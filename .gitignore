@@ -1,0 +1,6 @@
+*~
+*/snapshots/*
+*.toc
+*.aux
+*.log
+*.pdf
