@@ -40,7 +40,7 @@ I will be completing exercises 1, 2, and 3 in Chapter 3 of Pacheco.
 	When this completes, my .out file is filled with the greeting from processes $1$ through $39$ inclusive and in order, least to greatest. This is expected because of the way process $0$ is listening for messages. It listens first for messages from process $1$, then process $2$, etc up to the last process, process $39$.
 	\pagebreak
 
-	\lstinputlisting[language=C, style=customc, caption=The C source code I used\, taken straight from the Pacheco website:]{../greetings_1.c}
+	\lstinputlisting[language=C, style=customc, caption=The C source code I used\, taken straight from the Pacheco website:]{../snapshots/greetings_1.c}
 	
 	\lstinputlisting[language=bash, caption=\texttt{run\_greetings\_1\_1.slurm} used for running on a single process:]{../run_greetings_1_1.slurm}
 	
@@ -60,17 +60,30 @@ I will be completing exercises 1, 2, and 3 in Chapter 3 of Pacheco.
 	MPI_Recv(message, 100, MPI_CHAR, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
 	\end{lstlisting}
 	
-	\lstinputlisting[caption=Output when running 40 processes over 5 nodes but listening to all processes at once:]{../greetings_5_8_any_slurm.out}
+	\lstinputlisting[caption=Output when running $40$ processes over $5$ nodes but listening to all processes at once:]{../greetings_5_8_any_slurm.out}
 	
 	\pagebreak
 	\subsection{Exercise 3}
-	The purpose of this exercise is to see what happens when the parameters to \texttt{MPI\_Send} and \texttt{MPI\_Recv} are changed.
+	The purpose of this exercise is to see what happens when the parameters to \texttt{MPI\_Send} and \texttt{MPI\_Recv} are changed. For simplicity, I will only run my code on $1$ node and $5$ processes. To do this, I will update my .slurm file to have \texttt{nodes=1} and \texttt{ntasks-per-node=5} and rename the .slurm, .out, and .err files to follow my naming convention. After every change to \texttt{greetings.c} I will use the same compile command I stated earlier.
+	I am starting with the same code I ended exercise $2$ with. I first changed the \texttt{datatype} in \texttt{MPI\_Send} to \texttt{MPI\_INT} because I know in C \texttt{int} and \texttt{char} are interchangeable for the most part. This resulted in an error that $104$ bytes were received but buffer size is $100$. TO attempt to remedy this, I increased \texttt{count} in \texttt{MPI\_Recv} to $200$. After this, messages were successfully received and I got the following output:
+	\begin{lstlisting}[language=bash]
+Greetings from process 3!
+Greetings from process 4!
+Greetings from process 1!
+Greetings from process 2!
+	\end{lstlisting}
+	This appears to show that \texttt{MPI\_INT} datatypes are slightly larger than \texttt{MPI\_CHAR} datatypes.
+	
+	I next changed both \texttt{MPI\_Send} and \texttt{MPI\_Recv} to have a datatype of \texttt{MPI\_INT} and \texttt{count} back to $100$. This worked without error or warning and produced similar output to above, just in a different order. To try and find a lower bound for what \texttt{count} can be with my message, I set \texttt{datatype} back to \texttt{MPI\_CHAR} for both functions since I am working with \texttt{char} C types. I then found that for single digit process numbers, the greeting message is $25$ characters long plus the \texttt{null} terminating character that C adds, making the message $26$ \texttt{char}s long. I changed \texttt{count} to $26$ in \texttt{MPI\_Recv} since the length of the message is calculated in \texttt{MPI\_Send}. This also ran and surprisingly the messages were printed in order. I ran the same code twice more and got the same results. This is intriguing because I kept \texttt{MPI\_ANY\_SOURCE} and \texttt{MPI\_ANY\_TAG} in the \texttt{MPI\_Recv} function. I could run more tests, but for these brief experiments these results are enough to tell me it may not be a coincidence and could have something to do with how MPI pipelines data from processes. To see what happens when I reduce \texttt{count} to just $25$ in \texttt{MPI\_Recv}. This resulted in an error telling me $26$ bytes were received but the buffer size is only $25$ and caused the program to hang. These results suggest that for future programs, either an upper limit should be placed on messages constructed by sending processes, some method of predicting message size should be implemented by the receiving processes, or \texttt{count} should be assigned to some large value where it is only assumed no message will be constructed to be larger. Of all three, I believe the best to be setting an upper limit on messages constructed by sending processes.
+	
+	I increased \texttt{count} back to $26$ so I could start manipulating the \texttt{source} and \texttt{dest} parameters. I started by hard coding \texttt{source} to always be $2$ in \texttt{MPI\_Recv}. This caused only the greeting from process $2$ to be printed and the program to hang. This is because the receive function is inside a for-loop trying to get a message from process $2$ four times, once for each process. However in this case each process sends only a single message meaning process $0$ will only receive $1$ message from process $2$. I used \texttt{scancel} to cancel my job because I knew it would never finish. I changed \texttt{source} back to \texttt{MPI\_ANY\_SOURCE} for further testing. Changing \texttt{dest} in \texttt{MPI\_Send} to any value other than $0$ caused the program to hang without printing anything out so I had to cancel the job to stop it. This happened because process $0$ is waiting for $4$ messages, but all $4$ processes that send messages are sending them to process $2$, which is not expecting them.
+	
+	\lstinputlisting[language=bash, caption=\texttt{run_greetings_1_5.slurm} used to run code after each modification]{../run_greetings_1_5.slurm}
 	
 
 \pagebreak
 \section{Problem 2}
 
-% Now we need to end the document
 \end{document}
 
 
