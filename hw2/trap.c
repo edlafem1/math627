@@ -129,7 +129,7 @@ double Trap(
 
 		local_a = trapezoid*h + a;
 		local_b = (trapezoid+1)*h + a;
-		printf("Covering %f - %f\n", local_a, local_b);
+		//printf("Covering %f - %f\n", local_a, local_b);
 		
 		approximation += ((f(local_a) + f(local_b))/2.0);
 	}
