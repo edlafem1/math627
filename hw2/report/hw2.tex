@@ -105,12 +105,15 @@ Running the program on $1$ node with $15$ tasks yielded results that were mostly
 Running the program on $3$ nodes and $5$ tasks per node for a total of $15$ processes yielded the same results with process $0$ interjecting the greeting it received from process $14$ randomly between the outputs of the other processes. However running the program on $5$ nodes and $3$ tasks per node for a total of $15$ processes yielded increasingly out of order print statements. Ignoring this, each process still sent and received a message to and from the correct processes and thus the program is ran correctly.
 
 Thus in all the tests, the code performed correctly, however the order of the output was somewhat surprising though the reason likely lies in the handling of I/O by the system rather than the implementation of the code itself.
-
 \pagebreak
+\lstinputlisting[language=bash, caption=\texttt{hi}Output when running on $3$ nodes with $5$ processes each:]{../greetings_3_5_slurm.out}
 \lstinputlisting[language=C, style=customc, caption=\texttt{greetings\_3.c} source code for Problem 2.]{../snapshots/greetings_3.c}
 \pagebreak
 
-\section{Problem 4}
+\section{Problem 3}
+This problem discusses the program from Chapter 4 of Pacheco designed to calculate an approximation of a definite integral using trapezoids.
+\subsection{Verification of Original Code}
+
 \end{document}
 
 
