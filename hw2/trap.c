@@ -56,7 +56,7 @@ main(int argc, char** argv) {
 
     /* Find out how many processes are being used */
     MPI_Comm_size(MPI_COMM_WORLD, &np);
-	/*
+	
 	if (argc < 4 && id == 0) {
 		printf("Not enough arguments supplied.\n");
 		MPI_Abort(MPI_COMM_WORLD, -1);
@@ -65,7 +65,18 @@ main(int argc, char** argv) {
 		b = atoi(argv[2]);
 		n = (int)atof(argv[3]);
 	}
+	
+	if (n <= 0 && id == 0) {
+		printf("Number of trapezoids must be greater than 0.\n");
+		MPI_Abort(MPI_COMM_WORLD, -1);
+	} 
+	/*
+	else if (n % np != 0 && id == 0) {
+		printf("n must be divisible by np.\n");
+		MPI_Abort(MPI_COMM_WORLD, -1);
+	}
 	*/
+	
     h = (b-a)/n;    /* h is the same for all processes */
     local_n = n/np;  /* So is the number of trapezoids */
 
@@ -96,9 +107,9 @@ main(int argc, char** argv) {
 		printf("\tn = %i trapezoids,\n", n);
 		printf("\th = %24.16e\n", h);
 		printf("\th^2 = %24.16e\n", h*h);
-		printf("\tTrue value = %24.16e\n", (1.0/3.0)*(b*b*b-a*a*a));
-		printf("\tTrue error = %24.16e\n", total-(1.0/3.0)*(b*b*b-a*a*a));
-		printf("\tApproximation = %24.16e\n", total);
+		printf("True value = %24.16e\n", (1.0/3.0)*(b*b*b-a*a*a));
+		printf("True error = %24.16e\n", total-(1.0/3.0)*(b*b*b-a*a*a));
+		printf("Approximation = %24.16e\n", total);
     }
 
     /* Shut down MPI */
