@@ -1,0 +1,104 @@
+% First we choose the document class (can be book, report, article etc.)
+\documentclass[11pt]{article}
+\usepackage{xcolor}
+\usepackage{listings}
+
+\lstdefinestyle{customc}{
+  belowcaptionskip=1\baselineskip,
+  breaklines=true,
+  frame=L,
+  xleftmargin=\parindent,
+  language=C,
+  showstringspaces=false,
+  basicstyle=\footnotesize\ttfamily,
+  keywordstyle=\bfseries\color{green!40!black},
+  commentstyle=\ttfamily\color{purple!40!black},
+  identifierstyle=\color{blue},
+  stringstyle=\color{orange},
+}
+\lstset{escapechar=@,style=customc}
+
+\author{Edward LaFemina \\
+		\it{University of Maryland, Baltimore County}}
+\title{Math 627 HW 2}
+\date{\today}
+
+\begin{document}
+\maketitle
+\tableofcontents
+
+\pagebreak
+\section{Problem 1}
+I will be completing exercises 1, 2, and 3 in Chapter 3 of Pacheco.
+	\subsection{Exercise 1}
+	This goal of this exercise is to run the given \texttt{greetings.c} program written by Pacheco first on one processor, then on as many as possible and compare the outputs.
+	
+	I first downloaded the greetings.c source code from the Pacheco website and copied and pasted it onto the maya cluster in my math627 directory. To compile, I used the command \texttt{mpiicc greetings.c -o greetings}. To run my program on only one process, I created a file called \texttt{run\_greetings\_1\_1.slurm} which contains directives used by slurm to run my code. I set the job-name to greetings, the partition to develop, nodes to $1$, ntasks-per-node to $1$, and, adopting a naming convention of \textless job-name\textgreater\_\textless nodes\textgreater\_\textless processes per node\textgreater\_slurm, I named my output and error files with file extensions .out and .err respectively. I then ran my code using the command \texttt{sbatch run\_greetings\_1\_1.slurm}.
+	
+	My code ran without error and the output and error files were both empty. I believe this to be correct because the code copied from Pacheco only listens for messages on process 0 without creating any of its own. Thus, no messages are sent and none can be received so the output remains blank. Keeping on the development partition to avoid interfering with research projects, a table on the maya resource page states there are 6 nodes I can run on and a paragraph of text above the table says I can only use $5$ nodes, however I found that though I can only use $5$ nodes, the ones I can use are slightly different than those listed in the paragraph. I can run my code on $5$ nodes, $2$ hpcf2013, $1$ hpcf2010, and $2$ hpcf2009 nodes, for a total of $48$ processes. Because slurm limits the ntasks-per-node value to the minimum of the number or processes the requested nodes can handle, I will only run my code on $5$ nodes with $8$ processes each for a total of $40$ processes. To do this, I will make a new \texttt{.slurm} file following my naming convention and setting nodes to $5$ and ntasks-per-node to $8$.
+	
+	When this completes, my .out file is filled with the greeting from processes $1$ through $39$ inclusive and in order, least to greatest. This is expected because of the way process $0$ is listening for messages. It listens first for messages from process $1$, then process $2$, etc up to the last process, process $39$.
+	\pagebreak
+
+	\lstinputlisting[language=C, style=customc, caption=The C source code I used\, taken straight from the Pacheco website:]{../greetings_1.c}
+	
+	\lstinputlisting[language=bash, caption=\texttt{run\_greetings\_1\_1.slurm} used for running on a single process:]{../run_greetings_1_1.slurm}
+	
+	\lstinputlisting[language=bash, caption=\texttt{run\_greetings\_5\_8.slurm} used for running $40$ tasks across $5$ nodes:]{../run_greetings_5_8.slurm}
+
+	\lstinputlisting[language=bash, caption=\texttt{greetings\_5\_8\_slurm.out} when running $40$ tasks across $5$ nodes:]{../greetings_5_8_slurm.out}
+	
+	\pagebreak
+	\subsection{Exercise 2}
+	The goal of this exercise is to modify the original \texttt{greetings.c} program so that process 0 can listen for messages from any process using any tag and compare the outputs.
+	
+	To do this, I simply changed the \texttt{source} and \texttt{tag} argument in the \texttt{MPI\_Recv} function to be \texttt{MPI\_ANY\_SOURCE} and \texttt{MPI\_ANY\_TAG} respectively and compiled using the same command used for exercise $1$. I also changed the name of my output and error files to greetings\_5\_8\_any\_slurm with file extensions .out and .err respectively. I used the same .slurm file for $5$ nodes, $8$ processes per node and \texttt{sbatch} command to run my code.
+	
+	After my code ran, my output file still had greeting messages from processes $1$-$39$ inclusive, but in a random order which is different from exercise $1$. This was to be expected because now that process $0$ listens for messages from any process it will print messages as they arrive which can be in any order in a parallel computing environment.
+	
+	\begin{lstlisting}[language=C, style=customc, caption=\texttt{MPI\_Recv} call is the only difference in code from exercise 1 to exercise 2:]
+	MPI_Recv(message, 100, MPI_CHAR, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
+	\end{lstlisting}
+	
+	\lstinputlisting[caption=Output when running 40 processes over 5 nodes but listening to all processes at once:]{../greetings_5_8_any_slurm.out}
+	
+	\pagebreak
+	\subsection{Exercise 3}
+	The purpose of this exercise is to see what happens when the parameters to \texttt{MPI\_Send} and \texttt{MPI\_Recv} are changed.
+	
+
+\pagebreak
+\section{Problem 2}
+
+% Now we need to end the document
+\end{document}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
