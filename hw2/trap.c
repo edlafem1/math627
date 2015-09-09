@@ -103,7 +103,7 @@ main(int argc, char** argv) {
 		printf("True value = %24.16e\n", (1.0/3.0)*(b*b*b-a*a*a));
 		printf("True error = %24.16e\n", total-(1.0/3.0)*(b*b*b-a*a*a));
 		printf("Approximation = %24.16e\n", total);
-		printf("observed wall clock time in seconds = %9.2f\n", elapsedTime);
+		printf("observed wall clock time in seconds = %24.16e\n", elapsedTime);
     }
 
     /* Shut down MPI */
