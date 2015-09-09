@@ -79,7 +79,7 @@ main(int argc, char** argv) {
     /* Add up the approximations calculated by each process */
     if (id == 0) {
         total = approximation;
-        for (source = 1; source < p; source++) {
+        for (source = 1; source < np; source++) {
             MPI_Recv(&approximation, 1, MPI_DOUBLE, source, tag,
                 MPI_COMM_WORLD, &status);
             total = total + approximation;
