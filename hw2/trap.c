@@ -40,6 +40,8 @@ main(int argc, char** argv) {
     int         dest = 0;  /* All messages go to 0      */
     int         tag = 0;
     MPI_Status  status;
+	
+	double startTime, endTime, elapsedTime;
 
 		
     double Trap(int n, double h, int id, int np);    /* Calculate local approximation of integral  */
@@ -67,6 +69,9 @@ main(int argc, char** argv) {
 		MPI_Abort(MPI_COMM_WORLD, -1);
 	} 
 	
+	MPI_Barrier(MPI_COMM_WORLD);
+	startTime = MPI_Wtime();
+	
     h = (b-a)/n;    /* h is the same for all processes */
 
     approximation = Trap(n, h, id, np);
@@ -83,9 +88,13 @@ main(int argc, char** argv) {
         MPI_Send(&approximation, 1, MPI_DOUBLE, dest,
             tag, MPI_COMM_WORLD);
     }
-
+	
+	MPI_Barrier(MPI_COMM_WORLD);
+	endTime = MPI_Wtime();
     /* Print the result */
     if (id == 0) {
+		elapsedTime = endTime - startTime;
+		
         printf("With:\n");
 		printf("\tNumber of processes np = %i\n", np);
 		printf("\tn = %i trapezoids\n", n);
@@ -94,6 +103,7 @@ main(int argc, char** argv) {
 		printf("True value = %24.16e\n", (1.0/3.0)*(b*b*b-a*a*a));
 		printf("True error = %24.16e\n", total-(1.0/3.0)*(b*b*b-a*a*a));
 		printf("Approximation = %24.16e\n", total);
+		printf("observed wall clock time in seconds = %9.2f\n", elapsedTime);
     }
 
     /* Shut down MPI */
