@@ -56,7 +56,7 @@ main(int argc, char** argv) {
 
     /* Find out how many processes are being used */
     MPI_Comm_size(MPI_COMM_WORLD, &np);
-
+	/*
 	if (argc < 4 && id == 0) {
 		printf("Not enough arguments supplied.\n");
 		MPI_Abort(MPI_COMM_WORLD, -1);
@@ -65,7 +65,7 @@ main(int argc, char** argv) {
 		b = atoi(argv[2]);
 		n = (int)atof(argv[3]);
 	}
-	
+	*/
     h = (b-a)/n;    /* h is the same for all processes */
     local_n = n/np;  /* So is the number of trapezoids */
 
