@@ -78,7 +78,7 @@ Greetings from process 2!
 	
 	I increased \texttt{count} back to $26$ so I could start manipulating the \texttt{source} and \texttt{dest} parameters. I started by hard coding \texttt{source} to always be $2$ in \texttt{MPI\_Recv}. This caused only the greeting from process $2$ to be printed and the program to hang. This is because the receive function is inside a for-loop trying to get a message from process $2$ four times, once for each process. However in this case each process sends only a single message meaning process $0$ will only receive $1$ message from process $2$. I used \texttt{scancel} to cancel my job because I knew it would never finish. I changed \texttt{source} back to \texttt{MPI\_ANY\_SOURCE} for further testing. Changing \texttt{dest} in \texttt{MPI\_Send} to any value other than $0$ caused the program to hang without printing anything out so I had to cancel the job to stop it. This happened because process $0$ is waiting for $4$ messages, but all $4$ processes that send messages are sending them to process $2$, which is not expecting them.
 	
-	\lstinputlisting[language=bash, caption=\texttt{run_greetings_1_5.slurm} used to run code after each modification]{../run_greetings_1_5.slurm}
+	\lstinputlisting[language=bash, caption=\texttt{run\_greetings\_1\_5.slurm} used to run code after each modification]{../run_greetings_1_5.slurm}
 	
 
 \pagebreak
