@@ -33,10 +33,7 @@ main(int argc, char** argv) {
     double       b = 1.0;   /* Right endpoint            */
     int         n = 1024;  /* Number of trapezoids      */
     double       h;         /* Trapezoid base length     */
-    double       local_a;   /* Left endpoint my process  */
-    double       local_b;   /* Right endpoint my process */
-    int         local_n;   /* Number of trapezoids for  */
-                           /* my calculation            */
+
     double       approximation;  /* approximation of integral over my interval */
     double       total;     /* Total approximation            */
     int         source;    /* Process sending approximation  */
@@ -45,8 +42,7 @@ main(int argc, char** argv) {
     MPI_Status  status;
 
 		
-    double Trap(double local_a, double local_b, int local_n,
-              double h);    /* Calculate local approximation of integral  */
+    double Trap(int n, double h, int id, int np);    /* Calculate local approximation of integral  */
 
     /* Let the system do what it needs to start up MPI */
     MPI_Init(&argc, &argv);
@@ -70,22 +66,10 @@ main(int argc, char** argv) {
 		printf("Number of trapezoids must be greater than 0.\n");
 		MPI_Abort(MPI_COMM_WORLD, -1);
 	} 
-	/*
-	else if (n % np != 0 && id == 0) {
-		printf("n must be divisible by np.\n");
-		MPI_Abort(MPI_COMM_WORLD, -1);
-	}
-	*/
 	
     h = (b-a)/n;    /* h is the same for all processes */
-    local_n = n/np;  /* So is the number of trapezoids */
 
-    /* Length of each process' interval of
-     * integration = local_n*h.  So my interval
-     * starts at: */
-    local_a = a + id*local_n*h;
-    local_b = local_a + local_n*h;
-    approximation = Trap(local_a, local_b, local_n, h);
+    approximation = Trap(n, h, id, np);
 
     /* Add up the approximations calculated by each process */
     if (id == 0) {
@@ -119,24 +103,25 @@ main(int argc, char** argv) {
 
 
 double Trap(
-          double  local_a   /* in */,
-          double  local_b   /* in */,
-          int    local_n   /* in */,
-          double  h         /* in */) {
+          int n   		/* in */,
+          double  h     /* in */,
+		  int id		/* in */,
+		  int np		/* in */,) {
 
-    double approximation;   /* Store result in approximation  */
-    double x;
-    int i;
+    double approximation=0;   /* Store result in approximation  */
+    int k, trapezoid;
+	double local_a, local_b;
 
     double f(double x); /* function we're integrating */
 
-    approximation = (f(local_a) + f(local_b))/2.0;
-    x = local_a;
-    for (i = 1; i <= local_n-1; i++) {
-        x = x + h;
-        approximation = approximation + f(x);
-    }
-    approximation = approximation*h;
+	trapezoid = id;
+	for (k = 0; (trapezoid=id+k*np) < n; k++) {
+		local_a = trapezoid*h;
+		local_b = (trapezoid+1)*h;
+		
+		approximation += (f(local_a) + f(local_b))/2.0;
+	}
+		
     return approximation;
 } /*  Trap  */
 
