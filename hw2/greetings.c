@@ -39,12 +39,12 @@ main(int argc, char* argv[]) {
 		source = (id - 1 + np) % np;
         MPI_Recv(message, 100, MPI_CHAR, source, MPI_ANY_TAG,
             MPI_COMM_WORLD, &status);
-        printf("My ID: %d, From: %i, Message: %s\n", id, status->MPI_SOURCE, message);
+        printf("My ID: %d, From: %i, Message: %s\n", id, status.MPI_SOURCE, message);
     } else {
 		source = (id - 1 + np) % np;
         MPI_Recv(message, 100, MPI_CHAR, source, MPI_ANY_TAG,
             MPI_COMM_WORLD, &status);
-        printf("My ID: %d, From: %i, Message: %s\n", id, status->MPI_SOURCE, message);
+        printf("My ID: %d, From: %i, Message: %s\n", id, status.MPI_SOURCE, message);
         
 		/* Create message */
         sprintf(message, "Greetings from process %d!",
