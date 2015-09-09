@@ -31,7 +31,7 @@ main(int argc, char** argv) {
     int         np;         /* The number of processes   */
     double       a = 0.0;   /* Left endpoint             */
     double       b = 1.0;   /* Right endpoint            */
-    int         n = 1024;  /* Number of trapezoids      */
+    int         n;  /* Number of trapezoids      */
     double       h;         /* Trapezoid base length     */
 
     double       approximation;  /* approximation of integral over my interval */
@@ -44,7 +44,7 @@ main(int argc, char** argv) {
 	double startTime, endTime, elapsedTime;
 
 		
-    double Trap(int n, double h, int id, int np);    /* Calculate local approximation of integral  */
+    double Trap(int n, double h, double a, int id, int np);    /* Calculate local approximation of integral  */
 
     /* Let the system do what it needs to start up MPI */
     MPI_Init(&argc, &argv);
@@ -59,8 +59,8 @@ main(int argc, char** argv) {
 		printf("Not enough arguments supplied.\n");
 		MPI_Abort(MPI_COMM_WORLD, -1);
 	} else {
-		a = atoi(argv[1]);
-		b = atoi(argv[2]);
+		a = atof(argv[1]);
+		b = atof(argv[2]);
 		n = (int)atof(argv[3]);
 	}
 	
@@ -74,7 +74,7 @@ main(int argc, char** argv) {
 	
     h = (b-a)/n;    /* h is the same for all processes */
 
-    approximation = Trap(n, h, id, np);
+    approximation = Trap(n, h, a, id, np);
 
     /* Add up the approximations calculated by each process */
     if (id == 0) {
@@ -114,6 +114,7 @@ main(int argc, char** argv) {
 double Trap(
           int n,  		/* in */
           double  h,    /* in */
+		  double a,		/* in */
 		  int id,		/* in */
 		  int np		/* in */) {
 
@@ -125,9 +126,10 @@ double Trap(
 
 	trapezoid = id;
 	for (k = 0; (trapezoid=id+k*np) < n; k++) {
-		printf("Covering trapezoid %i\n", trapezoid);
-		local_a = trapezoid*h;
-		local_b = (trapezoid+1)*h;
+
+		local_a = trapezoid*h + a;
+		local_b = (trapezoid+1)*h + a;
+		printf("Covering %f - %f\n", local_a, local_b);
 		
 		approximation += (f(local_a) + f(local_b))/2.0;
 	}
