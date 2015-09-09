@@ -31,13 +31,13 @@ main(int argc, char* argv[]) {
         /* Create message */
         sprintf(message, "Greetings from process %d!",
             my_rank);
-        dest = 0;
+        dest = 1;
         /* Use strlen+1 so that '\0' gets transmitted */
         MPI_Send(message, strlen(message)+1, MPI_CHAR,
             dest, tag, MPI_COMM_WORLD);
     } else { /* my_rank == 0 */
         for (source = 1; source < p; source++) {
-            MPI_Recv(message, 100, MPI_CHAR, MPI_ANY_SOURCE, MPI_ANY_TAG,
+            MPI_Recv(message, 25+1, MPI_CHAR, MPI_ANY_SOURCE, MPI_ANY_TAG,
                 MPI_COMM_WORLD, &status);
             printf("%s\n", message);
         }
