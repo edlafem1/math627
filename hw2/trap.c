@@ -103,10 +103,10 @@ main(int argc, char** argv) {
 
 
 double Trap(
-          int n   		/* in */,
-          double  h     /* in */,
-		  int id		/* in */,
-		  int np		/* in */,) {
+          int n,  		/* in */
+          double  h,    /* in */
+		  int id,		/* in */
+		  int np		/* in */) {
 
     double approximation=0;   /* Store result in approximation  */
     int k, trapezoid;
