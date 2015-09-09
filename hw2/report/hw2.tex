@@ -1,5 +1,7 @@
 % First we choose the document class (can be book, report, article etc.)
 \documentclass[11pt]{article}
+\usepackage{amsmath}
+
 \usepackage{xcolor}
 \usepackage{listings}
 
@@ -83,7 +85,24 @@ Greetings from process 2!
 
 \pagebreak
 \section{Problem 2}
+The purpose of this assignment is to write a program in which each process sends a greeting to the process with an $id$ one higher, or in the case of the process with the highest $id$, to process $0$ and have each process make sure to receive messages only from the process with $id$ one lower than their own, and in the case of process $0$ to receive messages only from the process with the highest $id$.
+\subsection{Discussion of Relevant Issues and Solution Strategy}
+The exact problem statement is that \textquotedblleft process $i$ sends a greeting to process $(i+1)\mod p$\textquotedblright where $p$ is the number of processes. If each process $i$ sends a message to process $i+1$ and receives from process $i-1$, process $p-1$ will be trying to send to process $p$ which does not exist, and process $0$ will be trying to receive from process $-1$ which does not exist either. The solution for sending is to have process $i$ send to process $(i+1)\mod p$. Thus processes $0$ through $p-2$ will send messages to process $i+1$ and process $p-1$ will send to process $0$. This means the code must calculate \texttt{dest} to be $(i+1)\% p$. The solution for receiving is for process $i$ to listen for a message from process $(i-1)\mod p$. On a computer, this will work for all processes except process $0$. The reason for this is that the computer's calculation of $-1\mod p$ is poorly defined across systems and programming languages. In particular, when testing this on the maya system using the \texttt{cc} compiler on the user node and computing the value $(0-1) \% p$ for any value $p > 1$ we get $-1$, meaning the error is not resolved. To solve this, we apply the following fact to our code:
+$$ i-1 \equiv i-1+p \pmod{p} \Longrightarrow 1- \equiv -1+p \pmod{p}. $$
+Thus, we compute \texttt{source} to be $()i-1+p) \% p $ and obtain the correct destination for every $i$ in $0\mathellipsis p-1$.
 
+Another question regards the order of sending and receiving. It is useful to note that \texttt{MPI\_Send} and \texttt{MPI\_Recv} both block until the communication is complete. This means that if a process sends a message, it cannot do anything else until another process receives it; further, if a process is waiting for a message, it cannot do anything else until a message has been sent and it receives the message.
+
+Consider if all processes chooses to receive a message first. All processes will block waiting for a message to be sent before sending their own message. This means no messages can be sent unless one process receives one and send its message; but no message can be sent and the program will hang indefinitely. Now consider every process sending its message to the correct destination and then trying to receive a message. Every process will wait for its message to be received before listening for a message to be sent to itself. But if all processes send first, none are listening for messages and the program blocks on send and hangs indefinitely. To solve this, have one process, say process $0$, choose to send first and all other processes listen first. Then process $1$ will immediately receive a message from process $0$ and send its own message to process $2$ which will then send a message to process $3$ and so on until process $p-2$ sends its message to process $p-1$ which will complete the circuit and send a message to process $0$ which has been listening ever since it sent its message to process $1$.
+
+Because each process is given an $id$ independent of which processor it is on, it does not matter how many processors the program is run on, nor how many tasks per node are run. To test that our program works, we should have each process print its $id$ and when it sends, where it is sending to, and when it receives, where it received a message from. In addition, we should have process $0$ print the total number or processes running the program. We will know our program is correct if every process says it receives a message from a process with $id$ less than its own, except for process $0$ which should receive a message from $id=p-1$. If we verify that this is the case, we know every process $i$ has sent a message to process $(i+1)\%p$ that has been received correctly. To absolutely verify the sender of the message, we will use the \texttt{status} variable instead of only relying on the content of the message.
+
+For this problem, I started with the exact code supplied by Pacheco, however I changed \texttt{my\_rank} into \texttt{id} and \texttt{p} to \texttt{np}. I changed the conditional tests to read \texttt{if (id == 0) \{...\} else \{...\}} and included in those blocks the strategy for sending and receiving messages described above. See code listing on next page for full source.
+\pagebreak
+\lstinputlisting[language=C, style=customc, caption=\texttt{greetings\_3.c} source code for Problem 2.]{../snapshots/greetings_3.c}
+\pagebreak
+
+\section{Problem 4}
 \end{document}
 
 
