@@ -118,8 +118,85 @@ The purpose of this section is to verify that the code given works for me and gi
 Potential shortcomings of this code arise from the author's attempt at a simple example. To begin, the code uses \texttt{my\_rank} and \texttt{p} to store the process's id and the total number of processes. Another misnamed variable is \texttt{integral}, which is actually used to accumulate the approximation for the integral. This code does not allow the user to specify command line arguments to set the bounds of the integral to approximate or the number or trapezoids, making it a very inflexible program. The program also relies on the number of processes dividing the number or trapezoids used in the approximation. The program's assumptions could yield an answer that leaves out approximations of part of the function over the bounds, for example if $np=3$ then one trapezoid would be left out of the approximation. The program also only uses \texttt{float}s for real values, which do not have nearly enough precision to accurately make an approximation for a very large number of trapezoids. Another shortcoming comes from the fact that it does not print information such as the step size, the true value of the integral, the true error, the acceptable error, or the number of intervals used. When it does print the answer, it does not format the answer to leave out insignificant bits.
 
 \subsection{Fixing the Shortcomings}
-I first began by converting all \texttt{float} types to \texttt{double} types to increase the amount of precision and renaming variables to what they actually represent, namely \texttt{my\_rank} becomes \texttt{id}; \texttt{p} becomes \texttt{np}; \texttt{integral} becomes \texttt{approximation}.
+I first began by converting all \texttt{float} types to \texttt{double} types to increase the amount of precision and renaming variables to what they actually represent, namely \texttt{my\_rank} becomes \texttt{id}; \texttt{p} becomes \texttt{np}; \texttt{integral} becomes \texttt{approximation}. When I added the detailed diagnostic print statements, I used a format of \texttt{\%24.16e} so I could have a field width of 24 digits and 16 digits after the decimal place of a number with type \texttt{double}. I chose this number because the \texttt{double} type has $16$ bits of precision. I also printed the dependent variables, the ones that are not calculated as part of the approximation but are rather used in the approximation such as \texttt{a, b, n, np, h, local\_h} etc, first with an indent and the calculated values and true value of the integral underneath, unindented. This is just for aesthetic purposes and easier distinction.
+
+To install command line arguments for $a$ and $b$ I just used the \texttt{atof()} function on elements $1$ and $2$ of the \texttt{argv} array which converts \texttt{char \*} types to \texttt{double}s. To get the value of $n$, I used \texttt{atof()} and casted that to an \texttt{int}. The reason for this is that using \texttt{atof()} allows users to use exponential notation to set the value of $n$ if they want it very large, but using \texttt{atoi()} cannot parse exponential notation and would otherwise throw an error.
+
+For error checking, I first checked if the value of $n$ was less than or equal to $0$. The trapezoidal method of approximating an integral requires at least one trapezoid so it would be a user error to specify any less than $1$. I also included a check to see if it was process $0$ to make sure I only print an error message from process $0$. After printing, I call \texttt{MPI\_Abort} with an error code of $-1$. In the state the code is now, it would also be an error for the number of processes to not divide the number of trapezoids. To check for this case, I computed the remainder of $\frac{n}{p}$ using \texttt{n \% np} and if it was non-zero I checked if the \texttt{id} was $0$. If both were true, I printed an error message and again called \texttt{MPI\_Abort} with an error code of $-1$.
+
+\subsection{Source of an Inaccuracy}
+When the number of processes does not divide the number of trapezoids used for the approximation, the current state of the program will only calculate the first $ \lfloor\frac{n}{p}\rfloor \cdot p $ trapezoids. This is due to the fact that the code calculates a value \texttt{local\_n} that represents how many trapezoids each of the $p$ processes will calculate as part of the approximation of the integral. It does this using the statement \texttt{local\_n = n/np;} which is an integer division, meaning it truncates anything after the decimal point. For example, if we have $3$ processes and $1024$ trapezoids, process $0$will process trapezoids $0$ inclusive up to $341$ exclusive; process $1$ will process trapezoids $341$ inclusive up to $642$ exclusive; finally process $2$ will process trapezoids $642$ inclusive through $983$ exclusive. This leaves the last $40$ trapezoids unaccounted for. Removing the error checking I did related to this, the program yields an error of $ -9.7545034562546151\times10^{-04}$ which can be significant in scientific or engineering applications.
+
+To solve this problem, I propose each process $i$ is assigned to process trapezoids $i+k*p$ for all integer $k$ including $0$ such that $i+k*p < n$. To show that any process $i$ will have at most $1$ more trapezoid to process than any other process $j$, let us assume there exists a process $i$ that has two more trapezoids to process than a process $j$. This means process $i$ is assigned trapezoids $i, i+p, i+2p,\mathellipsis, i+k*p$ and process $j$ is assigned trapezoids $j, j+p, j+2p, \mathellipsis, j+(k-2)*p$. $ (i+k*p)-(j+(k-2)*p) = (i-j)+(k-(k-2))*p = (i-j)+2p $. Since $i<p$ and $j<p$, we have $-p < i-j < p \Longrightarrow p < i-j +2p < 3p $. This means the difference between the highest trapezoid of process $i$ is at least $p$ trapezoids away from the highest trapezoid of process $j$ meaning $j+(k-1)*p < i+k*p < n$ meaning process $j$ must also be assigned trapezoid $j+(k-1)*p$ and that process $i$ cannot be assigned trapezoid $i+(k+1)*p$ because $i+(k+1)*p > n$. Thus process $i$ can have at most $1$ more trapezoid than a process $j$ and will only have $1$ more trapezoid than a process $j$ if $i < j$ and $p$ does not divide $n$.
+
+To implement my algorithm, I got rid of all instances of \texttt{local\_n} and \texttt{local\_h} and only kept \texttt{local\_a} and \texttt{local\_b} inside of the \texttt{Trap} function. I modified the function declaration of \texttt{Trap} to be \texttt{double Trap(int n, double h, double a, int id, int np)}. I modified the function so that it increments $k$ in a loop from $0$ upwards while $id+k*np < n$. Inside this loop I calculate which trapezoid needs to be processed and compute \texttt{local\_a}, the x-coordinate of the leftmost base of the trapezoid, to be \texttt{trapezoid*h+a} and \texttt{local\_b}, the x-coordinate of the rightmost base of the trapezoid, to be \texttt{()trapezoid+1)*h+a}. I then use the formula for the area of a trapezoid and add that to the approximation the current process is doing. Once the loop is finished, it sends the approximation to process $0$ which sums all approximations from all processes and prints the information I deemed useful earlier.
+
+My algorithm has used all trapezoids in the approximation when $np$ divides $n$, $np=n$, and $np > n$, which is all scenarios other than when $n$ or $np$ is zero, however those cases have no real mathematical meaning.
+
+\begin{table}
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+	& 1 node & 2 nodes  \\ [0.5ex] 
+ \hline
+ 1 process per node & 1.5974044799804688e-05 & 2.9087066650390625e-05   \\ 
+ \hline
+ 2 processes per node & 3.1948089599609375e-05 & 3.0040740966796875e-05   \\
+ \hline
+4 processes per node & 2.5033950805664062e-05 & 2.9087066650390625e-05   \\
+ \hline
+8 processes per node & 2.3126602172851562e-05 & 4.1961669921875000e-05   \\
+ \hline
+16 processes per node &  1.8191337585449219e-04 & 1.7309188842773438e-04   \\ [1ex] 
+ \hline
+\end{tabular}
+\caption{Times(in seconds) of runs on hpcf2013 development nodes approximating the integral of $x^2$ from $0$ to $1$ using $8192$ trapezoids.}
+\end{table}
+
+\begin{table}
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+	& 1 node & 2 nodes  \\ [0.5ex] 
+ \hline
+ 1 process per node & 3.0303001403808594e-04 & 1.5997886657714844e-04   \\ 
+ \hline
+ 2 processes per node & 1.6188621520996094e-04 & 1.1110305786132812e-04   \\
+ \hline
+4 processes per node & 1.0895729064941406e-04 & 7.0095062255859375e-05   \\
+ \hline
+8 processes per node & 6.8902969360351562e-05 & 6.0081481933593750e-05   \\
+ \hline
+16 processes per node & 8.2969665527343750e-05 & 1.9311904907226562e-04   \\ [1ex] 
+ \hline
+\end{tabular}
+\caption{Times in seconds of runs on hpcf2013 development nodes approximating the integral of $\pi sin(x^2)$ from $0$ to $1$ using $8192$ trapezoids.}
+\end{table}
+
+My tests ran without program errors. For the approximation of the integral of $f(x)=x^2$ from $0$ to $1$ using $8192$ trapezoids, my programs all reported the same answer which was $2.4835268841449931e-09$ off of the true value. For the approximation of the integral of $g(x)=\pi sin(x^2)$ from $0$ to $1$ using $8192$ trapezoids, my programs all reported the same answer which was $-2.4511426666151692e-08$ off of the true value. Both of these actual errors are extremely small leading me to conclude that my programs resulted in very good approximations.
+
+To make my timing accurate, I placed an \texttt{MPI\_Barrier} immediatly after my error checks and getting command line args and right before process $0$ prints results. I did this so that I would have two clearly defined points where all processes have to be at the same time , regardless of which gets there first and last. Thus I was able to use \texttt{MPI\_Wtime} to record the times when all processes were at the same point before they began computing trapezoid areas and right after they finished and process $0$ had aggregated the results. The time I calculated is only the time required for the whole program to do the computations involved and share their results, not any of the setup or printing results since both of those can take a long time without doing any work to reach an answer.
+
+I notice a general trend of decreasing speeds as the per node increases when using only $1$ node, however the approximation for $f(x)=x^2$ became slower when it was distributed over $2$ nodes in all but $1$ case. This could be caused by network latencies, but more tests are required for anything conclusive. I ensure that my code achieved close enough answers by validating my algorithms mathematically by hand and then reviewing them once I had put them in code. I also included the true value of the integral and the difference between the true answer and the approximation in the print outs. I did not encounter this, but one limitation of my code is dealing with values exceeding 32 bits in size. This is due to my choice of double and int rather than other datatypes or using software libraries designed for big arithmetic.
+
+Looking at the data for runs of the second function, I notice that some of them are slower than the first function by about a factor of $10$, though not all of them are.  Without performing serial tests of both functions and comparing that to the parallel runs, it is hard to tell which function had a greater speedup by going parallel.
+
+
 \end{document}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
