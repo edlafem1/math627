@@ -1,0 +1,9 @@
+With:
+	Number of processes np = 32
+	n = 8192 trapezoids
+	h =   1.2207031250000000e-04
+	h^2 =   1.4901161193847656e-08
+True value =   2.0000000000000000e+00
+True error =  -2.4511427776374717e-08
+Approximation =   1.9999999754885722e+00
+observed wall clock time in seconds =   1.9311904907226562e-04
