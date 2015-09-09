@@ -27,64 +27,78 @@
 
 
 main(int argc, char** argv) {
-    int         my_rank;   /* My process rank           */
-    int         p;         /* The number of processes   */
-    float       a = 0.0;   /* Left endpoint             */
-    float       b = 1.0;   /* Right endpoint            */
+    int         id;   /* My process rank           */
+    int         np;         /* The number of processes   */
+    double       a = 0.0;   /* Left endpoint             */
+    double       b = 1.0;   /* Right endpoint            */
     int         n = 1024;  /* Number of trapezoids      */
-    float       h;         /* Trapezoid base length     */
-    float       local_a;   /* Left endpoint my process  */
-    float       local_b;   /* Right endpoint my process */
+    double       h;         /* Trapezoid base length     */
+    double       local_a;   /* Left endpoint my process  */
+    double       local_b;   /* Right endpoint my process */
     int         local_n;   /* Number of trapezoids for  */
                            /* my calculation            */
-    float       integral;  /* Integral over my interval */
-    float       total;     /* Total integral            */
-    int         source;    /* Process sending integral  */
+    double       approximation;  /* approximation of integral over my interval */
+    double       total;     /* Total approximation            */
+    int         source;    /* Process sending approximation  */
     int         dest = 0;  /* All messages go to 0      */
     int         tag = 0;
     MPI_Status  status;
 
-    float Trap(float local_a, float local_b, int local_n,
-              float h);    /* Calculate local integral  */
+		
+    double Trap(double local_a, double local_b, int local_n,
+              double h);    /* Calculate local approximation of integral  */
 
     /* Let the system do what it needs to start up MPI */
     MPI_Init(&argc, &argv);
 
     /* Get my process rank */
-    MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
+    MPI_Comm_rank(MPI_COMM_WORLD, &id);
 
     /* Find out how many processes are being used */
-    MPI_Comm_size(MPI_COMM_WORLD, &p);
+    MPI_Comm_size(MPI_COMM_WORLD, &np);
 
+	if (argc < 4 && id == 0) {
+		printf("Not enough arguments supplied.\n");
+		MPI_Abort(MPI_COMM_WORLD, -1);
+	} else {
+		a = atoi(argv[1]);
+		b = atoi(argv[2]);
+		n = (int)atof(argv[3]);
+	}
+	
     h = (b-a)/n;    /* h is the same for all processes */
-    local_n = n/p;  /* So is the number of trapezoids */
+    local_n = n/np;  /* So is the number of trapezoids */
 
     /* Length of each process' interval of
      * integration = local_n*h.  So my interval
      * starts at: */
-    local_a = a + my_rank*local_n*h;
+    local_a = a + id*local_n*h;
     local_b = local_a + local_n*h;
-    integral = Trap(local_a, local_b, local_n, h);
+    approximation = Trap(local_a, local_b, local_n, h);
 
-    /* Add up the integrals calculated by each process */
-    if (my_rank == 0) {
-        total = integral;
+    /* Add up the approximations calculated by each process */
+    if (id == 0) {
+        total = approximation;
         for (source = 1; source < p; source++) {
-            MPI_Recv(&integral, 1, MPI_FLOAT, source, tag,
+            MPI_Recv(&approximation, 1, MPI_DOUBLE, source, tag,
                 MPI_COMM_WORLD, &status);
-            total = total + integral;
+            total = total + approximation;
         }
     } else {  
-        MPI_Send(&integral, 1, MPI_FLOAT, dest,
+        MPI_Send(&approximation, 1, MPI_DOUBLE, dest,
             tag, MPI_COMM_WORLD);
     }
 
     /* Print the result */
-    if (my_rank == 0) {
-        printf("With n = %d trapezoids, our estimate\n",
-            n);
-        printf("of the integral from %f to %f = %f\n",
-            a, b, total);
+    if (id == 0) {
+        printf("With:\n");
+		printf("\tNumber of processes np = %i\n", np);
+		printf("\tn = %i trapezoids,\n", n);
+		printf("\th = %24.16e\n", h);
+		printf("\th^2 = %24.16e\n", h*h);
+		printf("\tTrue value = %24.16e\n", (1.0/3.0)*(b**3-a**3));
+		printf("\tTrue error = %24.16e\n", total-(1.0/3.0)*(b**3-a**3)));
+		printf("\tApproximation = %24.16e\n", total);
     }
 
     /* Shut down MPI */
@@ -92,31 +106,31 @@ main(int argc, char** argv) {
 } /*  main  */
 
 
-float Trap(
-          float  local_a   /* in */,
-          float  local_b   /* in */,
+double Trap(
+          double  local_a   /* in */,
+          double  local_b   /* in */,
           int    local_n   /* in */,
-          float  h         /* in */) {
+          double  h         /* in */) {
 
-    float integral;   /* Store result in integral  */
-    float x;
+    double approximation;   /* Store result in approximation  */
+    double x;
     int i;
 
-    float f(float x); /* function we're integrating */
+    double f(double x); /* function we're integrating */
 
-    integral = (f(local_a) + f(local_b))/2.0;
+    approximation = (f(local_a) + f(local_b))/2.0;
     x = local_a;
     for (i = 1; i <= local_n-1; i++) {
         x = x + h;
-        integral = integral + f(x);
+        approximation = approximation + f(x);
     }
-    integral = integral*h;
-    return integral;
+    approximation = approximation*h;
+    return approximation;
 } /*  Trap  */
 
 
-float f(float x) {
-    float return_val;
+double f(double x) {
+    double return_val;
     /* Calculate f(x). */
     /* Store calculation in return_val. */
     return_val = x*x;
