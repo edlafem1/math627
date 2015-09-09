@@ -113,7 +113,12 @@ Thus in all the tests, the code performed correctly, however the order of the ou
 \section{Problem 3}
 This problem discusses the program from Chapter 4 of Pacheco designed to calculate an approximation of a definite integral using trapezoids.
 \subsection{Verification of Original Code}
+The purpose of this section is to verify that the code given works for me and gives at least a close approximation of the actual value of the integral, as well as to identify any possible shortcomings in the code. To compile, I used \texttt{mpiicc trap.c -o trap}. For my first test, I ran the program on $2$ nodes with $4$ tasks per node to ensure the total number or processes was a divisor of $n=1024$, the number of trapezoids used in the approximation. The run completed quickly without error and gave an estimation of 0.333333 which is fairly close to the actual value of the integral which is $\frac{1}{3}$.
 
+Potential shortcomings of this code arise from the author's attempt at a simple example. To begin, the code uses \texttt{my\_rank} and \texttt{p} to store the process's id and the total number of processes. Another misnamed variable is \texttt{integral}, which is actually used to accumulate the approximation for the integral. This code does not allow the user to specify command line arguments to set the bounds of the integral to approximate or the number or trapezoids, making it a very inflexible program. The program also relies on the number of processes dividing the number or trapezoids used in the approximation. The program's assumptions could yield an answer that leaves out approximations of part of the function over the bounds, for example if $np=3$ then one trapezoid would be left out of the approximation. The program also only uses \texttt{float}s for real values, which do not have nearly enough precision to accurately make an approximation for a very large number of trapezoids. Another shortcoming comes from the fact that it does not print information such as the step size, the true value of the integral, the true error, the acceptable error, or the number of intervals used. When it does print the answer, it does not format the answer to leave out insignificant bits.
+
+\subsection{Fixing the Shortcomings}
+I first began by converting all \texttt{float} types to \texttt{double} types to increase the amount of precision and renaming variables to what they actually represent, namely \texttt{my\_rank} becomes \texttt{id}; \texttt{p} becomes \texttt{np}; \texttt{integral} becomes \texttt{approximation}.
 \end{document}
 
 
