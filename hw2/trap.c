@@ -21,6 +21,7 @@
  * See Chap. 4, pp. 56 & ff. in PPMPI.
  */
 #include <stdio.h>
+#include <math.h>
 
 /* We'll be using MPI routines, definitions, etc. */
 #include "mpi.h"
@@ -100,8 +101,13 @@ main(int argc, char** argv) {
 		printf("\tn = %i trapezoids\n", n);
 		printf("\th = %24.16e\n", h);
 		printf("\th^2 = %24.16e\n", h*h);
+		/* for x^2
 		printf("True value = %24.16e\n", (1.0/3.0)*(b*b*b-a*a*a));
 		printf("True error = %24.16e\n", total-(1.0/3.0)*(b*b*b-a*a*a));
+		*/
+		printf("True value = %24.16e\n", (-cos(M_PI * b))-(-cos(M_PI * a)));
+		printf("True error = %24.16e\n", total-((-cos(M_PI * b))-(-cos(M_PI * a))));
+		
 		printf("Approximation = %24.16e\n", total);
 		printf("observed wall clock time in seconds = %24.16e\n", elapsedTime);
     }
@@ -123,6 +129,7 @@ double Trap(
 	double local_a, local_b;
 
     double f(double x); /* function we're integrating */
+	double g(double x); /* function we're integrating */
 
 	trapezoid = id;
 	for (k = 0; (trapezoid=id+k*np) < n; k++) {
@@ -131,7 +138,8 @@ double Trap(
 		local_b = (trapezoid+1)*h + a;
 		//printf("Covering %f - %f\n", local_a, local_b);
 		
-		approximation += ((f(local_a) + f(local_b))/2.0);
+		// approximation += ((f(local_a) + f(local_b))/2.0); // for x^2
+		approximation += ((g(local_a) + g(local_b))/2.0); // for pi*sin(pi*x)
 	}
 		
     return approximation*h;
@@ -143,6 +151,14 @@ double f(double x) {
     /* Calculate f(x). */
     /* Store calculation in return_val. */
     return_val = x*x;
+    return return_val;
+} /* f */
+
+double g(double x) {
+    double return_val;
+    /* Calculate g(x). */
+    /* Store calculation in return_val. */
+    return_val = M_PI * sin(M_PI * x);
     return return_val;
 } /* f */
 
