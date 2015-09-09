@@ -115,6 +115,7 @@ double Trap(
 
 	trapezoid = id;
 	for (k = 0; (trapezoid=id+k*np) < n; k++) {
+		printf("Covering trapezoid %i\n", trapezoid);
 		local_a = trapezoid*h;
 		local_b = (trapezoid+1)*h;
 		
