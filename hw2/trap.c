@@ -96,8 +96,8 @@ main(int argc, char** argv) {
 		printf("\tn = %i trapezoids,\n", n);
 		printf("\th = %24.16e\n", h);
 		printf("\th^2 = %24.16e\n", h*h);
-		printf("\tTrue value = %24.16e\n", (1.0/3.0)*(b**3-a**3));
-		printf("\tTrue error = %24.16e\n", total-(1.0/3.0)*(b**3-a**3)));
+		printf("\tTrue value = %24.16e\n", (1.0/3.0)*(b*b*b-a*a*a));
+		printf("\tTrue error = %24.16e\n", total-(1.0/3.0)*(b*b*b-a*a*a));
 		printf("\tApproximation = %24.16e\n", total);
     }
 
