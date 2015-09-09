@@ -89,7 +89,6 @@ main(int argc, char** argv) {
         printf("With:\n");
 		printf("\tNumber of processes np = %i\n", np);
 		printf("\tn = %i trapezoids\n", n);
-		printf("\tlocal_n = %i\n", local_n);
 		printf("\th = %24.16e\n", h);
 		printf("\th^2 = %24.16e\n", h*h);
 		printf("True value = %24.16e\n", (1.0/3.0)*(b*b*b-a*a*a));
