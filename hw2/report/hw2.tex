@@ -170,10 +170,10 @@ My algorithm has used all trapezoids in the approximation when $np$ divides $n$,
 16 processes per node & 8.2969665527343750e-05 & 1.9311904907226562e-04   \\ [1ex] 
  \hline
 \end{tabular}
-\caption{Times in seconds of runs on hpcf2013 development nodes approximating the integral of $\pi sin(x^2)$ from $0$ to $1$ using $8192$ trapezoids.}
+\caption{Times in seconds of runs on hpcf2013 development nodes approximating the integral of $\pi sin(\pi*x^2)$ from $0$ to $1$ using $8192$ trapezoids.}
 \end{table}
 
-My tests ran without program errors. For the approximation of the integral of $f(x)=x^2$ from $0$ to $1$ using $8192$ trapezoids, my programs all reported the same answer which was $2.4835268841449931e-09$ off of the true value. For the approximation of the integral of $g(x)=\pi sin(x^2)$ from $0$ to $1$ using $8192$ trapezoids, my programs all reported the same answer which was $-2.4511426666151692e-08$ off of the true value. Both of these actual errors are extremely small leading me to conclude that my programs resulted in very good approximations.
+My tests ran without program errors. For the approximation of the integral of $f(x)=x^2$ from $0$ to $1$ using $8192$ trapezoids, my programs all reported the same answer which was $2.4835268841449931e-09$ off of the true value. For the approximation of the integral of $g(x)=\pi sin(\pi*x^2)$ from $0$ to $1$ using $8192$ trapezoids, my programs all reported the same answer which was $-2.4511426666151692e-08$ off of the true value. Both of these actual errors are extremely small leading me to conclude that my programs resulted in very good approximations.
 
 To make my timing accurate, I placed an \texttt{MPI\_Barrier} immediatly after my error checks and getting command line args and right before process $0$ prints results. I did this so that I would have two clearly defined points where all processes have to be at the same time , regardless of which gets there first and last. Thus I was able to use \texttt{MPI\_Wtime} to record the times when all processes were at the same point before they began computing trapezoid areas and right after they finished and process $0$ had aggregated the results. The time I calculated is only the time required for the whole program to do the computations involved and share their results, not any of the setup or printing results since both of those can take a long time without doing any work to reach an answer.
 
