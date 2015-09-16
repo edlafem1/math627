@@ -3,3 +3,9 @@
 *.aux
 *.log
 *.pdf
+*.docx
+*.opensdf
+*.sdf
+*.sln
+*.vcxproj*
+*.vs
