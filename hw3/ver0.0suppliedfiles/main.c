@@ -1,3 +1,4 @@
+0.
 #include "main.h"
 
 /* 09/12/02-10/10/02, updated 02/07/08 by Matthias K. Gobbert */
@@ -57,14 +58,14 @@ int main (int argc, char *argv[])
   */
 
   /* test output of command-line arguments: */
-  /*
+  /**/
   if (id == 0) {
     printf("argc = %d\n", argc);
     for (i = 0; i < argc; i++) {
       printf("%s\n", argv[i]);
     }
   }
-  */
+  /**/
 
   /* process command-line inputs: */
   if (argc != 4)
@@ -111,7 +112,21 @@ int main (int argc, char *argv[])
     l_x[l_i] = 1.0 / sqrt(((double)(n)));
   }
 
-
+  double *A;
+  int destination = 0;
+  if (id == 0) {
+	  A = (double *) calloc(n*n, sizeof(double));
+	  int *displacement = (int *) malloc(np * sizeof(int));
+	  int *recvcounts = (int *) malloc(np * sizeof(int));
+	  for (int i = 0; i < n; i++) {
+		  displacement[i] = i*n*l_n;	// l_n vectors of n elements, i times
+		  recvcounts[i] = n*l_n;		// each process was assigned l_n vectors of n elements
+	  }
+  }
+  
+  MPI_Gatherv(l_A, n*l_n, MPI_DOUBLE, A, recvcounts, displacement, MPI_DOUBLE, destination, MPI_COMM_WORLD);
+  
+  /* PRINT STUFF HERE */
 
 
 
