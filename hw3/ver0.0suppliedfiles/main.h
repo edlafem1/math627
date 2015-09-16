@@ -11,6 +11,7 @@
 #endif
 
 #include "memory.h"
+#include "utilities.h"
 
 void setup_example (double *l_A, int n, int l_n, int id, int np);
 
