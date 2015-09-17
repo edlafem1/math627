@@ -132,9 +132,9 @@ int main (int argc, char *argv[])
   
 
   // For 1.b
-  for (int i = 0; i < l_n; i++) {
-	  l_x[i] = 2 * i; // evens
-	  l_y[i] = 2 * i + 1; // odds
+  for (int l_i = id*l_n; l_i < (id + 1)*l_n; l_i++) {
+	  l_x[l_i] = 2 * l_i; // evens
+	  l_y[l_i] = 2 * l_i + 1; // odds
   }
   double l_x_dot_l_y = 0;
   l_x_dot_l_y = dot_product_parallel(l_x, l_y, n, id, np);
