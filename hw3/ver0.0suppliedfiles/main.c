@@ -105,7 +105,7 @@ int main (int argc, char *argv[])
   l_x = allocate_double_vector(l_n);   /* l_x is l_n-vector */
   l_y = allocate_double_vector(l_n);   /* l_y is l_n-vector */
 
-  /* For 1.a
+  // For 1.a
   // setup example: 
   setup_example(l_A, n, l_n, id, np);
   for (l_i = 0; l_i < l_n; l_i++) {
@@ -129,7 +129,7 @@ int main (int argc, char *argv[])
 		  printf("\n");
 	  }
   }
-  */
+  
 
   // For 1.b
   for (int i = 0; i < l_n; i++) {
