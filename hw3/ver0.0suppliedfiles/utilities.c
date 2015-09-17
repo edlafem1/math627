@@ -4,6 +4,12 @@
 Computes dot product of two n-length column vectors and returns result
 */
 double dot_product_parallel(double *x, double *y, int n, int id, int np) {
+    if (id == 0) {
+        for (int i = 0; i < n; i++) {
+            printf("% 09.9f    % 09.9f\n", x[i], y[i]);
+        }
+    }
+
 	int l_n = n / np; // how many products each process will compute
 	double l_sum = 0; // the local sum of the products each process computes
 
