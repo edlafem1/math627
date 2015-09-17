@@ -101,11 +101,12 @@ int main (int argc, char *argv[])
   }
 
   /* allocate storage: */
-  l_A = allocate_double_vector((n*l_n)); /* l_A is n x l_n matrix */
-  l_x = allocate_double_vector((l_n));   /* l_x is l_n-vector */
-  l_y = allocate_double_vector((l_n));   /* l_y is l_n-vector */
+  l_A = allocate_double_vector(n*l_n); /* l_A is n x l_n matrix */
+  l_x = allocate_double_vector(l_n);   /* l_x is l_n-vector */
+  l_y = allocate_double_vector(l_n);   /* l_y is l_n-vector */
 
-  /* setup example: */
+  /* For 1.a
+  // setup example: 
   setup_example(l_A, n, l_n, id, np);
   for (l_i = 0; l_i < l_n; l_i++) {
     l_x[l_i] = 1.0 / sqrt(((double)(n)));
@@ -118,8 +119,7 @@ int main (int argc, char *argv[])
   }
   
   MPI_Gather(l_A, n*l_n, MPI_DOUBLE, A, n*l_n, MPI_DOUBLE, destination, MPI_COMM_WORLD);
-  
-  /* PRINT STUFF HERE */
+  // PRINT n x n array
   if (id == 0) {
 	  int i, j;
 	  for (i = 0; i < n; i++) {
@@ -129,6 +129,22 @@ int main (int argc, char *argv[])
 		  printf("\n");
 	  }
   }
+  */
+
+  // For 1.b
+  for (int i = 0; i < l_n; i++) {
+	  l_x[i] = 2 * i; // evens
+	  l_y[i] = 2 * i + 1; // odds
+  }
+  double l_x_dot_l_y = 0;
+  l_x_dot_l_y = dot_product_parallel(l_x, l_y, l_n, id, np);
+
+
+
+
+
+
+
 
 
 
