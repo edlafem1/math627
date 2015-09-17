@@ -137,7 +137,7 @@ int main (int argc, char *argv[])
 	  l_y[i] = 2 * i + 1; // odds
   }
   double l_x_dot_l_y = 0;
-  l_x_dot_l_y = dot_product_parallel(l_x, l_y, l_n, id, np);
+  l_x_dot_l_y = dot_product_parallel(l_x, l_y, n, id, np);
 
 
 
