@@ -1,4 +1,4 @@
-OBJS := main.o memory.o
+OBJS := main.o memory.o utilities.o
 
 EXECUTABLE := power
 
