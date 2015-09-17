@@ -7,6 +7,6 @@
 /*
 Computes dot product of two n-length column vectors and returns result
 */
-double dot_product_parallel(double *x, double *y, int n, int id, int np)
+double dot_product_parallel(double *x, double *y, int n, int id, int np);
 
 #endif
