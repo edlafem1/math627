@@ -132,9 +132,11 @@ int main (int argc, char *argv[])
   
 
   // For 1.b
+  double *x = allocate_double_vector(n);   /* x is n-vector */
+  double *y = allocate_double_vector(n);   /* y is n-vector */
   for (int l_i = id*l_n; l_i < (id + 1)*l_n; l_i++) {
-	  l_x[l_i] = 2 * l_i; // evens
-	  l_y[l_i] = 2 * l_i + 1; // odds
+	  x[l_i] = 2 * l_i; // evens
+	  y[l_i] = 2 * l_i + 1; // odds
   }
   double l_x_dot_l_y = 0;
   //l_x_dot_l_y = dot_product_parallel(l_x, l_y, n, id, np);
