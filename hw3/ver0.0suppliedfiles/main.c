@@ -150,11 +150,12 @@ int main (int argc, char *argv[])
 
 
 
-
+  /*
   free_vector(l_y);
   free_vector(l_x);
   free_vector(l_A);
   free(A);
+  */
   MPI_Finalize();
 
   return 0;
