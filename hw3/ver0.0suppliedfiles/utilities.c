@@ -18,7 +18,7 @@ double dot_product_parallel(double *x, double *y, int n, int id, int np) {
 	// to test that all processes have same value for dot product:
 
 	char *message;
-	sprintf(message, "Process %i has dot product % 09.9f", dot_product);
+	sprintf(message, "Process %i has dot product % 09.9f", id, dot_product);
 	if (id == 0) {
 		MPI_Status status;
 		printf("From 0: %s\n", message);
