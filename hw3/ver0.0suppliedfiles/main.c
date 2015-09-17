@@ -137,7 +137,7 @@ int main (int argc, char *argv[])
 	  l_y[l_i] = 2 * l_i + 1; // odds
   }
   double l_x_dot_l_y = 0;
-  l_x_dot_l_y = dot_product_parallel(l_x, l_y, n, id, np);
+  //l_x_dot_l_y = dot_product_parallel(l_x, l_y, n, id, np);
 
 
 
@@ -154,10 +154,10 @@ int main (int argc, char *argv[])
   free_vector(l_y);
   free_vector(l_x);
   free_vector(l_A);
-  /*
+  
   if (id == 0)
         free(A); // only allocated on process 0
-  */
+  
   MPI_Finalize();
 
   return 0;
