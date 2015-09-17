@@ -154,9 +154,10 @@ int main (int argc, char *argv[])
   free_vector(l_y);
   free_vector(l_x);
   free_vector(l_A);
+  /*
   if (id == 0)
         free(A); // only allocated on process 0
-  
+  */
   MPI_Finalize();
 
   return 0;
