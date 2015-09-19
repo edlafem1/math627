@@ -124,6 +124,7 @@ int main (int argc, char *argv[])
   MPI_Gather(l_A, n*l_n, MPI_DOUBLE, A, n*l_n, MPI_DOUBLE, destination, MPI_COMM_WORLD);
   // PRINT n x n array
   if (id == 0) {
+	  printf("Matrix A:\n");
 	  int i, j;
 	  for (i = 0; i < n; i++) {
 		  for (j = 0; j < n; j++) {
@@ -176,8 +177,10 @@ int main (int argc, char *argv[])
 
   // for printing result:
   MPI_Gather(l_y, l_n, MPI_DOUBLE, y, l_n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+  MPI_Gather(l_x, l_n, MPI_DOUBLE, x, l_n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
   if (id == 0) {
 	  for (int i = 0; i < n; i++) {
+		  printf("% -24.16e\t", x[i]);
 		  printf("% -24.16e\n", y[i]);
 	  }
   }
