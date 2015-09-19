@@ -113,78 +113,9 @@ int main (int argc, char *argv[])
 
 
   // For 1.a
-  // create a matrix A for use on only process 0 to gather all local pieces into one place
-  double *A;
-  int destination = 0;
-  if (id == 0) {
-	A = (double *) calloc(n*n, sizeof(double));
-  }
+  print_Square_Matrix(l_A, id, n, np);
   
-  // gather all l_A which have been set in the setup_example function into A for printing by process 0
-  MPI_Gather(l_A, n*l_n, MPI_DOUBLE, A, n*l_n, MPI_DOUBLE, destination, MPI_COMM_WORLD);
-  // PRINT n x n array
-  if (id == 0) {
-	  printf("Matrix A:\n");
-	  int i, j;
-	  for (i = 0; i < n; i++) {
-		  for (j = 0; j < n; j++) {
-			  printf("% -24.16e   ", A[i*n + j]);
-		  }
-		  printf("\n");
-	  }
-  }
-  
-
-  // For 1.b
-  if (id == 0)
-	  printf("Starting 1.b now\n");
-  // the vectors l_xb and l_yb are for TESTING this function only
-  double *l_xb = allocate_double_vector(l_n);   /* l_xb is l_n-vector */
-  double *l_yb = allocate_double_vector(l_n);   /* l_yb is l_n-vector */
-  for (int l_i = 0; l_i <l_n; l_i++) {
-	  l_xb[l_i] = 2 * (l_i+ id * l_n) + 1; // odds
-	  l_yb[l_i] = 2 * (l_i + id * l_n); // evens
-  }
-  // used only to print out vectors for testing
-  double *x = allocate_double_vector(n);
-  double *y = allocate_double_vector(n);
-  MPI_Gather(l_xb, l_n, MPI_DOUBLE, x, l_n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-  MPI_Gather(l_yb, l_n, MPI_DOUBLE, y, l_n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-  if (id == 0) {
-	  for (int i = 0; i < n; i++) {
-		  printf("%f\t%f\n", x[i], y[i]);
-	  }
-  }
-
-  double x_dot_y = dot_product_parallel(l_xb, l_yb, n, id, np);
-  // to test that all processes have same value for dot product:
-  print_result_every_process("dot product", x_dot_y, id, np);
-
-  // For 1.c
-  if (id == 0)
-	  printf("Starting 1.c now\n");
-
-  // re-use the odds vector, i.e. l_xb
-  double L2_norm = euclidean_norm_parallel(l_xb, n, id, np);
-  // to test that all processes have same value for Euclidean norm:
-  print_result_every_process("Euclidean Norm", L2_norm, id, np);
-
-  // For 1.d
-  
-  // use y as our resultant vector of dimension n x 1
-  // note, l_x is the same on all processes by way of its initialization
-  matrix_vector_mult_parallel(l_y, l_A, l_x, n, id, np);
-
-  // for printing result:
-  MPI_Gather(l_y, l_n, MPI_DOUBLE, y, l_n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-  MPI_Gather(l_x, l_n, MPI_DOUBLE, x, l_n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-  if (id == 0) {
-	  for (int i = 0; i < n; i++) {
-		  printf("% -24.16e\t", x[i]);
-		  printf("% -24.16e\n", y[i]);
-	  }
-  }
-  
+  // Assignment section
 
 
 
@@ -208,3 +139,56 @@ int main (int argc, char *argv[])
   return 0;
 }
 
+/* Testing section. Move into main function in place of assignment section to use.
+  // For 1.b
+  if (id == 0)
+	  printf("Starting 1.b now. Computing x dot y. Expected: 68.\n");
+  // the vectors l_xb and l_yb are for TESTING this function only
+  double *l_xb = allocate_double_vector(l_n);   // l_xb is l_n-vector
+  double *l_yb = allocate_double_vector(l_n);   // l_yb is l_n-vector
+  for (int l_i = 0; l_i <l_n; l_i++) {
+	  l_xb[l_i] = 2 * (l_i+ id * l_n) + 1; // odds
+	  l_yb[l_i] = 2 * (l_i + id * l_n); // evens
+  }
+  // used only to print out vectors for testing
+  double *x = allocate_double_vector(n);
+  double *y = allocate_double_vector(n);
+  MPI_Gather(l_xb, l_n, MPI_DOUBLE, x, l_n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+  MPI_Gather(l_yb, l_n, MPI_DOUBLE, y, l_n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+  if (id == 0) {
+	  printf("x\t\t\ty\n");
+	  for (int i = 0; i < n; i++) {
+		  printf("% -24.16e\t", x[i]);
+		  printf("% -24.16e\n", y[i]);
+	  }
+  }
+  double x_dot_y = dot_product_parallel(l_xb, l_yb, n, id, np);
+  // to test that all processes have same value for dot product:
+  print_result_every_process("dot product", x_dot_y, id, np);
+
+  // For 1.c
+  if (id == 0)
+	  printf("Starting 1.c now\n");
+
+  // re-use the odds vector, i.e. l_xb
+  double L2_norm = euclidean_norm_parallel(l_xb, n, id, np);
+  // to test that all processes have same value for Euclidean norm:
+  print_result_every_process("Euclidean Norm", L2_norm, id, np);
+
+  // For 1.d
+  
+  // use y as our resultant vector of dimension n x 1
+  // note, l_x is the same on all processes by way of its initialization
+  matrix_vector_mult_parallel(l_y, l_A, l_x, n, id, np);
+
+  // for printing result:
+  MPI_Gather(l_y, l_n, MPI_DOUBLE, y, l_n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+  MPI_Gather(l_x, l_n, MPI_DOUBLE, x, l_n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+  if (id == 0) {
+	  printf("x\t\t\ty\n");
+	  for (int i = 0; i < n; i++) {
+		  printf("% -24.16e\t", x[i]);
+		  printf("% -24.16e\n", y[i]);
+	  }
+  }
+ */

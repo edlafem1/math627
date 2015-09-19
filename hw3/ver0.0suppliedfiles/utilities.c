@@ -25,7 +25,6 @@ Relies on the dot_product_parallel function.
 */
 double euclidean_norm_parallel(double *l_x, int n, int id, int np) {
 	double norm = sqrt(dot_product_parallel(l_x, l_x, n, id, np));
-
 	return norm;
 }
 
@@ -38,12 +37,35 @@ void matrix_vector_mult_parallel(double *l_y, double *l_A, double *l_x, int n, i
 	for (int row = 0; row < l_n; row++) {
 		l_y[row] = 0;
 		for (int col = 0; col < n; col++) {
-			printf("%i, row=%i: %f * %f\n", id, row + id*l_n, l_A[(row * n) + col], x[col]);
+			//printf("%i, row=%i: %f * %f\n", id, row + id*l_n, l_A[(row * n) + col], x[col]);
 			l_y[row] += (l_A[(row * n) + col] * x[col]);
 		}
 	}
 }
 
+void print_Square_Matrix(double *l_A, int id, int n, int np) {
+	// create a matrix A for use on only process 0 to gather all local pieces into one place
+	double *A;
+	int destination = 0;
+	if (id == 0) {
+		A = (double *)calloc(n*n, sizeof(double));
+	}
+
+	int l_n = n / np;
+	// PRINT n x n array
+	// gather all l_A which have been set in the setup_example function into A for printing by process 0
+	MPI_Gather(l_A, n*l_n, MPI_DOUBLE, A, n*l_n, MPI_DOUBLE, destination, MPI_COMM_WORLD);
+	if (id == 0) {
+		printf("Matrix A:\n");
+		int i, j;
+		for (i = 0; i < n; i++) {
+			for (j = 0; j < n; j++) {
+				printf("% -24.16e   ", A[i*n + j]);
+			}
+			printf("\n");
+		}
+	}
+}
 
 /*
 Every process will send a message to process 0 which prints a message containing the operation and value that individual processes currently have.

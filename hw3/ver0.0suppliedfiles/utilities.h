@@ -24,6 +24,11 @@ Assumes dimensions of A are n x n and dimensions of x and y are n x 1.
 void matrix_vector_mult_parallel(double *l_y, double *l_A, double *l_x, int n, int id, int np);
 
 /*
+Prints the square matrix A with n rows and n columns distributed over np processes.
+*/
+void print_Square_Matrix(double *l_A, int id, int n, int np);
+
+/*
 Every process will send a message to process 0 which prints a message containing the operation and value that individual processes currently have.
 Used to verify that all processes have the same result, or that they have a value unique to their id.
 The double printed does not have all the digits required for scientific precision, only enough to verify sameness or differentess and still be easy to read.
