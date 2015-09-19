@@ -143,6 +143,7 @@ int main (int argc, char *argv[])
   for (int l_i = 0; l_i <l_n; l_i++) {
 	  l_xb[l_i] = 2 * (l_i+ id * l_n) + 1; // odds
 	  l_yb[l_i] = 2 * (l_i + id * l_n); // evens
+	  printf("%f\t%f\n", l_xb[l_i], l_yb[l_i]);
   }
   double x_dot_y = dot_product_parallel(l_xb, l_yb, n, id, np);
   
@@ -159,7 +160,7 @@ int main (int argc, char *argv[])
   // re-use the odds vector, i.e. x
   // use y as our resultant vector of dimension n x 1
   // note, l_x is the same on all processes by way of its initialization
-  matrix_vector_mult_parallel(l_y, l_A, l_x, n, id, np);
+  //matrix_vector_mult_parallel(l_y, l_A, l_x, n, id, np);
   
 
 
