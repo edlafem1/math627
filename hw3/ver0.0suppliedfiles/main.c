@@ -127,7 +127,7 @@ int main (int argc, char *argv[])
 	  int i, j;
 	  for (i = 0; i < n; i++) {
 		  for (j = 0; j < n; j++) {
-			  printf("%- 09.9f   ", A[i*n + j]);
+			  printf("% -24.16e   ", A[i*n + j]);
 		  }
 		  printf("\n");
 	  }
@@ -173,6 +173,14 @@ int main (int argc, char *argv[])
   // use y as our resultant vector of dimension n x 1
   // note, l_x is the same on all processes by way of its initialization
   matrix_vector_mult_parallel(l_y, l_A, l_x, n, id, np);
+
+  // for printing result:
+  MPI_Gather(l_y, l_n, MPI_DOUBLE, y, l_n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+  if (id == 0) {
+	  for (int i = 0; i < n; i++) {
+		  printf("% -24.16e\n");
+	  }
+  }
   
 
 

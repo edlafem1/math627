@@ -31,7 +31,13 @@ double euclidean_norm_parallel(double *l_x, int n, int id, int np) {
 
 void matrix_vector_mult_parallel(double *l_y, double *l_A, double *l_x, int n, int id, int np) {
 	int l_n = n / np;
-	
+	// dot product each row in l_A with l_x goes into 1 block of l_y
+	for (int row = 0; row < l_n; row++) {
+		l_y[row] = 0;
+		for (int col = 0; col < l_n; col++) {
+			l_y[row] += (l_A[(row * l_n) + col] * l_x[col]);
+		}
+	}
 }
 
 
@@ -42,7 +48,7 @@ The double printed does not have all the digits required for scientific precisio
 */
 void print_result_every_process(char *operation, double value, int id, int np) {
 	char *message = (char *)malloc(100 * sizeof(char));
-	sprintf(message, "%s % 09.9f", operation, value);
+	sprintf(message, "%s % -24.16e", operation, value);
 	if (id == 0) {
 		MPI_Status status;
 		printf("From 0: %s\n", message);
