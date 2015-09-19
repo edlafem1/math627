@@ -28,5 +28,5 @@ Every process will send a message to process 0 which prints a message containing
 Used to verify that all processes have the same result, or that they have a value unique to their id.
 The double printed does not have all the digits required for scientific precision, only enough to verify sameness or differentess and still be easy to read.
 */
-void print_result_every_process(char *operation, double value, int id);
+void print_result_every_process(char *operation, double value, int id, int np);
 #endif
