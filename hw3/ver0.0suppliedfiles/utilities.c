@@ -12,7 +12,7 @@ double dot_product_parallel(double *l_x, double *l_y, int n, int id, int np) {
 		// id*l_n is the starting element for this process, (id+1)*l_n is the starting element for the next process
 		l_sum += (l_x[l_i] * l_y[l_i]);
 	}
-
+	print_result_every_process("local dot sum", l_sum, id, np);
 	double dot_product = 0;
 	MPI_Allreduce(&l_sum, &dot_product, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
 	
@@ -42,7 +42,7 @@ The double printed does not have all the digits required for scientific precisio
 */
 void print_result_every_process(char *operation, double value, int id, int np) {
 	char *message = (char *)malloc(100 * sizeof(char));
-	sprintf(message, "Process %i: %s % 09.9f", id, operation, value);
+	sprintf(message, "%s % 09.9f", id, operation, value);
 	if (id == 0) {
 		MPI_Status status;
 		printf("From 0: %s\n", message);

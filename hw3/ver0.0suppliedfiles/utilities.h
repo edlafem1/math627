@@ -21,7 +21,7 @@ double euclidean_norm_parallel(double *l_x, int n, int id, int np);
 Performs the multiplication y = Ax where A is a matrix and x is a column vector.
 Assumes dimensions of A are n x n and dimensions of x and y are n x 1.
 */
-void matrix_vector_mult_parallel(double *y, double *A, double *x, int n, int id, int np);
+void matrix_vector_mult_parallel(double *l_y, double *l_A, double *l_x, int n, int id, int np);
 
 /*
 Every process will send a message to process 0 which prints a message containing the operation and value that individual processes currently have.

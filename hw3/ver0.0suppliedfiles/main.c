@@ -144,8 +144,8 @@ int main (int argc, char *argv[])
 	  l_xb[l_i] = 2 * (l_i+ id * l_n) + 1; // odds
 	  l_yb[l_i] = 2 * (l_i + id * l_n); // evens
   }
-  // used only to print out vectors to debug a seg fault I was getting
-/*  double *x = allocate_double_vector(n);
+  // used only to print out vectors for testing
+  double *x = allocate_double_vector(n);
   double *y = allocate_double_vector(n);
   MPI_Gather(l_xb, l_n, MPI_DOUBLE, x, l_n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
   MPI_Gather(l_yb, l_n, MPI_DOUBLE, y, l_n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
@@ -154,7 +154,7 @@ int main (int argc, char *argv[])
 		  printf("%f\t%f\n", x[i], y[i]);
 	  }
   }
-*/
+
   double x_dot_y = dot_product_parallel(l_xb, l_yb, n, id, np);
   // to test that all processes have same value for dot product:
   print_result_every_process("dot product", x_dot_y, id, np);
@@ -163,12 +163,6 @@ int main (int argc, char *argv[])
   if (id == 0)
 	  printf("Starting 1.c now\n");
 
-  //l_xb = allocate_double_vector(l_n);   /* l_xb is l_n-vector */
-  //l_yb = allocate_double_vector(l_n);   /* l_yb is l_n-vector */
-//  for (int l_i = 0; l_i <l_n; l_i++) {
-//	  l_xb[l_i] = 2 * (l_i + id * l_n) + 1; // odds
-//	  l_yb[l_i] = 2 * (l_i + id * l_n); // evens
-//  }
   // re-use the evens vector, i.e. l_yb
   double L2_norm = euclidean_norm_parallel(l_yb, n, id, np);
   // to test that all processes have same value for Euclidean norm:
@@ -176,10 +170,9 @@ int main (int argc, char *argv[])
 
   // For 1.d
   
-  // re-use the odds vector, i.e. x
   // use y as our resultant vector of dimension n x 1
   // note, l_x is the same on all processes by way of its initialization
-  //matrix_vector_mult_parallel(l_y, l_A, l_x, n, id, np);
+  matrix_vector_mult_parallel(l_y, l_A, l_x, n, id, np);
   
 
 
