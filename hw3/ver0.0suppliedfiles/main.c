@@ -170,7 +170,7 @@ int main (int argc, char *argv[])
 //	  l_yb[l_i] = 2 * (l_i + id * l_n); // evens
 //  }
   // re-use the evens vector, i.e. l_yb
-  //double L2_norm = euclidiean_norm_parallel(l_yb, n, id, np);
+  double L2_norm = euclidiean_norm_parallel(l_yb, n, id, np);
   // to test that all processes have same value for Euclidean norm:
   //print_result_every_process("Euclidean Norm", L2_norm, id, np);
 
