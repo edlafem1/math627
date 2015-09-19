@@ -112,11 +112,38 @@ int main (int argc, char *argv[])
   }
 
 
-  // For 1.a
-  print_Square_Matrix(l_A, id, n, np);
   
   // Assignment section
 
+  // performing y = Ax
+  matrix_vector_mult_parallel(l_y, l_A, l_x, n, id, np);
+
+  // printing the matrix A
+  print_Square_Matrix(l_A, id, n, np);
+
+  // printing x dot y
+  double x_dot_y = dot_product_parallel(l_x, l_y, n, id, np);
+  if (id == 0)
+	  printf("Dot product of x and y is % -24.16e\n", x_dot_y);
+
+  // printing euclidean norm of x
+  double l2_norm_x = euclidean_norm_parallel(l_x, n, id, np);
+  if (id == 0)
+	  printf("Euclidean norm of x is % -24.16e\n", l2_norm);
+
+  // printing y
+  double *y;
+  if (id == 0)
+	  y = allocate_double_vector(n);
+  MPI_Gather(l_y, l_n, MPI_DOUBLE, y, l_n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+  if (id == 0) {
+	  printf("The column vector y written as a row:\n");
+	  printf("\t(");
+	  for (int i = 0; i < n; i++) {
+		  printf("% -24.16e,  ");
+	  }
+	  printf("\n");
+  }
 
 
 
@@ -125,7 +152,7 @@ int main (int argc, char *argv[])
 
 
 
-
+  print_Square_Matrix(l_A, id, n, np);
   
   free_vector(l_y);
   free_vector(l_x);
