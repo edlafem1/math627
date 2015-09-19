@@ -15,9 +15,6 @@ double dot_product_parallel(double *l_x, double *l_y, int n, int id, int np) {
 
 	double dot_product = 0;
 	MPI_Allreduce(&l_sum, &dot_product, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-
-	// to test that all processes have same value for dot product:
-	print_result_every_process("dot product", dot_product, id, np);
 	
 	return dot_product;
 }
@@ -28,9 +25,6 @@ Relies on the dot_product_parallel function.
 */
 double euclidiean_norm_parallel(double *l_x, int n, int id, int np) {
 	double norm = sqrt(dot_product_parallel(l_x, l_x, n, id, np));
-
-	// to test that all processes have same value for Euclidean norm:
-	print_result_every_process("Euclidean Norm", norm, id, np);
 
 	return norm;
 }

@@ -144,6 +144,7 @@ int main (int argc, char *argv[])
 	  l_xb[l_i] = 2 * (l_i+ id * l_n) + 1; // odds
 	  l_yb[l_i] = 2 * (l_i + id * l_n); // evens
   }
+  // used only to print out vectors to debug a seg fault I was getting
   double *x = allocate_double_vector(n);
   double *y = allocate_double_vector(n);
   MPI_Gather(l_xb, l_n, MPI_DOUBLE, x, l_n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
@@ -155,14 +156,16 @@ int main (int argc, char *argv[])
   }
 
   double x_dot_y = dot_product_parallel(l_xb, l_yb, n, id, np);
-  
+  // to test that all processes have same value for dot product:
+  print_result_every_process("dot product", x_dot_y, id, np);
 
   // For 1.c
   if (id == 0)
 	  printf("Starting 1.c now\n");
   // re-use the evens vector, i.e. l_yb
   double L2_norm = euclidiean_norm_parallel(l_yb, n, id, np);
-
+  // to test that all processes have same value for Euclidean norm:
+  print_result_every_process("Euclidean Norm", L2_norm, id, np);
 
   // For 1.d
   
