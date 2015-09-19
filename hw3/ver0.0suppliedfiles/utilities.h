@@ -15,7 +15,7 @@ Calculates the Eucildean Norm of a column vector of length n in parallel.
 Relies on the dot_product_parallel function.
 Note, l_x represents only the portion of the vector that this function will process
 */
-double euclidiean_norm_parallel(double *l_x, int n, int id, int np);
+double euclidean_norm_parallel(double *l_x, int n, int id, int np);
 
 /*
 Performs the multiplication y = Ax where A is a matrix and x is a column vector.

@@ -23,7 +23,7 @@ double dot_product_parallel(double *l_x, double *l_y, int n, int id, int np) {
 Calculates the Eucildean Norm of a column vector of length n in parallel.
 Relies on the dot_product_parallel function.
 */
-double euclidiean_norm_parallel(double *l_x, int n, int id, int np) {
+double euclidean_norm_parallel(double *l_x, int n, int id, int np) {
 	double norm = sqrt(dot_product_parallel(l_x, l_x, n, id, np));
 
 	return norm;
