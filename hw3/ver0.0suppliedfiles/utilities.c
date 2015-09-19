@@ -17,7 +17,7 @@ double dot_product_parallel(double *l_x, double *l_y, int n, int id, int np) {
 	MPI_Allreduce(&l_sum, &dot_product, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
 
 	// to test that all processes have same value for dot product:
-	print_result_every_process("dot product", dot_product, id);
+	print_result_every_process("dot product", dot_product, id, np);
 	
 	return dot_product;
 }
@@ -30,7 +30,7 @@ double euclidiean_norm_parallel(double *l_x, int n, int id, int np) {
 	double norm = sqrt(dot_product_parallel(l_x, l_x, n, id, np));
 
 	// to test that all processes have same value for Euclidean norm:
-	print_result_every_process("Euclidean Norm", norm, id);
+	print_result_every_process("Euclidean Norm", norm, id, np);
 
 	return norm;
 }
@@ -46,7 +46,7 @@ Every process will send a message to process 0 which prints a message containing
 Used to verify that all processes have the same result, or that they have a value unique to their id.
 The double printed does not have all the digits required for scientific precision, only enough to verify sameness or differentess and still be easy to read.
 */
-void print_result_every_process(char *operation, double value, int id) {
+void print_result_every_process(char *operation, double value, int id, int np) {
 	char *message;
 	sprintf(message, "Process %i: %s % 09.9f", id, operation, value);
 	if (id == 0) {
