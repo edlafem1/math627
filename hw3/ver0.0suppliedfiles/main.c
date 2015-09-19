@@ -157,7 +157,7 @@ int main (int argc, char *argv[])
 */
   double x_dot_y = dot_product_parallel(l_xb, l_yb, n, id, np);
   // to test that all processes have same value for dot product:
-  //print_result_every_process("dot product", x_dot_y, id, np);
+  print_result_every_process("dot product", x_dot_y, id, np);
 
   // For 1.c
   if (id == 0)
