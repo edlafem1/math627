@@ -138,11 +138,13 @@ int main (int argc, char *argv[])
   MPI_Gather(l_y, l_n, MPI_DOUBLE, y, l_n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
   if (id == 0) {
 	  printf("The column vector y written as a row:\n");
-	  printf("\t(");
+	  printf("  (");
 	  for (int i = 0; i < n; i++) {
-		  printf("% -24.16e,  ", y[i]);
+		  printf("% -24.16e", y[i]);
+		  if (i < n - 1)
+			  printf(", ");
 	  }
-	  printf("\n");
+	  printf(")\n");
   }
 
 
