@@ -146,8 +146,8 @@ int main (int argc, char *argv[])
   }
   double *x = allocate_double_vector(n);
   double *y = allocate_double_vector(n);
-  MPI_Gather(l_x, l_n, MPI_DOUBLE, x, l_n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-  MPI_Gather(l_y, l_n, MPI_DOUBLE, y, l_n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+  MPI_Gather(l_xb, l_n, MPI_DOUBLE, x, l_n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+  MPI_Gather(l_yb, l_n, MPI_DOUBLE, y, l_n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
   if (id == 0) {
 	  for (int i = 0; i < n; i++) {
 		  printf("%f\t%f\n", x[i], y[i]);
