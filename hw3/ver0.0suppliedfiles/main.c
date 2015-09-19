@@ -129,7 +129,7 @@ int main (int argc, char *argv[])
   // printing euclidean norm of x
   double l2_norm_x = euclidean_norm_parallel(l_x, n, id, np);
   if (id == 0)
-	  printf("Euclidean norm of x is % -24.16e\n", l2_norm);
+	  printf("Euclidean norm of x is % -24.16e\n", l2_norm_x);
 
   // printing y
   double *y;
