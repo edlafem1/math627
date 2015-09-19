@@ -2,6 +2,7 @@
 	#define UTILITIES_H
 	#ifndef MAIN_H
 		#include "main.h"
+		#include <stdio.h>
 	#endif
 
 /*
