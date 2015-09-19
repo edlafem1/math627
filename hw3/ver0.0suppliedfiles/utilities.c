@@ -42,7 +42,7 @@ The double printed does not have all the digits required for scientific precisio
 */
 void print_result_every_process(char *operation, double value, int id, int np) {
 	char *message;
-	asprintf(message, "Process %i: %s % 09.9f", id, operation, value);
+	asprintf(&message, "Process %i: %s % 09.9f", id, operation, value);
 	if (id == 0) {
 		MPI_Status status;
 		printf("From 0: %s\n", message);
