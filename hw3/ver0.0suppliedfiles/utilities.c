@@ -60,7 +60,7 @@ void print_Square_Matrix(double *l_A, int id, int n, int np) {
 		int i, j;
 		for (i = 0; i < n; i++) {
 			for (j = 0; j < n; j++) {
-				printf("% -24.16e   ", A[i*n + j]);
+				printf("% -24.15e   ", A[i*n + j]);
 			}
 			printf("\n");
 		}
