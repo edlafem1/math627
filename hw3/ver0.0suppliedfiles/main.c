@@ -105,19 +105,22 @@ int main (int argc, char *argv[])
   l_x = allocate_double_vector(l_n);   /* l_x is l_n-vector */
   l_y = allocate_double_vector(l_n);   /* l_y is l_n-vector */
 
-  // For 1.a
   // setup example: 
   setup_example(l_A, n, l_n, id, np);
   for (l_i = 0; l_i < l_n; l_i++) {
     l_x[l_i] = 1.0 / sqrt(((double)(n)));
   }
 
+
+  // For 1.a
+  // create a matrix A for use on only process 0 to gather all local pieces into one place
   double *A;
   int destination = 0;
   if (id == 0) {
 	A = (double *) calloc(n*n, sizeof(double));
   }
   
+  // gather all l_A which have been set in the setup_example function into A for printing by process 0
   MPI_Gather(l_A, n*l_n, MPI_DOUBLE, A, n*l_n, MPI_DOUBLE, destination, MPI_COMM_WORLD);
   // PRINT n x n array
   if (id == 0) {
@@ -132,16 +135,28 @@ int main (int argc, char *argv[])
   
 
   // For 1.b
-  double *x = allocate_double_vector(n);   /* x is n-vector */
-  double *y = allocate_double_vector(n);   /* y is n-vector */
-  for (int l_i = id*l_n; l_i < (id + 1)*l_n; l_i++) {
-	  x[l_i] = 2 * l_i; // evens
-	  y[l_i] = 2 * l_i + 1; // odds
+  // the vectors l_xb and l_yb are for TESTING this function only
+  double *l_xb = allocate_double_vector(l_n);   /* l_xb is l_n-vector */
+  double *l_yb = allocate_double_vector(l_n);   /* l_yb is l_n-vector */
+  for (int l_i = 0; l_i <l_n; l_i++) {
+	  l_xb[l_i] = 2 * (l_i+ id * l_n) + 1; // odds
+	  l_yb[l_i] = 2 * (l_i + id * l_n); // evens
   }
-  double l_x_dot_l_y = 0;
-  l_x_dot_l_y = dot_product_parallel(x, y, n, id, np);
+  double x_dot_y = dot_product_parallel(l_xb, l_yb, n, id, np);
+  
+
+  // For 1.c
+  // re-use the evens vector, i.e. l_yb
+  double L2_norm = euclidiean_norm_parallel(l_yb, n, id, np);
 
 
+  // For 1.d
+  
+  // re-use the odds vector, i.e. x
+  // use y as our resultant vector of dimension n x 1
+  // note, l_x is the same on all processes by way of its initialization
+  matrix_vector_mult_parallel(l_y, l_A, l_x, n, id, np);
+  
 
 
 
