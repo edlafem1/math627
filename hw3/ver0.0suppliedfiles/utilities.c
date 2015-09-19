@@ -64,6 +64,7 @@ void print_Square_Matrix(double *l_A, int id, int n, int np) {
 			}
 			printf("\n");
 		}
+		free(A); // only allocated on process 0
 	}
 }
 
