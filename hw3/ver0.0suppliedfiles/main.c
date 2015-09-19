@@ -162,8 +162,15 @@ int main (int argc, char *argv[])
   // For 1.c
   if (id == 0)
 	  printf("Starting 1.c now\n");
+
+  //l_xb = allocate_double_vector(l_n);   /* l_xb is l_n-vector */
+  //l_yb = allocate_double_vector(l_n);   /* l_yb is l_n-vector */
+//  for (int l_i = 0; l_i <l_n; l_i++) {
+//	  l_xb[l_i] = 2 * (l_i + id * l_n) + 1; // odds
+//	  l_yb[l_i] = 2 * (l_i + id * l_n); // evens
+//  }
   // re-use the evens vector, i.e. l_yb
-  double L2_norm = euclidiean_norm_parallel(l_yb, n, id, np);
+  //double L2_norm = euclidiean_norm_parallel(l_yb, n, id, np);
   // to test that all processes have same value for Euclidean norm:
   //print_result_every_process("Euclidean Norm", L2_norm, id, np);
 
