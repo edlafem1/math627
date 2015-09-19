@@ -12,7 +12,7 @@ double dot_product_parallel(double *l_x, double *l_y, int n, int id, int np) {
 		// id*l_n is the starting element for this process, (id+1)*l_n is the starting element for the next process
 		l_sum += (l_x[l_i] * l_y[l_i]);
 	}
-	print_result_every_process("local dot sum", l_sum, id, np);
+	
 	double dot_product = 0;
 	MPI_Allreduce(&l_sum, &dot_product, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
 	
@@ -31,12 +31,15 @@ double euclidean_norm_parallel(double *l_x, int n, int id, int np) {
 
 void matrix_vector_mult_parallel(double *l_y, double *l_A, double *l_x, int n, int id, int np) {
 	int l_n = n / np;
-	// dot product each row in l_A with l_x goes into 1 block of l_y
+	double *x = allocate_double_vector(n);
+	MPI_Allgather(l_x, l_n, MPI_DOUBLE, x, l_n, MPI_DOUBLE, MPI_COMM_WORLD);
+
+	// dot product each row in l_A with x goes into 1 block of l_y
 	for (int row = 0; row < l_n; row++) {
 		l_y[row] = 0;
-		for (int col = 0; col < l_n; col++) {
-			printf("%i, row=%i: %f * %f\n", id, row, l_A[(row * l_n) + col], l_x[col]);
-			l_y[row] += (l_A[(row * l_n) + col] * l_x[col]);
+		for (int col = 0; col < n; col++) {
+			printf("%i, row=%i: %f * %f\n", id, row, l_A[(row * n) + col], x[col]);
+			l_y[row] += (l_A[(row * n) + col] * x[col]);
 		}
 	}
 }
