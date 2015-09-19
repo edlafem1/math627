@@ -163,8 +163,8 @@ int main (int argc, char *argv[])
   if (id == 0)
 	  printf("Starting 1.c now\n");
 
-  // re-use the evens vector, i.e. l_yb
-  double L2_norm = euclidean_norm_parallel(l_yb, n, id, np);
+  // re-use the odds vector, i.e. l_xb
+  double L2_norm = euclidean_norm_parallel(l_xb, n, id, np);
   // to test that all processes have same value for Euclidean norm:
   print_result_every_process("Euclidean Norm", L2_norm, id, np);
 
