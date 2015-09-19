@@ -143,8 +143,17 @@ int main (int argc, char *argv[])
   for (int l_i = 0; l_i <l_n; l_i++) {
 	  l_xb[l_i] = 2 * (l_i+ id * l_n) + 1; // odds
 	  l_yb[l_i] = 2 * (l_i + id * l_n); // evens
-	  printf("%f\t%f\n", l_xb[l_i], l_yb[l_i]);
   }
+  double *x = allocate_double_vector(n);
+  double *y = allocate_double_vector(n);
+  MPI_Gather(l_x, l_n, MPI_DOUBLE, x, l_n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+  MPI_Gather(l_y, l_n, MPI_DOUBLE, y, l_n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+  if (id == 0) {
+	  for (int i = 0; i < n; i++) {
+		  printf("%f\t%f\n", x[i], y[i]);
+	  }
+  }
+
   double x_dot_y = dot_product_parallel(l_xb, l_yb, n, id, np);
   
 
