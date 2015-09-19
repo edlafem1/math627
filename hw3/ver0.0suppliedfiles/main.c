@@ -178,7 +178,7 @@ int main (int argc, char *argv[])
   MPI_Gather(l_y, l_n, MPI_DOUBLE, y, l_n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
   if (id == 0) {
 	  for (int i = 0; i < n; i++) {
-		  printf("% -24.16e\n");
+		  printf("% -24.16e\n", y[i]);
 	  }
   }
   
