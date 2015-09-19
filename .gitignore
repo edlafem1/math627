@@ -10,3 +10,7 @@
 *.vcxproj*
 *.vs
 *.o
+*.out
+*.err
+*.slurm
+
