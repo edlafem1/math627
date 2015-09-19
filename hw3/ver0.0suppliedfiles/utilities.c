@@ -38,7 +38,7 @@ void matrix_vector_mult_parallel(double *l_y, double *l_A, double *l_x, int n, i
 	for (int row = 0; row < l_n; row++) {
 		l_y[row] = 0;
 		for (int col = 0; col < n; col++) {
-			printf("%i, row=%i: %f * %f\n", id, row, l_A[(row * n) + col], x[col]);
+			printf("%i, row=%i: %f * %f\n", id, row + id*l_n, l_A[(row * n) + col], x[col]);
 			l_y[row] += (l_A[(row * n) + col] * x[col]);
 		}
 	}
