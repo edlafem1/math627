@@ -113,7 +113,7 @@ int main (int argc, char *argv[])
 
 
   
-  // Assignment section
+  // Question 1 section
 
   // performing y = Ax
   matrix_vector_mult_parallel(l_y, l_A, l_x, n, id, np);
@@ -142,7 +142,7 @@ int main (int argc, char *argv[])
 	  for (int i = 0; i < n; i++) {
 		  printf("% -24.16e", y[i]);
 		  if (i < n - 1)
-			  printf(", ");
+			  printf(",");
 	  }
 	  printf(")\n");
   }
