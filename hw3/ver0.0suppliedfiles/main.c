@@ -135,6 +135,8 @@ int main (int argc, char *argv[])
   
 
   // For 1.b
+  if (id == 0)
+	  printf("Starting 1.b now\n");
   // the vectors l_xb and l_yb are for TESTING this function only
   double *l_xb = allocate_double_vector(l_n);   /* l_xb is l_n-vector */
   double *l_yb = allocate_double_vector(l_n);   /* l_yb is l_n-vector */
@@ -146,6 +148,8 @@ int main (int argc, char *argv[])
   
 
   // For 1.c
+  if (id == 0)
+	  printf("Starting 1.c now\n");
   // re-use the evens vector, i.e. l_yb
   double L2_norm = euclidiean_norm_parallel(l_yb, n, id, np);
 
