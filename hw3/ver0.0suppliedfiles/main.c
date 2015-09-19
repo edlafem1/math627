@@ -140,7 +140,7 @@ int main (int argc, char *argv[])
 	  printf("The column vector y written as a row:\n");
 	  printf("\t(");
 	  for (int i = 0; i < n; i++) {
-		  printf("% -24.16e,  ");
+		  printf("% -24.16e,  ", y[i]);
 	  }
 	  printf("\n");
   }
