@@ -41,8 +41,8 @@ Used to verify that all processes have the same result, or that they have a valu
 The double printed does not have all the digits required for scientific precision, only enough to verify sameness or differentess and still be easy to read.
 */
 void print_result_every_process(char *operation, double value, int id, int np) {
-	char *message;
-	asprintf(&message, "Process %i: %s % 09.9f", id, operation, value);
+	char *message = (char *)malloc(100 * sizeof(char));
+	sprintf(&message, "Process %i: %s % 09.9f", id, operation, value);
 	if (id == 0) {
 		MPI_Status status;
 		printf("From 0: %s\n", message);
@@ -55,4 +55,5 @@ void print_result_every_process(char *operation, double value, int id, int np) {
 	else {
 		MPI_Send(message, strlen(message) + 1, MPI_CHAR, 0, 0, MPI_COMM_WORLD);
 	}
+	free(message);
 }
