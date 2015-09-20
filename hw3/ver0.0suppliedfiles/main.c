@@ -159,7 +159,7 @@ int main (int argc, char *argv[])
 	  ++iterations; // increment iteration counter
 	  lambdaold = lambda;
 
-	  norm_y = euclidean_norm_parallel(l_y, n, id, np); // Euclidean vector norm of vector y
+	  //norm_y = euclidean_norm_parallel(l_y, n, id, np); // Euclidean vector norm of vector y
 	  //x = y / normy; // scale y by its norm, such that x has norm 1
 	  matrix_vector_mult_parallel(l_y, l_A, l_x, n, id, np); // y_new = A * y_old
 	  lambda = dot_product_parallel(l_y, l_x, n, id, np) / dot_product_parallel(l_x, l_y, n, id, np); // eigenvalue approximation using Rayleigh quotient
