@@ -163,6 +163,17 @@ int main (int argc, char *argv[])
 	  printf("err=				% -24.16e\n", err);
 	  eigenvector = allocate_double_vector(n);
   }
+  // calculate norm of residual
+  matrix_vector_mult_parallel(l_y, l_A, l_x, n, id, np);
+
+  for (int i = 0; i < l_n; i++) {
+	  l_y[i] = l_y[i] - lambda*l_x[i];
+  }
+
+  double residual_norm = euclidean_norm_parallel(l_y, n, id, np);
+  if (id == 0)
+	  printf("norm of residual: % -24.16e\n", residual_norm);
+
   MPI_Gather(l_x, l_n, MPI_DOUBLE, eigenvector, l_n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 
   if (id == 0) {
@@ -176,40 +187,6 @@ int main (int argc, char *argv[])
 	  printf(")\n");
 	  free(eigenvector);
   }
-  ////////////////////////////////////////////////////////////////////////////////
-  print_result_every_process("lambda", lambda, id, np);
-
-  matrix_vector_mult_parallel(l_y, l_A, l_x, n, id, np);
-  /*
-  double *ax;
-  if (id == 0)
-	ax = allocate_double_vector(n);
-  MPI_Gather(l_y, l_n, MPI_DOUBLE, ax, l_n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-  if (id == 0) {
-	  printf("A*x\n");
-	  for (int i = 0; i < n; i++)
-		  printf("% -24.16e\n", ax[i]);
-  }
-  */
-
-  double *difference = allocate_double_vector(l_n);
-  for (int i = 0; i < l_n; i++) {
-	  l_y[i] = l_y[i] - lambda*l_x[i];
-  }
-  /*
-  MPI_Gather(difference, l_n, MPI_DOUBLE, ax, l_n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-  if (id == 0) {
-	  printf("A*x-lambda*x\n");
-	  for (int i = 0; i < n; i++)
-		  printf("% -24.16e\n", ax[i]);
-  }
-  */
-
-  double residual_norm = euclidean_norm_parallel(l_y, n, id, np);
-  if (id == 0)
-	  printf("res: % -24.16e\n", residual_norm);
-
-
 
   
   free_vector(l_y);
