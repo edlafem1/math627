@@ -155,7 +155,7 @@ int main (int argc, char *argv[])
   // just to make sure, in case we change the code above:
   matrix_vector_mult_parallel(l_y, l_A, l_x, n, id, np);
 
-  while ((err > tol) & (iterations < itmax)) {
+  while ((err > tol) && (iterations < itmax)) {
 	  ++iterations; // increment iteration counter
 	  lambdaold = lambda;
 
