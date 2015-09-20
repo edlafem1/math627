@@ -194,7 +194,7 @@ int main (int argc, char *argv[])
 
   double *difference = allocate_double_vector(l_n);
   for (int i = 0; i < l_n; i++) {
-	  difference[i] = l_y[i] - lambda*l_x[i];
+	  l_y[i] = l_y[i] - lambda*l_x[i];
   }
   /*
   MPI_Gather(difference, l_n, MPI_DOUBLE, ax, l_n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
@@ -205,7 +205,7 @@ int main (int argc, char *argv[])
   }
   */
 
-  double residual_norm = euclidean_norm_parallel(difference, n, id, np);
+  double residual_norm = euclidean_norm_parallel(l_y, n, id, np);
   if (id == 0)
 	  printf("res: % -24.16e\n", residual_norm);
 
