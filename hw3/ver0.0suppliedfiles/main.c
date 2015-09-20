@@ -151,7 +151,7 @@ int main (int argc, char *argv[])
   // Problem 2 Section
   double *lambda, *err;
   int iterations = eigenvalue_approximation_parallel(lambda, err, l_x, l_A, l_y, tol, itmax, n, id, np);
-  print_result_every_process("lambda", *lambda, id, np);
+  //print_result_every_process("lambda", *lambda, id, np);
 
   double *eigenvector;
   if (id == 0) {
@@ -160,17 +160,17 @@ int main (int argc, char *argv[])
 	  printf("err:        % -24.16e\n", *err);
 	  eigenvector = allocate_double_vector(n);
   }
-  MPI_Gather(l_x, l_n, MPI_DOUBLE, eigenvector, l_n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+  //MPI_Gather(l_x, l_n, MPI_DOUBLE, eigenvector, l_n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
   if (id == 0) {
 	  printf("Eigenvector approximation written as a row:\n");
 	  printf("           (");
 	  for (int i = 0; i < n; i++) {
-		  printf("% -24.16e", eigenvector[i]);
+		  //printf("% -24.16e", eigenvector[i]);
 		  if (i < n - 1)
 			  printf(",");
 	  }
 	  printf(")\n");
-	  free(eigenvector);
+	  //free(eigenvector);
   }
 
 
