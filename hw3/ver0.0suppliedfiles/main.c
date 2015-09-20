@@ -177,6 +177,7 @@ int main (int argc, char *argv[])
 	  free(eigenvector);
   }
   ////////////////////////////////////////////////////////////////////////////////
+  print_result_every_process("lambda", lambda, id, np);
   double *ax = allocate_double_vector(n);
 
   matrix_vector_mult_parallel(l_y, l_A, l_x, n, id, np);
@@ -190,7 +191,7 @@ int main (int argc, char *argv[])
 
   double *difference = allocate_double_vector(l_n);
   for (int i = 0; i < l_n; i++) {
-	  difference[i] = l_y[i] - lambda*l_x[i];
+	  difference[i] = ax[i] - lambda*l_x[i];
   }
   MPI_Gather(difference, l_n, MPI_DOUBLE, ax, l_n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
   if (id == 0) {
