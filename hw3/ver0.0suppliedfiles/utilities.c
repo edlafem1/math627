@@ -43,6 +43,40 @@ void matrix_vector_mult_parallel(double *l_y, double *l_A, double *l_x, int n, i
 	}
 }
 
+int eigenvalue_approximation_parallel(double *lambda, double *err, double *l_x, double *l_A, double *l_y, double tol, int itmax, int n, int id, int np) {
+	int l_n = n / np;
+	double norm_x;
+	double lambdaold = 0;
+	int iterations = 0;
+	*err = 1.0 + tol; // to ensure 1 pass through loop
+	*lambda = 0;
+
+	matrix_vector_mult_parallel(l_y, l_A, l_x, n, id, np); // just to make sure, in case we change the calling code:
+
+	while ((*err > tol) && (iterations < itmax)) {
+		++iterations; // increment iteration counter
+		lambdaold = *lambda;
+
+		//norm_y = euclidean_norm_parallel(l_y, n, id, np); // Euclidean vector norm of vector y
+		memcpy(l_x, l_y, l_n * sizeof(double)); // takes place of x=y/normy but without scaling, so really just means x = y
+		matrix_vector_mult_parallel(l_y, l_A, l_x, n, id, np); // y_new = A * x = A * y_old
+		*lambda = dot_product_parallel(l_x, l_y, n, id, np) / dot_product_parallel(l_x, l_x, n, id, np); // eigenvalue approximation using Rayleigh quotient with eigenvector x
+		if (id == 0)
+			printf("lambda in loop % -24.16e\n", *lambda);
+		*err = fabs((*lambda - lambdaold) / *lambda);
+	}
+
+	if (iterations == itmax && id == 0) {
+		printf("Max number of iterations reached. Answer given is the most recent approximation.\n");
+	}
+
+	// compute scaled eigenvector x
+	norm_x = euclidean_norm_parallel(l_x, n, id, np);
+	for (int row = 0; row < l_n; row++)
+		l_x[row] = l_x[row] / norm_x;
+	return iterations;
+}
+
 void print_Square_Matrix(double *l_A, int id, int n, int np) {
 	// create a matrix A for use on only process 0 to gather all local pieces into one place
 	double *A;
@@ -67,6 +101,7 @@ void print_Square_Matrix(double *l_A, int id, int n, int np) {
 		free(A); // only allocated on process 0
 	}
 }
+
 
 /*
 Every process will send a message to process 0 which prints a message containing the operation and value that individual processes currently have.

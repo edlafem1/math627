@@ -149,35 +149,29 @@ int main (int argc, char *argv[])
   }
 
   // Problem 2 Section
-  double err = 1.0 + tol; // to ensure 1 pass through loop
-  int iterations = 0;
-  double lambdaold = 0, lambda = 0; //, norm_y; // not using norm_y
-  // just to make sure, in case we change the code above:
-  matrix_vector_mult_parallel(l_y, l_A, l_x, n, id, np);
+  double *lambda, *err;
+  int iterations = eigenvalue_approximation_parallel(lambda, err, l_x, l_A, l_y, tol, itmax, n, id, np);
+  print_result_every_process("lambda", *lambda, id, np);
 
-  while ((err > tol) && (iterations < itmax)) {
-	  ++iterations; // increment iteration counter
-	  lambdaold = lambda;
-
-	  //norm_y = euclidean_norm_parallel(l_y, n, id, np); // Euclidean vector norm of vector y
-	  //x = y / normy; // scale y by its norm, such that x has norm 1
-	  memcpy(l_x, l_y, l_n * sizeof(double)); // takes place of x=y/normy
-	  matrix_vector_mult_parallel(l_y, l_A, l_x, n, id, np); // y_new = A * (y_old==x)
-	  lambda = dot_product_parallel(l_x, l_y, n, id, np) / dot_product_parallel(l_x, l_x, n, id, np); // eigenvalue approximation using Rayleigh quotient
-	  if (id == 0)
-		  printf("lambda in loop % -24.16e\n", lambda);
-	  err = fabs((lambda - lambdaold) / lambda);
-  }
-
-  if (iterations == itmax && id == 0) {
-	  printf("Max number of iterations reached. Answer shown is the most recent approximation.\n");
-  }
+  double *eigenvector;
   if (id == 0) {
-	  printf("lambda: % -24.16e\n", lambda);
 	  printf("iterations: %i\n", iterations);
-	  printf("err: % -24.16e\n", err);
+	  printf("lambda:     % -24.16e\n", lambda);
+	  printf("err:        % -24.16e\n", err);
+	  eigenvector = allocate_double_vector(n);
   }
-
+  MPI_Gather(l_x, l_n, MPI_DOUBLE, eigenvector, l_n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+  if (id == 0) {
+	  printf("Eigenvector approximation written as a row:\n");
+	  printf("           (");
+	  for (int i = 0; i < n; i++) {
+		  printf("% -24.16e", eigenvector[i]);
+		  if (i < n - 1)
+			  printf(",");
+	  }
+	  printf(")\n");
+	  free(eigenvector);
+  }
 
 
 

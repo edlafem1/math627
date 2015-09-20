@@ -24,6 +24,12 @@ Assumes dimensions of A are n x n and dimensions of x and y are n x 1.
 void matrix_vector_mult_parallel(double *l_y, double *l_A, double *l_x, int n, int id, int np);
 
 /*
+Uses the Power method to approximate the largest eigenvalue of the matrix A in parallel. l_y should represent y = A*x.
+Returns the number of iterations taken, stores the eigenvale approximation in lambda and this process's chunk of the eigenvector approximation in l_x and the error in err.
+*/
+int eigenvalue_approximation_parallel(double *lambda, double *err, double *l_x, double *l_A, double *l_y, double tol, int itmax, int n, int id, int np);
+
+/*
 Prints the square matrix A with n rows and n columns distributed over np processes.
 */
 void print_Square_Matrix(double *l_A, int id, int n, int np);
