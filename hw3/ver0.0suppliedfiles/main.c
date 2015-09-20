@@ -148,6 +148,8 @@ int main (int argc, char *argv[])
 	  free(y);
   }
 
+  if (id == 0)
+	  printf("Begin problem 2\n");
   // Problem 2 Section
   double *lambda, *err;
   int iterations = eigenvalue_approximation_parallel(lambda, err, l_x, l_A, l_y, tol, itmax, n, id, np);
