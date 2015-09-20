@@ -157,16 +157,26 @@ int main (int argc, char *argv[])
 
   double *eigenvector;
   if (id == 0) {
-	  printf("iterations: %i\n", iterations);
-	  printf("lambda:     % -24.16e\n", lambda);
-	  printf("err:        % -24.16e\n", err);
+	  printf("Tolerance=		% -24.16e\n", tol);
+	  printf("Max iterations=	% -i\n", itmax);
+	  printf("iterations=		% -i\n", iterations);
+	  printf("lambda=			% -24.16e\n", lambda);
+	  printf("err=				% -24.16e\n", err);
 	  eigenvector = allocate_double_vector(n);
   }
   MPI_Gather(l_x, l_n, MPI_DOUBLE, eigenvector, l_n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+  double *lambda_x = allocate_double_vector(l_n);
+  for (int i = 0; i < l_n; i++) {
+	  lambda_x[i] = l_y[i] - l_x[i];
+  }
+
   if (id == 0) {
-	  printf("Eigenvector approximation written as a row:\n");
+	  printf("norm residual=	% -24.16e\n", euclidean_norm_parallel(lambda_x, n, id, np));
+	  free(lambda_x);
+	  printf("x=\n");
 	  printf("           (");
 	  for (int i = 0; i < n; i++) {
+		  lambda_x[i] = lambda * eigenvector[i];
 		  printf("% -24.16e", eigenvector[i]);
 		  if (i < n - 1)
 			  printf(",");

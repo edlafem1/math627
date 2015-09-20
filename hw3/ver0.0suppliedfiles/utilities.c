@@ -62,8 +62,6 @@ int eigenvalue_approximation_parallel(double *lambda, double *err, double *l_x, 
 		memcpy(l_x, l_y, l_n * sizeof(double)); // takes place of x=y/normy but without scaling, so really just means x = y
 		matrix_vector_mult_parallel(l_y, l_A, l_x, n, id, np); // y_new = A * x = A * y_old
 		*lambda = dot_product_parallel(l_x, l_y, n, id, np) / dot_product_parallel(l_x, l_x, n, id, np); // eigenvalue approximation using Rayleigh quotient with eigenvector x
-		if (id == 0)
-			printf("lambda in loop % -24.16e\n", *lambda);
 		*err = fabs((*lambda - lambdaold) / *lambda);
 	}
 
