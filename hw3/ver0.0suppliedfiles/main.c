@@ -178,28 +178,32 @@ int main (int argc, char *argv[])
   }
   ////////////////////////////////////////////////////////////////////////////////
   print_result_every_process("lambda", lambda, id, np);
-  double *ax = allocate_double_vector(n);
 
-  //matrix_vector_mult_parallel(l_y, l_A, l_x, n, id, np);
+  matrix_vector_mult_parallel(l_y, l_A, l_x, n, id, np);
+  /*
+  double *ax;
+  if (id == 0)
+	ax = allocate_double_vector(n);
   MPI_Gather(l_y, l_n, MPI_DOUBLE, ax, l_n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
   if (id == 0) {
 	  printf("A*x\n");
 	  for (int i = 0; i < n; i++)
 		  printf("% -24.16e\n", ax[i]);
   }
-
+  */
 
   double *difference = allocate_double_vector(l_n);
   for (int i = 0; i < l_n; i++) {
 	  difference[i] = l_y[i] - lambda*l_x[i];
   }
-
+  /*
   MPI_Gather(difference, l_n, MPI_DOUBLE, ax, l_n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
   if (id == 0) {
 	  printf("A*x-lambda*x\n");
 	  for (int i = 0; i < n; i++)
 		  printf("% -24.16e\n", ax[i]);
   }
+  */
 
   double residual_norm = euclidean_norm_parallel(difference, n, id, np);
   if (id == 0)
