@@ -161,8 +161,9 @@ int main (int argc, char *argv[])
 
 	  //norm_y = euclidean_norm_parallel(l_y, n, id, np); // Euclidean vector norm of vector y
 	  //x = y / normy; // scale y by its norm, such that x has norm 1
-	  matrix_vector_mult_parallel(l_y, l_A, l_x, n, id, np); // y_new = A * y_old
-	  lambda = dot_product_parallel(l_y, l_x, n, id, np) / dot_product_parallel(l_x, l_y, n, id, np); // eigenvalue approximation using Rayleigh quotient
+	  memcpy(l_x, l_y, l_n * sizeof(double)); // takes place of x=y/normy
+	  matrix_vector_mult_parallel(l_y, l_A, l_x, n, id, np); // y_new = A * (y_old==x)
+	  lambda = dot_product_parallel(l_x, l_y, n, id, np) / dot_product_parallel(l_x, l_x, n, id, np); // eigenvalue approximation using Rayleigh quotient
 	  if (id == 0)
 		  printf("lambda in loop % -24.16e\n", lambda);
 	  err = fabs((lambda - lambdaold) / lambda);
