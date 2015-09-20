@@ -69,8 +69,11 @@ int eigenvalue_approximation_parallel(double *lambda, double *err, double *l_x, 
 
 	// compute scaled eigenvector x
 	norm_x = euclidean_norm_parallel(l_x, n, id, np);
-	for (int row = 0; row < l_n; row++)
+	double norm_y = euclidean_norm_parallel(l_y, n, id, np);
+	for (int row = 0; row < l_n; row++) {
 		l_x[row] = l_x[row] / norm_x;
+		l_y[row] = l_y[row] / norm_y;
+	}
 	return iterations;
 }
 
