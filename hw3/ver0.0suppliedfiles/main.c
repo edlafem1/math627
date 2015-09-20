@@ -169,9 +169,9 @@ int main (int argc, char *argv[])
   for (int i = 0; i < l_n; i++) {
 	  lambda_x[i] = l_y[i] - l_x[i];
   }
-
+  double res = euclidean_norm_parallel(lambda_x, n, id, np);
   if (id == 0) {
-	  printf("norm residual=	% -24.16e\n", euclidean_norm_parallel(lambda_x, n, id, np));
+	  printf("norm residual=	% -24.16e\n", res);
 	  free(lambda_x);
 	  printf("x=\n");
 	  printf("           (");
