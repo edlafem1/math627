@@ -167,12 +167,12 @@ int main (int argc, char *argv[])
   MPI_Gather(l_x, l_n, MPI_DOUBLE, eigenvector, l_n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 
   // calculating norm of residual. y=A*x because that is how the function to approximate x left it.
-  for (int i = 0; i < l_n; i++) {
-	  l_y[i] -= (lambda * l_x[i]);
-  }
-  double res = euclidean_norm_parallel(l_y, n, id, np);
+//  for (int i = 0; i < l_n; i++) {
+//	  l_y[i] -= (lambda * l_x[i]);
+//  }
+//  double res = euclidean_norm_parallel(l_y, n, id, np);
   if (id == 0) {
-	  printf("norm residual=	% -24.16e\n", res);
+//	  printf("norm residual=	% -24.16e\n", res);
 	  printf("x=\n");
 	  printf("           (");
 	  for (int i = 0; i < n; i++) {
@@ -181,10 +181,30 @@ int main (int argc, char *argv[])
 			  printf(",");
 	  }
 	  printf(")\n");
-	  free(eigenvector);
+	  //free(eigenvector);
   }
 
-
+  MPI_Gather(l_y, l_n, MPI_DOUBLE, eigenvector, l_n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+  if (id == 0) {
+	  printf("A*x: ");
+	  for (int i = 0; i < n; i++)
+		  printf("% -24.16e, ", eigenvector[i]);
+	  printf("\n");
+  }
+  // calculating norm of residual. y=A*x because that is how the function to approximate x left it.
+    for (int i = 0; i < l_n; i++) {
+  	  l_y[i] -= (lambda * l_x[i]);
+    }
+	MPI_Gather(l_y, l_n, MPI_DOUBLE, eigenvector, l_n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+	if (id == 0) {
+		printf("A*x - lambda*x: ");
+		for (int i = 0; i < n; i++)
+			printf("% -24.16e, ", eigenvector[i]);
+		printf("\n");
+	}
+    double res = euclidean_norm_parallel(l_y, n, id, np);
+	if (id == 0)
+		printf("norm of residual: % -24.16e\n", res);
 
 
 
