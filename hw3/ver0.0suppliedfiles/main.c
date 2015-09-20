@@ -163,14 +163,19 @@ int main (int argc, char *argv[])
 	  //x = y / normy; // scale y by its norm, such that x has norm 1
 	  matrix_vector_mult_parallel(l_y, l_A, l_x, n, id, np); // y_new = A * y_old
 	  lambda = dot_product_parallel(l_y, l_x, n, id, np) / dot_product_parallel(l_x, l_y, n, id, np); // eigenvalue approximation using Rayleigh quotient
+	  if (id == 0)
+		  printf("lambda in loop % -24.16e\n", lambda);
 	  err = fabs((lambda - lambdaold) / lambda);
   }
 
   if (iterations == itmax && id == 0) {
 	  printf("Max number of iterations reached. Answer shown is the most recent approximation.\n");
   }
-  if (id == 0)
-	  printf("lambda is % -24.16e\n", lambda);
+  if (id == 0) {
+	  printf("lambda: % -24.16e\n", lambda);
+	  printf("iterations: %i\n", iterations);
+	  printf("err: % -24.16e\n", err);
+  }
 
 
 
