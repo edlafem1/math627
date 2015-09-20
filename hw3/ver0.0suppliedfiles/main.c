@@ -189,6 +189,13 @@ int main (int argc, char *argv[])
   for (int i = 0; i < l_n; i++) {
 	  difference[i] = l_y[i] - lambda*l_x[i];
   }
+
+  double *g_diff = allocate_double_vector(n);
+  MPI_GATHER(difference, l_n, MPI_DOUBLE, g_diff, l_n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+  if (id == 0)
+	  for (int i = 0; i < n; i++)
+		  printf("% -24.16e\n", g_diff[i]);
+
   double residual_norm = euclidean_norm_parallel(difference, n, id, np);
   if (id == 0)
 	  printf("res: % -24.16e\n", residual_norm);
