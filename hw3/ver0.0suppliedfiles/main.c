@@ -156,8 +156,8 @@ int main (int argc, char *argv[])
   double *eigenvector;
   if (id == 0) {
 	  printf("iterations: %i\n", iterations);
-	  printf("lambda:     % -24.16e\n", lambda);
-	  printf("err:        % -24.16e\n", err);
+	  printf("lambda:     % -24.16e\n", *lambda);
+	  printf("err:        % -24.16e\n", *err);
 	  eigenvector = allocate_double_vector(n);
   }
   MPI_Gather(l_x, l_n, MPI_DOUBLE, eigenvector, l_n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
