@@ -180,7 +180,7 @@ int main (int argc, char *argv[])
   print_result_every_process("lambda", lambda, id, np);
   double *ax = allocate_double_vector(n);
 
-  matrix_vector_mult_parallel(l_y, l_A, l_x, n, id, np);
+  //matrix_vector_mult_parallel(l_y, l_A, l_x, n, id, np);
   MPI_Gather(l_y, l_n, MPI_DOUBLE, ax, l_n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
   if (id == 0) {
 	  printf("A*x\n");
