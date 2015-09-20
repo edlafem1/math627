@@ -169,7 +169,8 @@ int main (int argc, char *argv[])
   if (iterations == itmax && id == 0) {
 	  printf("Max number of iterations reached. Answer shown is the most recent approximation.\n");
   }
-
+  if (id == 0)
+	  printf("lambda is % -24.16e\n", lambda);
 
 
 
