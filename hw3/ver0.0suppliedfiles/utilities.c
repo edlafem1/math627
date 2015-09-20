@@ -48,10 +48,8 @@ int eigenvalue_approximation_parallel(double *lambda, double *err, double *l_x, 
 	double norm_x;
 	double lambdaold = 0;
 	int iterations = 0;
-	printf("finished localized vars\n");
 	*err = 1.0 + tol; // to ensure 1 pass through loop
 	*lambda = 0;
-	printf("finished return vars passed in\n");
 	matrix_vector_mult_parallel(l_y, l_A, l_x, n, id, np); // just to make sure, in case we change the calling code:
 
 	while ((*err > tol) && (iterations < itmax)) {

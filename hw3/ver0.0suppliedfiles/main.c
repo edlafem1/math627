@@ -165,17 +165,17 @@ int main (int argc, char *argv[])
 	  eigenvector = allocate_double_vector(n);
   }
   MPI_Gather(l_x, l_n, MPI_DOUBLE, eigenvector, l_n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-  double *lambda_x = allocate_double_vector(l_n);
+
+  // calculating norm of residual. y=A*x because that is how the function to approximate x left it.
   for (int i = 0; i < l_n; i++) {
-	  lambda_x[i] = l_y[i] - l_x[i];
+	  l_y[i] -= (lambda * l_x[i]);
   }
-  double res = euclidean_norm_parallel(lambda_x, n, id, np);
+  double res = euclidean_norm_parallel(l_y, n, id, np);
   if (id == 0) {
 	  printf("norm residual=	% -24.16e\n", res);
 	  printf("x=\n");
 	  printf("           (");
 	  for (int i = 0; i < n; i++) {
-		  lambda_x[i] = lambda * eigenvector[i];
 		  printf("% -24.16e", eigenvector[i]);
 		  if (i < n - 1)
 			  printf(",");
