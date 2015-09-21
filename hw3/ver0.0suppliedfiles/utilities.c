@@ -24,21 +24,20 @@ Calculates the Eucildean Norm of a column vector of length n in parallel.
 Relies on the dot_product_parallel function.
 */
 double euclidean_norm_parallel(double *l_x, int n, int id, int np) {
-	double norm = sqrt(dot_product_parallel(l_x, l_x, n, id, np));
-	return norm;
+	return sqrt(dot_product_parallel(l_x, l_x, n, id, np));
 }
 
 void matrix_vector_mult_parallel(double *l_y, double *l_A, double *l_x, int n, int id, int np) {
 	int l_n = n / np;
-	double *x = allocate_double_vector(n);
-	MPI_Allgather(l_x, l_n, MPI_DOUBLE, x, l_n, MPI_DOUBLE, MPI_COMM_WORLD);
+	//double *x = allocate_double_vector(n);
+	//MPI_Allgather(l_x, l_n, MPI_DOUBLE, x, l_n, MPI_DOUBLE, MPI_COMM_WORLD);
 
 	// dot product each row in l_A with x goes into 1 block of l_y
 	for (int row = 0; row < l_n; row++) {
 		l_y[row] = 0;
-		for (int col = 0; col < n; col++) {
+		for (int col = 0; col < l_n; col++) {
 			//printf("%i, row=%i: %f * %f\n", id, row + id*l_n, l_A[(row * n) + col], x[col]);
-			l_y[row] += (l_A[(row * n) + col] * x[col]);
+			l_y[row] += (l_A[(row * n) + col] * l_x[col]);
 		}
 	}
 }
