@@ -35,7 +35,7 @@ void matrix_vector_mult_parallel(double *l_y, double *l_A, double *l_x, double *
 			if (i == 0)
 				temp_y[0] = 0;
 			temp_y[j] += (l_A[j + i*n] * l_x[i]);
-			printf("id=%i, i=%i, j=%i, l_A[j+i*n]=%f, l_x[i]=%f\n");
+			printf("id=%i, i=%i, j=%i, l_A[j+i*n]=%f, l_x[i]=%f\n", id, i, j, l_A[j+i*n], l_x[i]);
 		}
 	}
 	//for (int j = 0; j < n; j++)
