@@ -90,10 +90,10 @@ void print_Square_Matrix(double *l_A, int id, int n, int np) {
 	MPI_Gather(l_A, n*l_n, MPI_DOUBLE, A, n*l_n, MPI_DOUBLE, destination, MPI_COMM_WORLD);
 	if (id == 0) {
 		printf("Matrix A:\n");
-		int i, j;
-		for (i = 0; i < n; i++) {
-			for (j = 0; j < n; j++) {
-				printf("% -24.16e   ", A[i*n + j]);
+		int row, col;
+		for (row = 0; row < n; row++) {
+			for (col = 0; col < n; col++) {
+				printf("% -24.16e   ", A[row + col * n]);
 			}
 			printf("\n");
 		}
