@@ -165,7 +165,7 @@ int main (int argc, char *argv[])
 	  eigenvector = allocate_double_vector(n);
   }
   // calculate norm of residual
-  matrix_vector_mult_parallel(l_y, l_A, l_x, n, id, np);
+  matrix_vector_mult_parallel(l_y, l_A, l_x, temp_nvector, n, id, np);
 
   for (int i = 0; i < l_n; i++) {
 	  l_y[i] = l_y[i] - lambda*l_x[i];
