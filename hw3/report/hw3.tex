@@ -73,6 +73,16 @@ For each of the \texttt{l\_n} rows referenced by \texttt{l\_A}, the function com
 To verify this function for correctness, I computed the matrix-vector product of the matrix \texttt{A} created by the \texttt{setup\_example} function supplied and the vector of odd numbers created for earlier testing in Matlab and used that result to check the value given by my function. In all cases, the Matlab answer and my function's answer were the same, however the $15$th digit after the decimal place in the Matlab answer was occasionally $1$ higher than the corresponding digit in the answer returned by my function which I suspect is due to how Matlab handles rounding and not due to an inaccuracy in my function.
 \pagebreak
 \section{Problem 2}
+The purpose of thise problem is to write a function that can compute the largest eigenvale and associated eigenvector of an $n \times n$ matrix $A$ within a given tolerance $tol$ using an iterative process called the Power Method of a matrix that is distributed over several processors. The Power Method starts with an initial guess of a column vector $x_{0}$ of $n$ elements. For our purposes, we set every element of $x_{0}$ equal to $\frac{1}{\sqrt{n}}$. The algorithm then performs the computation $x_{i+1}=A*x_{i}$, starting with $x_{1}=A*x_{0}$. It then computes the eigenvalue $\lambda_{i}$ from the computed $x_{i}$; my implementation uses the Rayleigh Quotient to compute 
+$$\lambda_{i}=\frac{A*x_{i}}{x_{i}\cdot x_{i}}$$.
+To determine if the approximation is close enough to the actual value of the eigenvalue, we test if 
+$$\left|\frac{\lambda_{i}-\lambda_{i-1}}{\lambda_{i}}\right| < tol$$. 
+If it is not, the algorithm performs iterations until this condition is satisfied, or until a maximum number of iterations has been reached.
+
+My implementation of the Power Method takes as input a pointer to the distributed column vector $l\_x$ to be used as the initial guess and the resulting eigenvector, $l\_y$ as a temporary column vector to be used in operations, a pointer to the distributed matrix $l\_A$, the tolerance $tol$, a max number of iterations to be completed $itmax$, the dimensions of the matrix and column vectors $n$, the id of the current process $id$, and the number of processes $np$. It also takes pointers to $lambda$ and $err$ to store the approximated eigenvalue and associated error. By looking at the Matlab code given to me by Dr. Gobbert, I was able to replicate most of the statements into my function.
+
+My function starts by computing $y=A*x$ using the maxtrix vector multiplication function I created in Problem 1. I set $err=1+tol$ to ensure my code will perform at least one iteration of the Power Method, just as the Matlab code does. I set $\lambda_{0}=0$ as the Matlab code does in order to provide a starting point for my approximation. For the condition of my iteration, I verify that the error is greater than the tolerance and the maximum number of iterations has not been met before continuing the Power Method. TALK ABOUT INSIDE THE ITERATION NOW.
+
 
 \pagebreak
 

@@ -27,17 +27,18 @@ double euclidean_norm_parallel(double *l_x, int n, int id, int np) {
 	return sqrt(dot_product_parallel(l_x, l_x, n, id, np));
 }
 
+// rewrite assuming l_A is a bunch of columns of A, l_x is a bunch of rows, and l_y n x 1. Use an MPI_Reduce call. NO ALLGATHER of x. Use a scatter to put result on all processes.
 void matrix_vector_mult_parallel(double *l_y, double *l_A, double *l_x, int n, int id, int np) {
 	int l_n = n / np;
-	//double *x = allocate_double_vector(n);
-	//MPI_Allgather(l_x, l_n, MPI_DOUBLE, x, l_n, MPI_DOUBLE, MPI_COMM_WORLD);
+	double *x = allocate_double_vector(n);
+	MPI_Allgather(l_x, l_n, MPI_DOUBLE, x, l_n, MPI_DOUBLE, MPI_COMM_WORLD);
 
 	// dot product each row in l_A with x goes into 1 block of l_y
 	for (int row = 0; row < l_n; row++) {
 		l_y[row] = 0;
-		for (int col = 0; col < l_n; col++) {
+		for (int col = 0; col < n; col++) {
 			//printf("%i, row=%i: %f * %f\n", id, row + id*l_n, l_A[(row * n) + col], x[col]);
-			l_y[row] += (l_A[(row * n) + col] * l_x[col]);
+			l_y[row] += (l_A[(row * n) + col] * x[col]);
 		}
 	}
 }
