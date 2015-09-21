@@ -32,6 +32,8 @@ void matrix_vector_mult_parallel(double *l_y, double *l_A, double *l_x, double *
 	int l_n = n / np;
 	for (int i = 0; i < l_n; i++) {
 		for (int j = 0; j < n; j++) {
+			if (i == 0)
+				temp_y[0] = 0;
 			temp_y[j] += (l_A[j + i*n] * l_x[i]);
 		}
 	}

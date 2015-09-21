@@ -135,9 +135,6 @@ int main (int argc, char *argv[])
 	  printf("Euclidean norm of x is % -24.16e\n", l2_norm_x);
 
   // printing y
-  double *y;
-  if (id == 0)
-	  y = allocate_double_vector(n);
   MPI_Gather(l_y, l_n, MPI_DOUBLE, y, l_n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
   if (id == 0) {
 	  printf("The column vector y written as a row:\n");
