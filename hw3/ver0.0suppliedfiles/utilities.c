@@ -28,29 +28,26 @@ double euclidean_norm_parallel(double *l_x, int n, int id, int np) {
 }
 
 // rewrite assuming l_A is a bunch of columns of A, l_x is a bunch of rows, and l_y n x 1. Use an MPI_Reduce call. NO ALLGATHER of x. Use a scatter to put result on all processes.
-void matrix_vector_mult_parallel(double *l_y, double *l_A, double *l_x, int n, int id, int np) {
+void matrix_vector_mult_parallel(double *l_y, double *l_A, double *l_x, double *temp_y, int n, int id, int np) {
 	int l_n = n / np;
-	double *x = allocate_double_vector(n);
-	MPI_Allgather(l_x, l_n, MPI_DOUBLE, x, l_n, MPI_DOUBLE, MPI_COMM_WORLD);
-
-	// dot product each row in l_A with x goes into 1 block of l_y
-	for (int row = 0; row < l_n; row++) {
-		l_y[row] = 0;
-		for (int col = 0; col < n; col++) {
-			//printf("%i, row=%i: %f * %f\n", id, row + id*l_n, l_A[(row * n) + col], x[col]);
-			l_y[row] += (l_A[(row * n) + col] * x[col]);
+	for (int i = 0; i < l_n; i++) {
+		for (int j = 0; j < n; j++) {
+			temp_y[j] += (l_A[j + i*n] * l_x[i]);
 		}
 	}
+
+	MPI_Reduce(temp_y, temp_y, n, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+	MPI_Scatter(temp_y, l_n, MPI_DOUBLE, l_y, l_n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 }
 
-int eigenvalue_approximation_parallel(double *lambda, double *err, double *l_x, double *l_A, double *l_y, double tol, int itmax, int n, int id, int np) {
+int eigenvalue_approximation_parallel(double *lambda, double *err, double *l_x, double *l_A, double *l_y, double *temp_nvector, double tol, int itmax, int n, int id, int np) {
 	int l_n = n / np;
 	double norm_x;
 	double lambdaold = 0;
 	int iterations = 0;
 	*err = 1.0 + tol; // to ensure 1 pass through loop
 	*lambda = 0;
-	matrix_vector_mult_parallel(l_y, l_A, l_x, n, id, np); // just to make sure, in case we change the calling code:
+	matrix_vector_mult_parallel(l_y, l_A, l_x, temp_nvector, n, id, np); // just to make sure, in case we change the calling code:
 
 	while ((*err > tol) && (iterations < itmax)) {
 		++iterations; // increment iteration counter
@@ -58,7 +55,7 @@ int eigenvalue_approximation_parallel(double *lambda, double *err, double *l_x, 
 
 		//norm_y = euclidean_norm_parallel(l_y, n, id, np); // Euclidean vector norm of vector y
 		memcpy(l_x, l_y, l_n * sizeof(double)); // takes place of x=y/normy but without scaling, so really just means x = y
-		matrix_vector_mult_parallel(l_y, l_A, l_x, n, id, np); // y_new = A * x = A * y_old
+		matrix_vector_mult_parallel(l_y, l_A, l_x, temp_nvector, n, id, np); // y_new = A * x = A * y_old
 		*lambda = dot_product_parallel(l_x, l_y, n, id, np) / dot_product_parallel(l_x, l_x, n, id, np); // eigenvalue approximation using Rayleigh quotient with eigenvector x
 		*err = fabs((*lambda - lambdaold) / *lambda);
 	}

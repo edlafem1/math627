@@ -32,7 +32,7 @@ int main (int argc, char *argv[])
   int n;
   double double_n;
   int l_n, l_i;
-  double *l_A, *l_x, *l_y;
+  double *l_A, *l_x, *l_y, *temp_nvector;
   double tol;
   int itmax;
 
@@ -104,6 +104,7 @@ int main (int argc, char *argv[])
   l_A = allocate_double_vector(n*l_n); /* l_A is n x l_n matrix */
   l_x = allocate_double_vector(l_n);   /* l_x is l_n-vector */
   l_y = allocate_double_vector(l_n);   /* l_y is l_n-vector */
+  temp_nvector = allocate_double_vector(n); // an n-vector
 
   // setup example: 
   setup_example(l_A, n, l_n, id, np);
@@ -116,7 +117,7 @@ int main (int argc, char *argv[])
   // Question 1 section
 
   // performing y = Ax
-  matrix_vector_mult_parallel(l_y, l_A, l_x, n, id, np);
+  matrix_vector_mult_parallel(l_y, l_A, l_x, temp_nvector, n, id, np);
 
   // printing the matrix A
   print_Square_Matrix(l_A, id, n, np);
@@ -152,7 +153,7 @@ int main (int argc, char *argv[])
 	  printf("Begin problem 2\n");
   // Problem 2 Section
   double lambda, err;
-  int iterations = eigenvalue_approximation_parallel(&lambda, &err, l_x, l_A, l_y, tol, itmax, n, id, np);
+  int iterations = eigenvalue_approximation_parallel(&lambda, &err, l_x, l_A, l_y, temp_nvector, tol, itmax, n, id, np);
 
   double *eigenvector;
   if (id == 0) {
@@ -189,7 +190,7 @@ int main (int argc, char *argv[])
 	  free(eigenvector);
   }
 
-  
+  free(temp_nvector);
   free_vector(l_y);
   free_vector(l_x);
   free_vector(l_A);
