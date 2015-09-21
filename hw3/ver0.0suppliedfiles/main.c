@@ -105,7 +105,7 @@ int main (int argc, char *argv[])
   l_x = allocate_double_vector(l_n);   /* l_x is l_n-vector */
   l_y = allocate_double_vector(l_n);   /* l_y is l_n-vector */
   temp_nvector = allocate_double_vector(n); // an n-vector
-  if (id == 0)
+  //if (id == 0)
 	  y = allocate_double_vector(n);
 
   // setup example: 
