@@ -32,7 +32,7 @@ int main (int argc, char *argv[])
   int n;
   double double_n;
   int l_n, l_i;
-  double *l_A, *l_x, *l_y, *temp_nvector;
+  double *l_A, *l_x, *l_y, *temp_nvector, *y;
   double tol;
   int itmax;
 
@@ -105,6 +105,8 @@ int main (int argc, char *argv[])
   l_x = allocate_double_vector(l_n);   /* l_x is l_n-vector */
   l_y = allocate_double_vector(l_n);   /* l_y is l_n-vector */
   temp_nvector = allocate_double_vector(n); // an n-vector
+  if (id == 0)
+	  y = allocate_double_vector(n);
 
   // setup example: 
   setup_example(l_A, n, l_n, id, np);
@@ -117,7 +119,7 @@ int main (int argc, char *argv[])
   // Question 1 section
 
   // performing y = Ax
-  matrix_vector_mult_parallel(l_y, l_A, l_x, temp_nvector, n, id, np);
+  matrix_vector_mult_parallel(l_y, l_A, l_x, temp_nvector, y, n, id, np);
 
   // printing the matrix A
   print_Square_Matrix(l_A, id, n, np);
@@ -153,7 +155,7 @@ int main (int argc, char *argv[])
 	  printf("Begin problem 2\n");
   // Problem 2 Section
   double lambda, err;
-  int iterations = eigenvalue_approximation_parallel(&lambda, &err, l_x, l_A, l_y, temp_nvector, tol, itmax, n, id, np);
+  int iterations = eigenvalue_approximation_parallel(&lambda, &err, l_x, l_A, l_y, temp_nvector, y, tol, itmax, n, id, np);
 
   double *eigenvector;
   if (id == 0) {
@@ -165,7 +167,7 @@ int main (int argc, char *argv[])
 	  eigenvector = allocate_double_vector(n);
   }
   // calculate norm of residual
-  matrix_vector_mult_parallel(l_y, l_A, l_x, temp_nvector, n, id, np);
+  matrix_vector_mult_parallel(l_y, l_A, l_x, temp_nvector, y, n, id, np);
 
   for (int i = 0; i < l_n; i++) {
 	  l_y[i] = l_y[i] - lambda*l_x[i];

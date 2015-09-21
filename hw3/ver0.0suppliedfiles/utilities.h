@@ -21,13 +21,13 @@ double euclidean_norm_parallel(double *l_x, int n, int id, int np);
 Performs the multiplication y = Ax where A is a matrix and x is a column vector.
 Assumes dimensions of A are n x n and dimensions of x and y are n x 1.
 */
-void matrix_vector_mult_parallel(double *l_y, double *l_A, double *l_x, double *temp_y, int n, int id, int np);
+void matrix_vector_mult_parallel(double *l_y, double *l_A, double *l_x, double *temp_y, double *y, int n, int id, int np);
 
 /*
 Uses the Power method to approximate the largest eigenvalue of the matrix A in parallel. l_y should represent y = A*x.
 Returns the number of iterations taken, stores the eigenvale approximation in lambda and this process's chunk of the eigenvector approximation in l_x and the error in err.
 */
-int eigenvalue_approximation_parallel(double *lambda, double *err, double *l_x, double *l_A, double *l_y, double *temp_nvector, double tol, int itmax, int n, int id, int np);
+int eigenvalue_approximation_parallel(double *lambda, double *err, double *l_x, double *l_A, double *l_y, double *temp_nvector, double *y, double tol, int itmax, int n, int id, int np);
 
 /*
 Prints the square matrix A with n rows and n columns distributed over np processes.
