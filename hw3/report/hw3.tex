@@ -1,0 +1,126 @@
+% First we choose the document class (can be book, report, article etc.)
+\documentclass[11pt]{article}
+\usepackage{amsmath}
+
+\usepackage{xcolor}
+\usepackage{listings}
+
+\lstdefinestyle{customc}{
+  belowcaptionskip=1\baselineskip,
+  breaklines=true,
+  frame=L,
+  xleftmargin=\parindent,
+  language=C,
+  showstringspaces=false,
+  basicstyle=\footnotesize\ttfamily,
+  keywordstyle=\bfseries\color{green!40!black},
+  commentstyle=\ttfamily\color{purple!40!black},
+  identifierstyle=\color{blue},
+  stringstyle=\color{orange},
+}
+\lstset{escapechar=@,style=customc}
+
+\author{Edward LaFemina \\
+		\it{University of Maryland, Baltimore County}}
+\title{Math 627 HW 3}
+\date{\today}
+
+\begin{document}
+\maketitle
+\tableofcontents
+
+\pagebreak
+\section{Problem 1}
+I will be creating a series of standard matrix and vector functions for later use in an algorithm to estimate the largest eigenvalue of a square matrix. I will be verifying that these functions work individually, are accurate, and work on matrices and vectors distributed across multiple processes.
+
+\subsection{Printing a Matrix}
+The function written for this part must be able to print out the full contents of a matrix that is distributed across many processes. My function requires a pointer\(\texttt{l\_A}\) to that process's chunk of the matrix, the length of a row of the matrix\(\texttt{n}\) because it assumes A is square, the id of the process\(\texttt{id}\), and the number of processes\(\texttt{np}\). It then allocates enough memory for $ n^2 $ \texttt{double}s on process $ 0 $ to allow for assembling a full copy of the matrix. The function uses the \texttt{MPI\_Gather} function provided by MPI to get every process's chunk of A into the space allocated on process 0 in the right order. Because there are \texttt{np} processes and $ n $ rows of the matrix, each process held $ l\_n = n / np $ rows of $ n $ \texttt{double}s, meaning each process had to send $ n*l\_n $ doubles to process $ 0 $. This was reflected in the call to \texttt{MPI\_Gather} in both the \texttt{send\_count} and \texttt{recv\_count} arguments. The function encodes a matrix A in the form:
+$$
+A_{n,n} =
+\begin{pmatrix}
+	a_{1,1} & a_{1,2} & \cdots & a_{1,n} \\
+	a_{2,1} & a_{2,2} & \cdots & a_{2,n} \\
+	\vdots  & \vdots  & \ddots & \vdots  \\
+	a_{n,1} & a_{n,2} & \cdots & a_{n,n} 
+\end{pmatrix}
+$$
+ to a single array in memory of the form:
+$$
+\begin{matrix} 
+value |& a_{1,1} & a_{1,2} & \cdots & a_{1,n-1} & a_{2,1} & \cdots & a_{2,n-1} & \cdots & a_{n,n} \\
+index |& 0       & 1       & \cdots & n-1       & n       & \cdots & 2*n - 1   & \cdots & n*n
+\end{matrix}
+$$
+storing it only on process $ 0 $. To print the matrix in a human readable format, the function loops $ n $ times, printing the next element in the array each time. After $ n $ iterations, a newline character is printed. This repeats $ n $ times to account for all $ n $ rows.
+
+To verify that the matrix prints as expected, I printed the matrix created by the \texttt{setup\_example} function written by Dr. Gobbert and supplied to me, in which each element $a_{i,j}=\frac{1}{i+j}$. Because this matrix is equal to its transpose, I altered the element in what should be the bottom left corner of the matrix to be $ 0 $, a value that does not appear anywhere else in the matrix. When printing, this value appeared in the bottom left corner of the matrix and all values for the other cells matched what I had computed them to be by hand for some small values of $n$.
+
+\subsection{Dot Product}
+The function written for this part must be able to compute the dot product of two column vectors of length $ n $ distributed over $ np $ processes and have the result available on all processes. To accomplish this, my function takes pointers to portions of both vectors, \texttt{l\_x} and \texttt{l\_y} which are of length $ l\_n = n / np $, the length\(\texttt{n}\) of the full vectors, the id of the process\(\texttt{id}\), and the number of processes\(\texttt{np}\). It then computes the product of the $i$-th element in each vector with the corresponding element in the other vector and adds that to a running total of the local dot product called \texttt{l\_sum}. To compute the dot product of the full vectors and make the result available on all processes, the function calls \texttt{MPI\_Allreduce} with the operation \texttt{MPI\_SUM} to indicate that all local \texttt{l\_sum} values shall be added together and then stored in every process's \texttt{dot\_product} variable which is returned by the function. Thus each process that calls this function will obtain the exact same result, which is the dot product of the global vectors \texttt{x} and \texttt{y} which have been distributed over all processes in \texttt{l\_x} and \texttt{l\_y} respectively.
+
+I verified my function by computing the dot product between the even and odd vectors I created earlier and matching the returned answer to the answer I was able to compute with Matlab. In all cases my function gave the correct answer. To be sure that every process received the same value, I had every process create a message with the value of the dot product in it and sent the message to process $0$. I then had process $0$ print the message along with the \texttt{MPI\_SOURCE} value in the status struct created upon receipt of the message. In all tests the values were identical among all processes.
+
+\subsection{Euclidean Vector Norm}
+The function written for this part must compute the Euclidean Vector Norm of a vector \texttt{x} distributed amongst \texttt{np} processes and have the answer available to all processes. To compute this, my function took the square root of the dot product of \texttt{x} with itself using the \texttt{sqrt} function in the standard math library and returned it. Because the dot product is shared among all processes, the square root of that value is the same among all processes, therefore the value of the Euclidean Norm is the same on all processes.
+
+To verify my function, I computed the Euclidean Norm of the odd vector I had created earlier using Matlab and used that result to verify the value my function returned. Because the dot product is distributed to all processes and I already verified this was the case, I knew the square root of that value would be the same among all processes and no further testing was needed.
+
+\subsection{Matrix-Vector Product}
+The function written for this part must compute the product $y=A*x$ where $A$ is an $n \times n$ square matrix and $x$ is a column vector of dimension $n$ and $y, A,$ and $x$ are distributed across \texttt{np} processes. To accomplish this, my function takes pointers to the locally held portion of A called \texttt{l\_A}, the locally held portion of x called \texttt{l\_x}, the length\(\texttt{n}\) of a row of A, the id of the process\(\texttt{id}\), and the number of processes\(\texttt{np}\). It also takes a pointer to a vector of length $ l\_n = n / np $ to store the result in. To compute the product, my function uses \texttt{MPI\_Gather} to consolidate the entire vector \texttt{x} on every process. I chose to gather all of \texttt{x} onto one process rather than use the dot product function I created earlier with every row of A in \texttt{l\_A} with \texttt{l\_x} because the dot product function uses \texttt{MPI\_Allreduce} which would yield $ l\_n $ communications between all processes for every process, meaning a total of $ l\_n * np = n$ calls to \texttt{MPI\_Allreduce}. Because $ np \leq n $, calling \texttt{MPI\_Gather} on all $np$ processes is less communications and thus more efficient.
+
+For each of the \texttt{l\_n} rows referenced by \texttt{l\_A}, the function computes the product of the $i$-th element in the $j$-th row with the $i$-th element of \texttt{x} and adds that to a running total. The running total is stored as the $j$-th value of \texttt{l\_y}. When this is complete, the matrix-vector product $A*x$ will be distributed over all \texttt{np} processes as \texttt{l\_y}.
+
+To verify this function for correctness, I computed the matrix-vector product of the matrix \texttt{A} created by the \texttt{setup\_example} function supplied and the vector of odd numbers created for earlier testing in Matlab and used that result to check the value given by my function. In all cases, the Matlab answer and my function's answer were the same, however the $15$th digit after the decimal place in the Matlab answer was occasionally $1$ higher than the corresponding digit in the answer returned by my function which I suspect is due to how Matlab handles rounding and not due to an inaccuracy in my function.
+\pagebreak
+\section{Problem 2}
+
+\pagebreak
+
+\section{Problem 3}
+
+
+\end{document}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
