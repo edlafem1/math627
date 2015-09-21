@@ -174,11 +174,12 @@ int main (int argc, char *argv[])
   if (id == 0)
 	  printf("norm of residual: % -24.16e\n", residual_norm);
 
+  // print the eigenvector approximation
   MPI_Gather(l_x, l_n, MPI_DOUBLE, eigenvector, l_n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 
   if (id == 0) {
 	  printf("x=\n");
-	  printf("           (");
+	  printf("  (");
 	  for (int i = 0; i < n; i++) {
 		  printf("% -24.16e", eigenvector[i]);
 		  if (i < n - 1)
