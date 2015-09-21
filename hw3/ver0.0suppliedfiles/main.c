@@ -145,7 +145,7 @@ int main (int argc, char *argv[])
 			  printf(",");
 	  }
 	  printf(")\n");
-	  free(y);
+	  //free(y);
   }
 
   if (id == 0)
