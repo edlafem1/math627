@@ -136,22 +136,24 @@ int main (int argc, char *argv[])
   // printing y
   MPI_Gather(l_y, l_n, MPI_DOUBLE, y, l_n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
   if (id == 0) {
-	  printf("The column vector y written as a row:\n");
+	  printf("y:\n");
 	  printf("  (");
 	  for (int i = 0; i < n; i++) {
-		  printf("% -24.16e", y[i]);
-		  if (i < n - 1)
-			  printf(",");
+		  printf("% -24.16e\n", y[i]);
 	  }
 	  printf(")\n");
-	  //free(y);
   }
 
   if (id == 0)
 	  printf("Begin problem 2\n");
   // Problem 2 Section
   double lambda, err;
+  double startTime, endTime;
+  MPI_Barrier(MPI_COMM_WORLD);
+  startTime = MPI_Wtime();
   int iterations = eigenvalue_approximation_parallel(&lambda, &err, l_x, l_A, l_y, temp_nvector, y, tol, itmax, n, id, np);
+  MPI_Barrier(MPI_COMM_WORLD);
+  endTime = MPI_Wtime();
 
   double *eigenvector;
   if (id == 0) {
@@ -180,12 +182,11 @@ int main (int argc, char *argv[])
 	  printf("x=\n");
 	  printf("  (");
 	  for (int i = 0; i < n; i++) {
-		  printf("% -24.16e", eigenvector[i]);
-		  if (i < n - 1)
-			  printf(",");
+		  printf("% -24.16e\n", eigenvector[i]);
 	  }
 	  printf(")\n");
 	  free(eigenvector);
+      printf("Time elapsed for approximation: %9.9e\n", (endTime - startTime));
   }
 
   free(temp_nvector);
