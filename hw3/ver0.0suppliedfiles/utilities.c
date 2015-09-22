@@ -30,10 +30,10 @@ double euclidean_norm_parallel(double *l_x, int n, int id, int np) {
 // rewrite assuming l_A is a bunch of columns of A, l_x is a bunch of rows, and l_y n x 1. Use an MPI_Reduce call. NO ALLGATHER of x. Use a scatter to put result on all processes.
 void matrix_vector_mult_parallel(double *l_y, double *l_A, double *l_x, double *temp_y, double *y, int n, int id, int np) {
 	int l_n = n / np;
-		for (int j = 0; j < n; j++) {
 	for (int i = 0; i < l_n; i++) {
+		for (int j = 0; j < n; j++) {
 			if (i == 0)
-				temp_y[0] = 0;
+				temp_y[j] = 0;
 			temp_y[j] += (l_A[j + i*n] * l_x[i]);
 			printf("id=%i, i=%i, j=%i, l_A[j+i*n]=%f, l_x[i]=%f\n", id, i, j, l_A[j+i*n], l_x[i]);
 		}
