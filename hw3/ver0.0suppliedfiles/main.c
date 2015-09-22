@@ -156,7 +156,7 @@ int main (int argc, char *argv[])
   double *eigenvector;
   if (id == 0) {
 	  printf("Tolerance=		% -24.16e\n", tol);
-	  printf("Max iterations=	% -i\n", itmax);
+	  printf("Max iterations=	%i\n", itmax);
 	  printf("iterations=		% -i\n", iterations);
 	  printf("lambda=			% -24.16e\n", lambda);
 	  printf("err=				% -24.16e\n", err);
