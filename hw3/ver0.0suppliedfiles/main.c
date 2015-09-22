@@ -186,6 +186,7 @@ int main (int argc, char *argv[])
 	  }
 	  printf(")\n");
 	  free(eigenvector);
+      free(y);
       printf("Time elapsed for approximation: %9.9e\n", (endTime - startTime));
   }
 
