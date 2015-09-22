@@ -33,13 +33,10 @@ void matrix_vector_mult_parallel(double *l_y, double *l_A, double *l_x, double *
 	for (int i = 0; i < l_n; i++) {
 		for (int j = 0; j < n; j++) {
 			if (i == 0)
-				temp_y[j] = 0;
+				temp_y[j] = 0; // just in case this temp variable has been modified by anything else
 			temp_y[j] += (l_A[j + i*n] * l_x[i]);
-			printf("id=%i, i=%i, j=%i, l_A[j+i*n]=%f, l_x[i]=%f\n", id, i, j, l_A[j+i*n], l_x[i]);
 		}
 	}
-	for (int j = 0; j < n; j++)
-		printf("id: %i, j=%i, partial=%f\n", id, j, temp_y[j]);
 
 	MPI_Reduce(temp_y, y, n, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
 	MPI_Scatter(y, l_n, MPI_DOUBLE, l_y, l_n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
