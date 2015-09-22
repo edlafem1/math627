@@ -121,7 +121,7 @@ int main (int argc, char *argv[])
   matrix_vector_mult_parallel(l_y, l_A, l_x, temp_nvector, y, n, id, np);
 
   // printing the matrix A
-  print_Square_Matrix(l_A, id, n, np);
+  //print_Square_Matrix(l_A, id, n, np);
 
   // printing x dot y
   double x_dot_y = dot_product_parallel(l_x, l_y, n, id, np);
