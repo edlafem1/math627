@@ -1,0 +1,8 @@
+1752687     batch power655 edlafem1 PD       0:00     32 short   (Resources)
+1752686     batch power655 edlafem1 PD       0:00     16 short   (Priority)
+1752688     batch power655 edlafem1  R       0:17     32 short   n[22-35,52-69]
+1752685     batch power655 edlafem1  R       0:20      8 short   n[4-11]
+1752684     batch power655 edlafem1  R       0:20      4 short   n[12-15]
+1752683     batch power655 edlafem1  R       0:20      2 short   n[16-17]
+1752682     batch power655 edlafem1  R       0:20      1 short   n18
+1752681     batch power655 edlafem1  R       0:20      1 short   n21
