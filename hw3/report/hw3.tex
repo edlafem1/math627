@@ -22,6 +22,8 @@
 }
 \lstset{escapechar=@,style=customc}
 
+\usepackage{graphicx}
+
 \author{Edward LaFemina \\
 		\it{University of Maryland, Baltimore County}}
 \title{Math 627 HW 3}
@@ -156,7 +158,15 @@ $32768 $&$ 1.00  $&$ 0.990  $&$ 0.9350  $&$ 0.8512  $&$ 0.8537 $&$ 0.9268 $&$ 0.
 \end{tabular}
 }
 \end{table}
+\begin{figure}
+\caption{The Observed Speedup with various numbers of parallel processors as well as an ideal line.}
+\includegraphics{speedup.png}
+\end{figure}
+\begin{figure}
+\caption{The Observed Efficiency with various numbers of parallel processes as well as an ideal line.}
+\includegraphics{efficiency.png}
+\end{figure}
 When running tests, I noticed some tasks were not running because the max CPU limit had been reached on the current QoS. I then switched from normal to short to allow my program to use all $64$ hpcf2013 CPUs in the batch partition. This solved that problem, however I also recieved the following error when running on $32$ and $64$ nodes: \texttt{MPI startup(): ofa fabric is not available and fallback fabric is not enabled}. This seems to be related to the Connect-IB HCA on the InfiniBand adapter. I am unsure of how to resolve the issue, but my first instinct is to retry the test at a later time. Upon retrial, I received the same error messages. Tests that would have run with $n=65536$ errored out in some cases. From my memory usage estimation, \texttt{A} should use $32$ GB on a node at any one time. However when the matrix \texttt{A} is distributed over only $1$ node, my program is unable to allocate enough memory and cannot complete the approximation.
 
-Regarding times, it is clear that using larger values of $n$ achieves much better speedups, though understandable take slightly longer to complete. It also appears that as $n$ increases, efficiency decreases. Efficiency also appears to decrease as $p$ increases.
+Regarding times, it is clear that using larger values of $n$ achieve much better speedups, though understandable take slightly longer to complete. It also appears that as $n$ increases, efficiency decreases. Efficiency also appears to decrease as $p$ increases. It should also be noticed that for $N=2048$ it appears that the observed efficiency surpasses the ideal on $p=2$, however I am unable to determine the cause.
 \end{document}
