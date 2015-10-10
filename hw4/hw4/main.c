@@ -40,8 +40,21 @@ int main(int argc, char *argv[])
 		print_Matrix(B, k, n, id, np);
 		printf("Matrix C:\n");
 		print_Matrix(C, m, n, id, np);
+		// begin compute
 
+		double *D = allocate_double_vector(m*n);
+		naive_matrix_mul(A, B, D, m, k, n);
+		printf("Matrix D:\n");
+		print_Matrix(D, m, n, id, np);
+
+
+		free(A);
+		free(B);
+		free(C);
+		free(D);
 	}
+
+
 
 
 	MPI_Finalize();

@@ -13,5 +13,6 @@
 
 #include "memory.h"
 #include "setupABC_example.c"
+#include "lin_alg.h"
 
 #endif
