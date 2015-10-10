@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
 		printf("Matrix D:\n");
 		print_Matrix(D, m, n, id, np);
 
-		printf("Frobenius Norm: %f\n", frobenius_norm(D, C, m, n, id, np))
+		printf("Frobenius Norm: %f\n", frobenius_norm(D, C, m, n, id, np));
 
 
 
