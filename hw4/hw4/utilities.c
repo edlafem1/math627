@@ -30,6 +30,7 @@ double dot_product(double *l_x, double *l_y, int n, int id, int np) {
  #endif
 
 #endif
+	printf("dot_product=%f\nl_sum=%f\n", dot_product, l_sum);
 	return dot_product;
 }
 
