@@ -62,7 +62,7 @@ void print_Matrix(double *l_matrix, int m, int n, int id, int np) {
 	int row, col;
 	for (row = 0; row < m; row++) {
 		for (col = 0; col < n; col++) {
-			printf("% -24.16e   ", A[row + col * n]);
+			printf("% -24.16e   ", A[row + col * m]);
 		}
 		printf("\n");
 	}
