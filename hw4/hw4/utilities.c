@@ -53,33 +53,20 @@ void matrix_vector_mult(double *l_y, double *l_A, double *l_x, double *temp_y, d
 }
 
 // prints an mxn matrix
-void old_print_Matrix(double *l_matrix, int m, int n, int id, int np) {
-	// create a matrix A for use on only process 0 to gather all local pieces into one place
-	double *A;
-
-	A = l_matrix;
-
-	int row, col;
-	for (row = 0; row < m; row++) {
-		for (col = 0; col < n; col++) {
-			printf("% -24.16e   ", A[row + col * m]);
-		}
-		printf("\n");
-	}
-}
-
 void print_Matrix(double *l_matrix, int m, int n, int id, int np) {
 	// create a matrix A for use on only process 0 to gather all local pieces into one place
 	double *A;
 #ifdef PARALLEL
 	int destination = 0;
-	if (id == 0) {
-		A = (double *)calloc(n*m, sizeof(double));
-	}
+	if (np > 1) {
+		if (id == 0) {
+			A = (double *)calloc(n*m, sizeof(double));
+		}
+		int l_n = n / np;
 
-	int l_n = n / np;
-	// gather all l_A which have been set in the setup_example function into A for printing by process 0
-	MPI_Gather(l_matrix, m*l_n, MPI_DOUBLE, A, m*l_n, MPI_DOUBLE, destination, MPI_COMM_WORLD);
+		// gather all l_A which have been set in the setup_example function into A for printing by process 0
+		MPI_Gather(l_matrix, m*l_n, MPI_DOUBLE, A, m*l_n, MPI_DOUBLE, destination, MPI_COMM_WORLD);
+	}
 #else
 	A = l_matrix;
 #endif
@@ -94,7 +81,8 @@ void print_Matrix(double *l_matrix, int m, int n, int id, int np) {
 			printf("\n");
 		}
 #ifdef PARALLEL
-		free(A); // only allocated on process destination=0
+		if (np > 1)
+			free(A); // only allocated on process destination=0
 	}
 #endif
 }
