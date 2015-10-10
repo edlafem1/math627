@@ -67,6 +67,9 @@ void print_Matrix(double *l_matrix, int m, int n, int id, int np) {
 		// gather all l_A which have been set in the setup_example function into A for printing by process 0
 		MPI_Gather(l_matrix, m*l_n, MPI_DOUBLE, A, m*l_n, MPI_DOUBLE, destination, MPI_COMM_WORLD);
 	}
+	else {
+		A = l_matrix;
+	}
 #else
 	A = l_matrix;
 #endif

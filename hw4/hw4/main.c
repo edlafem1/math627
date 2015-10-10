@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
 		double *B = allocate_double_vector(k*n);
 		double *C = allocate_double_vector(m*n);
 		setABC_example(A, B, C, m, k, n);
-
+		printf("np=%i\n", np);
 		printf("Matrix A:\n");
 		print_Matrix(A, m, k, id, np);
 		printf("Matrix B:\n");
