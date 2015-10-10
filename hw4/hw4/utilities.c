@@ -19,8 +19,12 @@ double dot_product(double *l_x, double *l_y, int n, int id, int np) {
 		l_sum += (l_x[l_i] * l_y[l_i]);
 	}
 
- #ifdef PARALLEL
-	MPI_Allreduce(&l_sum, &dot_product, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+#ifdef PARALLEL
+	if (np > 1)
+		MPI_Allreduce(&l_sum, &dot_product, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+	else {
+		dot_product = l_sum;
+	}
  #else
 	dot_product = l_sum;
  #endif
