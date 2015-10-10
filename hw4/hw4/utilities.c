@@ -34,7 +34,7 @@ Calculates the Eucildean Norm of a column vector of length n.
 Relies on the dot_product function.
 */
 double euclidean_norm(double *l_x, int n, int id, int np) {
-	return sqrt(dot_product_parallel(l_x, l_x, n, id, np));
+	return sqrt(dot_product(l_x, l_x, n, id, np));
 }
 
 void matrix_vector_mult(double *l_y, double *l_A, double *l_x, double *temp_y, double *y, int n, int id, int np) {

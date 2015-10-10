@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
 	/* Do stuff here */
 	int m, k, n;
 	if (argc != 4) {
-		printf("Usage: %s [m] [k] [n]. Using default values 3, 4, 3.\n");
+		printf("Usage: %s [m] [k] [n]. Using default values 3, 4, 3.\n", argv[0]);
 		m = 3;
 		k = 4;
 		n = 3;
