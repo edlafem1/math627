@@ -1,4 +1,4 @@
-OBJS := main.o memory.o utilities.o
+OBJS := main.o memory.o utilities.o lin_alg.o
 
 EXECUTABLE := power
 
