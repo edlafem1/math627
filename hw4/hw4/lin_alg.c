@@ -17,8 +17,10 @@ double frobenius_norm(double *known, double *computed, int m, int n, int id, int
 
 	double *difference = allocate_double_vector(l_num_elements);
 
-	for (int i = 0; i < l_num_elements; i++)
+	for (int i = 0; i < l_num_elements; i++) {
 		difference[i] = computed[i] - known[i];
+		printf("difference[%i]=%f\n", i, difference[i]);
+	}
 
 	return euclidean_norm(difference, m*n, id, np);
 }
