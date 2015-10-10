@@ -53,7 +53,7 @@ void matrix_vector_mult(double *l_y, double *l_A, double *l_x, double *temp_y, d
 }
 
 // prints an mxn matrix
-void print_Matrix(double *l_matrix, int m, int n, int id, int np) {
+void old_print_Matrix(double *l_matrix, int m, int n, int id, int np) {
 	// create a matrix A for use on only process 0 to gather all local pieces into one place
 	double *A;
 
@@ -68,7 +68,7 @@ void print_Matrix(double *l_matrix, int m, int n, int id, int np) {
 	}
 }
 
-void trash_print_Matrix(double *l_matrix, int m, int n, int id, int np) {
+void print_Matrix(double *l_matrix, int m, int n, int id, int np) {
 	// create a matrix A for use on only process 0 to gather all local pieces into one place
 	double *A;
 #ifdef PARALLEL
@@ -89,7 +89,7 @@ void trash_print_Matrix(double *l_matrix, int m, int n, int id, int np) {
 		int row, col;
 		for (row = 0; row < m; row++) {
 			for (col = 0; col < n; col++) {
-				printf("% -24.16e   ", A[row + col * n]);
+				printf("% -24.16e   ", A[row + col * m]);
 			}
 			printf("\n");
 		}
