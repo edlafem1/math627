@@ -48,6 +48,8 @@ int main(int argc, char *argv[])
 		print_Matrix(D, m, n, id, np);
 
 
+
+
 		free(A);
 		free(B);
 		free(C);

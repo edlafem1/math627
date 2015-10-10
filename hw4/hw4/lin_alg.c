@@ -11,3 +11,14 @@ void naive_matrix_mul(double *A, double *B, double *D, int m, int k, int n) {
 		}
 	}
 }
+
+double frobenius_norm(double *known, double *computed, int m, int n, int id, int np) {
+	int l_num_elements = m*n / np;
+
+	double *difference = allocate_double_vector(l_num_elements);
+
+	for (int i = 0; i < l_num_elements; i++)
+		difference[i] = computed[i] - known[i];
+
+	return euclidean_norm(difference, m*n, id, np);
+}
