@@ -156,7 +156,7 @@ int main (int argc, char *argv[])
   endTime = MPI_Wtime();
 
   if (id == 0) {
-	  printf("Tolerance=        % -24.16e\n", tol);
+	  printf("Tolerance=        % -24.16f\n", tol);
 	  printf("Max iterations=   % -i\n", itmax);
 	  printf("iterations=       % -i\n", iterations);
 	  printf("lambda=           % -24.16e\n", lambda);

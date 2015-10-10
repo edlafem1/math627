@@ -138,8 +138,8 @@ double Trap(
 		local_b = (trapezoid+1)*h + a;
 		//printf("Covering %f - %f\n", local_a, local_b);
 		
-		// approximation += ((f(local_a) + f(local_b))/2.0); // for x^2
-		approximation += ((g(local_a) + g(local_b))/2.0); // for pi*sin(pi*x)
+		approximation += ((f(local_a) + f(local_b))/2.0); // for x^2
+		//approximation += ((g(local_a) + g(local_b))/2.0); // for pi*sin(pi*x)
 	}
 		
     return approximation*h;
