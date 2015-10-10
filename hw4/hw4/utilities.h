@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <math.h>
+#include "memory.h"
 
 #ifdef PARALLEL
 #include <mpi.h>
