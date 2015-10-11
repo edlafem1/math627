@@ -23,7 +23,13 @@ void blas1_inner_product(double *A, double *B, double *C, int m, int k, int n) {
     }
 }
 
-double frobenius_norm(double *known, double *computed, int m, int n, int id, int np) {
+void blas2_inner_product(double *A, double *B, double *C, int m, int k, int n) {
+    //http://www.cs.utexas.edu/users/flame/pubs/SUMMA2d3dTOMS.pdf
+    //https://software.intel.com/en-us/node/520751#94156EDE-4ADD-4830-940E-1CA5688ABE88
+
+}
+
+double frobenius_check(double *known, double *computed, int m, int n, int id, int np) {
 	int l_num_elements = m*n / np;
 
 	double *difference = allocate_double_vector(l_num_elements);

@@ -51,14 +51,14 @@ int main(int argc, char *argv[])
 		naive_inner_product(A, B, D, m, k, n);
 		printf("Matrix D:\n");
 		print_Matrix(D, m, n, id, np);
-		printf("Frobenius Norm: %f\n", frobenius_norm(D, C, m, n, id, np));
+		printf("Frobenius Norm: %f\n", frobenius_check(D, C, m, n, id, np));
 
         free(D);
         D = allocate_double_vector(m*n);
         blas1_inner_product(A, B, D, m, k, n);
         printf("Matrix D:\n");
         print_Matrix(D, m, n, id, np);
-        printf("Frobenius Norm: %f\n", frobenius_norm(D, C, m, n, id, np));
+        printf("Frobenius Norm: %f\n", frobenius_check(D, C, m, n, id, np));
 
 
 		free(A);
