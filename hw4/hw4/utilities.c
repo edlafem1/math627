@@ -26,7 +26,6 @@ double dot_product(double *l_x, double *l_y, int n, int id, int np) {
         dot_product = l_sum;
     }
 #else
-    printf("IN SERIAL\n");
     dot_product = l_sum;
 #endif
 
@@ -39,7 +38,11 @@ Calculates the Eucildean Norm of a column vector of length n.
 Relies on the dot_product function.
 */
 double euclidean_norm(double *l_x, int n, int id, int np) {
+#ifdef BLAS
+    return cblas_dnrm2(n, l_x, 1); // euclidean norm BLAS level 1
+#else
     return sqrt(dot_product(l_x, l_x, n, id, np));
+#endif
 }
 
 void matrix_vector_mult(double *l_y, double *l_A, double *l_x, double *temp_y, double *y, int n, int id, int np) {
