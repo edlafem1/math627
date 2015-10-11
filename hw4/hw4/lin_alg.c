@@ -18,7 +18,7 @@ void blas1_inner_product(double *A, double *B, double *C, int m, int k, int n) {
     // incA = m
     for (int res_col = 0; res_col < n; ++res_col) {
         for (int res_row = 0; res_row < m; ++res_row) {
-            C[res_row + n*res_col] = cblas_ddot(k, &(A[res_row]), m, &(B[res_col*k]), 1);
+            C[res_row + m*res_col] = cblas_ddot(k, &(A[res_row]), m, &(B[res_col*k]), 1);
         }
     }
 }

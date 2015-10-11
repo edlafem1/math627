@@ -63,8 +63,8 @@ int main(int argc, char *argv[])
         printf("Elapsed Time: %f\n", difftime(end_time, start_time));
         printf("\n");
 
-        //free(D);
-        //D = allocate_double_vector(m*n);
+        free(D);
+        D = allocate_double_vector(m*n);
         start_time = time(NULL);
         blas1_inner_product(A, B, D, m, k, n);
         end_time = time(NULL);
@@ -74,8 +74,8 @@ int main(int argc, char *argv[])
         printf("Elapsed Time: %f\n", difftime(end_time, start_time));
         printf("\n");
 
-        //free(D);
-        //D = allocate_double_vector(m*n);
+        free(D);
+        D = allocate_double_vector(m*n);
         start_time = time(NULL);
         blas2_inner_product(A, B, D, m, k, n);
         end_time = time(NULL);
@@ -85,8 +85,8 @@ int main(int argc, char *argv[])
         printf("Elapsed Time: %f\n", difftime(end_time, start_time));
         printf("\n");
 
-        //free(D);
-        //D = allocate_double_vector(m*n);
+        free(D);
+        D = allocate_double_vector(m*n);
         start_time = time(NULL);
         blas3_inner_product(A, B, D, m, k, n);
         end_time = time(NULL);
