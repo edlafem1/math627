@@ -48,12 +48,15 @@ int main(int argc, char *argv[])
 		// begin compute
 
 		double *D = allocate_double_vector(m*n);
-		naive_matrix_mul(A, B, D, m, k, n);
+		naive_inner_product(A, B, D, m, k, n);
 		printf("Matrix D:\n");
 		print_Matrix(D, m, n, id, np);
-
 		printf("Frobenius Norm: %f\n", frobenius_norm(D, C, m, n, id, np));
 
+        blas1_inner_product(A, B, D, m, k, n);
+        printf("Matrix D:\n");
+        print_Matrix(D, m, n, id, np);
+        printf("Frobenius Norm: %f\n", frobenius_norm(D, C, m, n, id, np));
 
 
 		free(A);
