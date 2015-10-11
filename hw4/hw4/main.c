@@ -3,18 +3,23 @@
 int main(int argc, char *argv[])
 {
 	int id, np, processor_name_len;
+#ifdef PARALLEL
 	char processor_name[MPI_MAX_PROCESSOR_NAME];
+#endif
 	double *l_x, *l_y, *temp_nvector, *y;
 
 	double *l_A, *l_B, *l_C, *l_D;
 
-
+#ifdef PARALLEL
 	MPI_Init(&argc, &argv);
 	/* Check processes: */
 	MPI_Comm_size(MPI_COMM_WORLD, &np);
 	MPI_Comm_rank(MPI_COMM_WORLD, &id);
 	MPI_Get_processor_name(processor_name, &processor_name_len);
-
+#else
+    np = 1;
+    id = 0;
+#endif
 	/* Do stuff here */
 	int m, k, n;
 	if (argc != 4) {
@@ -59,6 +64,7 @@ int main(int argc, char *argv[])
 
 
 
-
+#ifdef PARALLEL
 	MPI_Finalize();
+#endif
 }
