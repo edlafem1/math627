@@ -33,6 +33,10 @@ void blas2_inner_product(double *A, double *B, double *C, int m, int k, int n) {
 
 }
 
+void blas3_inner_product(double *A, double *B, double *C, int m, int k, int n) {
+	cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, m, n, k, 1, A, m, B, k, 0, C, m);
+}
+
 double frobenius_check(double *known, double *computed, int m, int n, int id, int np) {
 	int l_num_elements = m*n / np;
 
