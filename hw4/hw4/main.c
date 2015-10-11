@@ -47,8 +47,9 @@ int main(int argc, char *argv[])
         printf("Matrix B:\n");
         print_Matrix(B, k, n, id, np);
         printf("Matrix C:\n");
-        print_Matrix(C, m, n, id, np);
-		*/
+	*/        
+	print_Matrix(C, m, n, id, np);
+	
         // begin compute
 		printf("\n");
 
@@ -57,7 +58,7 @@ int main(int argc, char *argv[])
         naive_inner_product(A, B, D, m, k, n);
 		end_time = time(NULL);
         //printf("Naive:\n");
-        //print_Matrix(D, m, n, id, np);
+        print_Matrix(D, m, n, id, np);
         printf("Frobenius Norm: %f\n", frobenius_check(D, C, m, n, id, np));
 		printf("Elapsed Time: %f\n", difftime(end_time, start_time));
 		printf("\n");
@@ -68,7 +69,7 @@ int main(int argc, char *argv[])
         blas1_inner_product(A, B, D, m, k, n);
 		end_time = time(NULL);
         //printf("BLAS1:\n");
-        //print_Matrix(D, m, n, id, np);
+        print_Matrix(D, m, n, id, np);
         printf("Frobenius Norm: %f\n", frobenius_check(D, C, m, n, id, np));
 		printf("Elapsed Time: %f\n", difftime(end_time, start_time));
 		printf("\n");
@@ -79,7 +80,7 @@ int main(int argc, char *argv[])
         blas2_inner_product(A, B, D, m, k, n);
 		end_time = time(NULL);
         //printf("BLAS2:\n");
-        //print_Matrix(D, m, n, id, np);
+        print_Matrix(D, m, n, id, np);
         printf("Frobenius Norm: %f\n", frobenius_check(D, C, m, n, id, np));
 		printf("Elapsed Time: %f\n", difftime(end_time, start_time));
 		printf("\n");
@@ -90,7 +91,7 @@ int main(int argc, char *argv[])
 		blas3_inner_product(A, B, D, m, k, n);
 		end_time = time(NULL);
 		//printf("BLAS3:\n");
-		//print_Matrix(D, m, n, id, np);
+		print_Matrix(D, m, n, id, np);
 		printf("Frobenius Norm: %f\n", frobenius_check(D, C, m, n, id, np));
 		printf("Elapsed Time: %f\n", difftime(end_time, start_time));
 		printf("\n");
