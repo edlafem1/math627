@@ -49,16 +49,23 @@ int main(int argc, char *argv[])
 
 		double *D = allocate_double_vector(m*n);
 		naive_inner_product(A, B, D, m, k, n);
-		printf("Matrix D:\n");
+		printf("Naive: Matrix D:\n");
 		print_Matrix(D, m, n, id, np);
 		printf("Frobenius Norm: %f\n", frobenius_check(D, C, m, n, id, np));
 
         free(D);
         D = allocate_double_vector(m*n);
         blas1_inner_product(A, B, D, m, k, n);
-        printf("Matrix D:\n");
+        printf("BLAS1: Matrix D:\n");
         print_Matrix(D, m, n, id, np);
         printf("Frobenius Norm: %f\n", frobenius_check(D, C, m, n, id, np));
+
+		free(D);
+		D = allocate_double_vector(m*n);
+		blas2_inner_product(A, B, D, m, k, n);
+		printf("BLAS2: Matrix D:\n");
+		print_Matrix(D, m, n, id, np);
+		printf("Frobenius Norm: %f\n", frobenius_check(D, C, m, n, id, np));
 
 
 		free(A);
