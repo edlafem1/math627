@@ -6,9 +6,9 @@ Note, l_x and l_y represent only the portion of the vector that this function wi
 */
 double dot_product(double *l_x, double *l_y, int n, int id, int np) {
     double dot_product = 0;
-#ifdef BLAS
+#ifdef BLASXXX
 #ifndef PARALLEL
-    //dot_product = cblas_ddot(n, l_x, 1, l_y, 1); // increment by 1 because we are in serial
+    dot_product = cblas_ddot(n, l_x, 1, l_y, 1); // increment by 1 because we are in serial
 #endif
 #else
     int l_n = n / np; // how many products each process will compute
@@ -38,7 +38,7 @@ Calculates the Eucildean Norm of a column vector of length n.
 Relies on the dot_product function.
 */
 double euclidean_norm(double *l_x, int n, int id, int np) {
-#ifdef BLAS
+#ifdef BLASXXX
     return cblas_dnrm2(n, l_x, 1); // euclidean norm BLAS level 1
 #else
     return sqrt(dot_product(l_x, l_x, n, id, np));
