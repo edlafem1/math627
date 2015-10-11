@@ -61,17 +61,17 @@ int main(int argc, char *argv[])
         printf("Frobenius Norm: %f\n", frobenius_check(D, C, m, n, id, np));
 
         free(D);
-        double *Z = allocate_double_vector(m*n);
-        blas2_inner_product(A, B, Z, m, k, n);
-        printf("BLAS2: Matrix Z:\n");
-        print_Matrix(Z, m, n, id, np);
-        printf("Frobenius Norm: %f\n", frobenius_check(Z, C, m, n, id, np));
+        D = allocate_double_vector(m*n);
+        blas2_inner_product(A, B, D, m, k, n);
+        printf("BLAS2: Matrix D:\n");
+        print_Matrix(D, m, n, id, np);
+        printf("Frobenius Norm: %f\n", frobenius_check(D, C, m, n, id, np));
 
 
         free(A);
         free(B);
         free(C);
-        free(Z);
+        free(D);
     }
 
 

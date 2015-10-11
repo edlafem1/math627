@@ -27,8 +27,8 @@ void blas2_inner_product(double *A, double *B, double *C, int m, int k, int n) {
     //http://www.cs.utexas.edu/users/flame/pubs/SUMMA2d3dTOMS.pdf
     //https://software.intel.com/en-us/node/520751#94156EDE-4ADD-4830-940E-1CA5688ABE88
 
-	for (int rank = 0; rank < k; ++rank) {
-		cblas_dger(CblasColMajor, m, k, 1, &(A[rank*m]), 1, &(B[rank]), k, C, m);
+	for (int row = 0; row < k; ++row) {
+		cblas_dger(CblasColMajor, m, n, 1, &(A[row*m]), 1, &(B[row]), k, C, m);
 	}
 
 }
