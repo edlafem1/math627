@@ -6,6 +6,8 @@
 #include <math.h>
 #include <string.h>
 
+#include <time.h>
+
 #include "utilities.h"
 #ifdef PARALLEL
 #include <mpi.h>
