@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
         printf("Naive:\n");
         print_Matrix(D, m, n, id, np);
         printf("Frobenius Norm: %f\n", frobenius_check(D, C, m, n, id, np));
-		printf("Elapsed Time: %f\n", timediff(end_time, start_time));
+		printf("Elapsed Time: %f\n", difftime(end_time, start_time));
 		printf("\n");
 
         free(D);
@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
         printf("BLAS1:\n");
         print_Matrix(D, m, n, id, np);
         printf("Frobenius Norm: %f\n", frobenius_check(D, C, m, n, id, np));
-		printf("Elapsed Time: %f\n", timediff(end_time, start_time));
+		printf("Elapsed Time: %f\n", difftime(end_time, start_time));
 		printf("\n");
 
         free(D);
@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
         printf("BLAS2:\n");
         print_Matrix(D, m, n, id, np);
         printf("Frobenius Norm: %f\n", frobenius_check(D, C, m, n, id, np));
-		printf("Elapsed Time: %f\n", timediff(end_time, start_time));
+		printf("Elapsed Time: %f\n", difftime(end_time, start_time));
 		printf("\n");
 
 		free(D);
@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
 		printf("BLAS3:\n");
 		print_Matrix(D, m, n, id, np);
 		printf("Frobenius Norm: %f\n", frobenius_check(D, C, m, n, id, np));
-		printf("Elapsed Time: %f\n", timediff(end_time, start_time));
+		printf("Elapsed Time: %f\n", difftime(end_time, start_time));
 		printf("\n");
 
         free(A);
