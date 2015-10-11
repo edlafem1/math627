@@ -26,6 +26,7 @@ double dot_product(double *l_x, double *l_y, int n, int id, int np) {
         dot_product = l_sum;
     }
 #else
+    printf("IN SERIAL\n");
     dot_product = l_sum;
 #endif
 
