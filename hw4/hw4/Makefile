@@ -14,7 +14,7 @@ CFLAGS := -O3 -std=c99 -Wall -mkl
 # flags for GNU compiler gcc anywhere:
 # CFLAGS := -O3 -std=c99 -Wall -Wno-unused-variable
 
-DEFS :=
+DEFS := -DBLAS
 #  -DPARALLEL
 # -DBLAS
 INCLUDES :=
