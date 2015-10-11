@@ -5,7 +5,7 @@ void naive_matrix_mul(double *A, double *B, double *D, int m, int k, int n) {
 		for (int i = 0; i < m; i++) {
 			double sum = 0;
 			for (int q = 0; q < k; q++) {
-				sum += A[i + q*m] * B[q + j*k];
+				sum += A[i + q*m] * B[q + j*k] + 1;
 			}
 			D[i + j*m] = sum;
 		}
