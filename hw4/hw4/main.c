@@ -41,12 +41,14 @@ int main(int argc, char *argv[])
         double *C = allocate_double_vector(m*n);
         setABC_example(A, B, C, m, k, n);
         printf("np=%i\n", np);
-        printf("Matrix A:\n");
+        /*
+		printf("Matrix A:\n");
         print_Matrix(A, m, k, id, np);
         printf("Matrix B:\n");
         print_Matrix(B, k, n, id, np);
         printf("Matrix C:\n");
         print_Matrix(C, m, n, id, np);
+		*/
         // begin compute
 		printf("\n");
 
@@ -54,8 +56,8 @@ int main(int argc, char *argv[])
 		start_time = time(NULL);
         naive_inner_product(A, B, D, m, k, n);
 		end_time = time(NULL);
-        printf("Naive:\n");
-        print_Matrix(D, m, n, id, np);
+        //printf("Naive:\n");
+        //print_Matrix(D, m, n, id, np);
         printf("Frobenius Norm: %f\n", frobenius_check(D, C, m, n, id, np));
 		printf("Elapsed Time: %f\n", difftime(end_time, start_time));
 		printf("\n");
@@ -65,8 +67,8 @@ int main(int argc, char *argv[])
 		start_time = time(NULL);
         blas1_inner_product(A, B, D, m, k, n);
 		end_time = time(NULL);
-        printf("BLAS1:\n");
-        print_Matrix(D, m, n, id, np);
+        //printf("BLAS1:\n");
+        //print_Matrix(D, m, n, id, np);
         printf("Frobenius Norm: %f\n", frobenius_check(D, C, m, n, id, np));
 		printf("Elapsed Time: %f\n", difftime(end_time, start_time));
 		printf("\n");
@@ -76,8 +78,8 @@ int main(int argc, char *argv[])
 		start_time = time(NULL);
         blas2_inner_product(A, B, D, m, k, n);
 		end_time = time(NULL);
-        printf("BLAS2:\n");
-        print_Matrix(D, m, n, id, np);
+        //printf("BLAS2:\n");
+        //print_Matrix(D, m, n, id, np);
         printf("Frobenius Norm: %f\n", frobenius_check(D, C, m, n, id, np));
 		printf("Elapsed Time: %f\n", difftime(end_time, start_time));
 		printf("\n");
@@ -87,8 +89,8 @@ int main(int argc, char *argv[])
 		start_time = time(NULL);
 		blas3_inner_product(A, B, D, m, k, n);
 		end_time = time(NULL);
-		printf("BLAS3:\n");
-		print_Matrix(D, m, n, id, np);
+		//printf("BLAS3:\n");
+		//print_Matrix(D, m, n, id, np);
 		printf("Frobenius Norm: %f\n", frobenius_check(D, C, m, n, id, np));
 		printf("Elapsed Time: %f\n", difftime(end_time, start_time));
 		printf("\n");
