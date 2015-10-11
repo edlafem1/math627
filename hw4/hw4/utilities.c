@@ -92,8 +92,8 @@ void print_Matrix(double *l_matrix, int m, int n, int id, int np) {
             printf("\n");
         }
 #ifdef PARALLEL
-        if (np > 1)
-            free(A); // only allocated on process destination=0
+       // if (np > 1)
+       //     free(A); // only allocated on process destination=0
     }
 #endif
 }
