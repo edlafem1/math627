@@ -40,7 +40,9 @@ void blas3_inner_product(double *A, double *B, double *C, int m, int k, int n) {
 double frobenius_check(double *known, double *computed, int m, int n, int id, int np) {
 	int l_num_elements = m*n / np;
 
+    printf("trying to allocate for f-norm\n");
 	double *difference = allocate_double_vector(l_num_elements);
+    printf("allocated for f-norm\n");
 
 	for (int i = 0; i < l_num_elements; i++) {
 		difference[i] = computed[i] - known[i];

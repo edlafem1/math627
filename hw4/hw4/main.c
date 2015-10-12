@@ -36,9 +36,15 @@ int main(int argc, char *argv[])
     if (id == 0) {
         double start_time, end_time;
 
+        printf("trying to allocate matrix A\n");
         double *A = allocate_double_vector(m*k);
+        printf("allocated A\n");
+        printf("trying to allocate matrix B\n");
         double *B = allocate_double_vector(k*n);
+        printf("allocated B\n");
+        printf("trying to allocate matrix C\n");
         double *C = allocate_double_vector(m*n);
+        printf("allocated C\n");
         setABC_example(A, B, C, m, k, n);
         printf("np=%i\n", np);
         /*
@@ -53,7 +59,9 @@ int main(int argc, char *argv[])
         // begin compute
         printf("\n");
 
+        printf("trying to allocate matrix D\n");
         double *D = allocate_double_vector(m*n);
+        printf("allocated D\n");
         start_time = MPI_Wtime();
         naive_inner_product(A, B, D, m, k, n);
         end_time = MPI_Wtime();
@@ -64,7 +72,9 @@ int main(int argc, char *argv[])
         printf("\n");
 
         free(D);
+        printf("trying to allocate D\n");
         D = allocate_double_vector(m*n);
+        printf("allocated D\n");
         start_time = MPI_Wtime();
         blas1_inner_product(A, B, D, m, k, n);
         end_time = MPI_Wtime();
@@ -75,7 +85,9 @@ int main(int argc, char *argv[])
         printf("\n");
 
         free(D);
+        printf("trying to allocate D\n");
         D = allocate_double_vector(m*n);
+        printf("allocated D\n");
         start_time = MPI_Wtime();
         blas2_inner_product(A, B, D, m, k, n);
         end_time = MPI_Wtime();
@@ -86,7 +98,9 @@ int main(int argc, char *argv[])
         printf("\n");
 
         free(D);
+        printf("trying to allocate D\n");
         D = allocate_double_vector(m*n);
+        printf("allocated D\n");
         start_time = MPI_Wtime();
         blas3_inner_product(A, B, D, m, k, n);
         end_time = MPI_Wtime();
