@@ -1,6 +1,7 @@
 #include "lin_alg.h"
 
 void naive_inner_product(double *A, double *B, double *D, int m, int k, int n) {
+// try qji and jqi
 	for (int j = 0; j < n; j++) {
 		for (int i = 0; i < m; i++) {
 			double sum = 0;
