@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
         printf("Elapsed Time: %f\n", difftime(end_time, start_time));
         printf("\n");
 
-        goto free_stuff
+        goto free_stuff;
         ////////////////////////////////////////////////////////////////////////////////
         free(D);
         D = allocate_double_vector(m*n);
