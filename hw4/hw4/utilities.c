@@ -68,7 +68,9 @@ void print_Matrix(double *l_matrix, int m, int n, int id, int np) {
     int destination = 0;
     if (np > 1) {
         if (id == 0) {
-            A = (double *)calloc(n*m, sizeof(double));
+            printf("trying to allocate for print matrix\n");
+            A = allocate_double_vector(m*n);
+            printf("allocated for print matrix\n");
         }
         int l_n = n / np;
 
