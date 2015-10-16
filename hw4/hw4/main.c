@@ -55,14 +55,38 @@ int main(int argc, char *argv[])
 
         double *D = allocate_double_vector(m*n);
         start_time = time(NULL);
-        naive_inner_product(A, B, D, m, k, n);
+        naive_inner_product_jiq(A, B, D, m, k, n);
         end_time = time(NULL);
-        printf("Naive:\n");
+        printf("Naive jiq:\n");
         //print_Matrix(D, m, n, id, np);
         printf("Frobenius Norm: %f\n", frobenius_check(D, C, m, n, id, np));
         printf("Elapsed Time: %f\n", difftime(end_time, start_time));
         printf("\n");
 
+        free(D);
+        D = allocate_double_vector(m*n);
+        start_time = time(NULL);
+        naive_inner_product_jqi(A, B, D, m, k, n);
+        end_time = time(NULL);
+        printf("Naive jqi:\n");
+        //print_Matrix(D, m, n, id, np);
+        printf("Frobenius Norm: %f\n", frobenius_check(D, C, m, n, id, np));
+        printf("Elapsed Time: %f\n", difftime(end_time, start_time));
+        printf("\n");
+
+        free(D);
+        D = allocate_double_vector(m*n);
+        start_time = time(NULL);
+        naive_inner_product_qji(A, B, D, m, k, n);
+        end_time = time(NULL);
+        printf("Naive qji:\n");
+        //print_Matrix(D, m, n, id, np);
+        printf("Frobenius Norm: %f\n", frobenius_check(D, C, m, n, id, np));
+        printf("Elapsed Time: %f\n", difftime(end_time, start_time));
+        printf("\n");
+
+        goto free_stuff
+        ////////////////////////////////////////////////////////////////////////////////
         free(D);
         D = allocate_double_vector(m*n);
         start_time = time(NULL);
@@ -96,6 +120,7 @@ int main(int argc, char *argv[])
         printf("Elapsed Time: %f\n", difftime(end_time, start_time));
         printf("\n");
 
+free_stuff:
         free(A);
         free(B);
         free(C);
