@@ -4,11 +4,8 @@
 #include "memory.h"
 
 /* Stuff */
-void naive_inner_product_jiq(double *A, double *B, double *D, int m, int k, int n);
 
-void naive_inner_product_jqi(double *A, double *B, double *D, int m, int k, int n);
-
-void naive_inner_product_qji(double *A, double *B, double *D, int m, int k, int n);
+void naive_inner_product(double *A, double *B, double *D, int m, int k, int n);
 
 void blas1_inner_product(double *A, double *B, double *C, int m, int k, int n);
 
