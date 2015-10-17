@@ -53,11 +53,21 @@ int main(int argc, char *argv[])
         // begin compute
         printf("\n");
 
-        double *D = allocate_double_vector(m*n);
+                double *D = allocate_double_vector(m*n);
         start_time = time(NULL);
-        naive_inner_product(A, B, D, m, k, n);
+        blas3_inner_product(A, B, D, m, k, n);
         end_time = time(NULL);
-        printf("Naive:\n");
+        printf("BLAS3:\n");
+        //print_Matrix(D, m, n, id, np);
+        printf("Frobenius Norm: %f\n", frobenius_check(D, C, m, n, id, np));
+        printf("Elapsed Time: %f\n", difftime(end_time, start_time));
+        printf("\n");
+
+        D = allocate_double_vector(m*n);
+        start_time = time(NULL);
+        blas2_inner_product(A, B, D, m, k, n);
+        end_time = time(NULL);
+        printf("BLAS2:\n");
         //print_Matrix(D, m, n, id, np);
         printf("Frobenius Norm: %f\n", frobenius_check(D, C, m, n, id, np));
         printf("Elapsed Time: %f\n", difftime(end_time, start_time));
@@ -75,26 +85,19 @@ int main(int argc, char *argv[])
         printf("\n");
         free(D);
 
+        free(D);
         D = allocate_double_vector(m*n);
         start_time = time(NULL);
-        blas2_inner_product(A, B, D, m, k, n);
+        naive_inner_product(A, B, D, m, k, n);
         end_time = time(NULL);
-        printf("BLAS2:\n");
+        printf("Naive:\n");
         //print_Matrix(D, m, n, id, np);
         printf("Frobenius Norm: %f\n", frobenius_check(D, C, m, n, id, np));
         printf("Elapsed Time: %f\n", difftime(end_time, start_time));
         printf("\n");
 
-        free(D);
-        D = allocate_double_vector(m*n);
-        start_time = time(NULL);
-        blas3_inner_product(A, B, D, m, k, n);
-        end_time = time(NULL);
-        printf("BLAS3:\n");
-        //print_Matrix(D, m, n, id, np);
-        printf("Frobenius Norm: %f\n", frobenius_check(D, C, m, n, id, np));
-        printf("Elapsed Time: %f\n", difftime(end_time, start_time));
-        printf("\n");
+
+
 
         free(A);
         free(B);
