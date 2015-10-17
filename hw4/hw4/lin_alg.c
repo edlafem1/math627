@@ -43,6 +43,8 @@ double frobenius_check(double *known, double *computed, int m, int n, int id, in
 	for (int i = 0; i < l_num_elements; i++) {
 		difference[i] = computed[i] - known[i];
 	}
+    double e_norm = euclidean_norm(difference, m*n, id, np);
+    free(difference);
 
-	return euclidean_norm(difference, m*n, id, np);
+    return e_norm;
 }

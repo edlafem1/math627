@@ -63,8 +63,6 @@ int main(int argc, char *argv[])
         printf("Elapsed Time: %f\n", difftime(end_time, start_time));
         printf("\n");
 
-        goto free_stuff;
-        ////////////////////////////////////////////////////////////////////////////////
         free(D);
         D = allocate_double_vector(m*n);
         start_time = time(NULL);
@@ -75,8 +73,8 @@ int main(int argc, char *argv[])
         printf("Frobenius Norm: %f\n", frobenius_check(D, C, m, n, id, np));
         printf("Elapsed Time: %f\n", difftime(end_time, start_time));
         printf("\n");
-
         free(D);
+
         D = allocate_double_vector(m*n);
         start_time = time(NULL);
         blas2_inner_product(A, B, D, m, k, n);
@@ -98,7 +96,6 @@ int main(int argc, char *argv[])
         printf("Elapsed Time: %f\n", difftime(end_time, start_time));
         printf("\n");
 
-free_stuff:
         free(A);
         free(B);
         free(C);
