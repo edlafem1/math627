@@ -97,16 +97,16 @@ void parallel_blas3_product(double *A, double *B, double *C, int m, int k, int n
     else {
         MPI_Recv(l_A, (m*l_k), MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, &status);
     }
-
+/////////////////////////////////////////////////////////////////////////////
     if (id == 0) {
         // copy numbers from B to l_B
-        for (int col = 0; col < n; ++col) {
-            for (int row = 0; row < l_k; ++row) {
-                l_B[row + l_k * col] = B[row + k * col];
+        for (int row = 0; row < l_k; ++row) {
+            for (int col = 0; col < n; ++col) {
+                l_B[col + row*n] = B[col + row*n];
             }
         }
         for (int i = 1; i < np; ++i) {
-            MPI_Send(&(B[(i*l_k) + k * 0]), 1, block_row_t, i, 0, MPI_COMM_WORLD);
+            MPI_Send(&(B[i*l_k]), 1, block_row_t, i, 0, MPI_COMM_WORLD);
         }
     }
     else {
