@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
             printf("Frobenius Norm: %f\n", frobenius_check(D, C, m, n, id, np));
             printf("Elapsed Time: %f\n", end_time - start_time);
             printf("\n");
-            printf("F norm A: %f\n", frobenius_check(A, NULL, m, n, id, np));
+            printf("F norm A: %f\n", frobenius_check(A, NULL, m, k, id, np));
         }
 
     if (id == 0 && 1 == 0) { // short out for now
