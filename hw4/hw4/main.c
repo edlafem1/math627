@@ -60,13 +60,13 @@ int main(int argc, char *argv[])
         start_time = MPI_Wtime();
         parallel_blas3_product(A, B, D, m, k, n, id, np);
         end_time = MPI_Wtime();
+        double f_norm = frobenius_check(D, C, m, n, id, np);
         if (id == 0) {
             printf("parallel BLAS3:\n");
             print_Matrix(0, D, m, n, id, np);
-            printf("Frobenius Norm: %f\n", frobenius_check(D, C, m, n, id, np));
+            printf("Frobenius Norm: %f\n", f_norm);
             printf("Elapsed Time: %f\n", end_time - start_time);
             printf("\n");
-            printf("F norm A: %f\n", frobenius_check(A, NULL, m, k, id, np));
         }
 
     if (id == 0 && 1 == 0) { // short out for now
