@@ -57,17 +57,17 @@ int main(int argc, char *argv[])
         printf("\n");
         D = allocate_double_vector(m*n);
     }
-        start_time = MPI_Wtime();
-        parallel_blas3_product(A, B, D, m, k, n, id, np);
-        end_time = MPI_Wtime();
-        double f_norm = frobenius_check(D, C, m, n, id, np);
-        if (id == 0) {
-            printf("parallel BLAS3:\n");
-            print_Matrix(0, D, m, n, id, np);
-            printf("Frobenius Norm: %f\n", f_norm);
-            printf("Elapsed Time: %f\n", end_time - start_time);
-            printf("\n");
-        }
+    start_time = MPI_Wtime();
+    parallel_blas3_product(A, B, D, m, k, n, id, np);
+    end_time = MPI_Wtime();
+    if (id == 0) {
+    double f_norm = frobenius_check(D, C, m, n, id, np);
+        printf("parallel BLAS3:\n");
+        print_Matrix(0, D, m, n, id, np);
+        printf("Frobenius Norm: %f\n", f_norm);
+        printf("Elapsed Time: %f\n", end_time - start_time);
+        printf("\n");
+    }
 
     if (id == 0 && 1 == 0) { // short out for now
         free(D);
@@ -113,11 +113,6 @@ int main(int argc, char *argv[])
         printf("Frobenius Norm: %f\n", frobenius_check(D, C, m, n, id, np));
         printf("Elapsed Time: %f\n", end_time - start_time);
         printf("\n");
-
-
-
-
-
     }
 
     if (id == 0) {
