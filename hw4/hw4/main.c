@@ -53,7 +53,6 @@ int main(int argc, char *argv[])
         // begin compute
         printf("\n");
         double *D = allocate_double_vector(m*n);
-        /*
         start_time = MPI_Wtime();
         blas3_inner_product(A, B, D, m, k, n);
         end_time = MPI_Wtime();
@@ -77,17 +76,6 @@ int main(int argc, char *argv[])
         free(D);
         D = allocate_double_vector(m*n);
         start_time =  MPI_Wtime();
-        blas1_inner_product(A, B, D, m, k, n);
-        end_time =  MPI_Wtime();
-        printf("BLAS1:\n");
-        //print_Matrix(D, m, n, id, np);
-        printf("Frobenius Norm: %f\n", frobenius_check(D, C, m, n, id, np));
-        printf("Elapsed Time: %f\n", end_time - start_time);
-        printf("\n");
-        */
-        free(D);
-        D = allocate_double_vector(m*n);
-        start_time =  MPI_Wtime();
         naive_inner_product(A, B, D, m, k, n);
         end_time =  MPI_Wtime();
         printf("Naive:\n");
@@ -95,6 +83,18 @@ int main(int argc, char *argv[])
         printf("Frobenius Norm: %f\n", frobenius_check(D, C, m, n, id, np));
         printf("Elapsed Time: %f\n", end_time - start_time);
         printf("\n");
+
+        free(D);
+        D = allocate_double_vector(m*n);
+        start_time =  MPI_Wtime();
+        blas1_inner_product(A, B, D, m, k, n);
+        end_time =  MPI_Wtime();
+        printf("BLAS1:\n");
+        //print_Matrix(D, m, n, id, np);
+        printf("Frobenius Norm: %f\n", frobenius_check(D, C, m, n, id, np));
+        printf("Elapsed Time: %f\n", end_time - start_time);
+        printf("\n");
+
 
 
 
