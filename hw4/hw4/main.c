@@ -42,17 +42,16 @@ int main(int argc, char *argv[])
         A = allocate_double_vector(m*k);
         B = allocate_double_vector(k*n);
         C = allocate_double_vector(m*n);
-        malloc(1 << 10);
         setABC_example(A, B, C, m, k, n);
         printf("np=%i\n", np);
         /*
-    */
         printf("Matrix A:\n");
         print_Matrix(0, A, m, k, id, np);
         printf("Matrix B:\n");
         print_Matrix(0, B, k, n, id, np);
         printf("Matrix C:\n");
         print_Matrix(0, C, m, n, id, np);
+        */
 
     // begin compute
         printf("\n");
@@ -64,8 +63,7 @@ int main(int argc, char *argv[])
     if (id == 0) {
         double f_norm = frobenius_check(D, C, m, n, id, np);
         printf("parallel BLAS3:\n");
-        print_Matrix(0, D, m, n, id, np);
-        printf("D[3,3]=%f\n", D[3 + m * 3]);
+        //print_Matrix(0, D, m, n, id, np);
         printf("Frobenius Norm: %f\n", f_norm);
         printf("Elapsed Time: %f\n", end_time - start_time);
         printf("\n");
