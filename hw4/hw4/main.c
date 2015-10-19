@@ -57,8 +57,10 @@ int main(int argc, char *argv[])
         printf("\n");
         D = allocate_double_vector(m*n);
     }
+    MPI_Barrier(MPI_COMM_WORLD);
     start_time = MPI_Wtime();
     parallel_blas3_product(A, B, D, m, k, n, id, np);
+    MPI_Barrier(MPI_COMM_WORLD);
     end_time = MPI_Wtime();
     if (id == 0) {
         double f_norm = frobenius_check(D, C, m, n, id, np);
