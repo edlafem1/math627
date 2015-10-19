@@ -113,6 +113,19 @@ void parallel_blas3_product(double *A, double *B, double *C, int m, int k, int n
         MPI_Recv(l_B, (l_k*n), MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, &status);
     }
 
+
+    for (int i = 0; i < l_k*n; ++i) {
+        printf("[%i]: Row l_B[%i]=%f\n", id, i, l_B[i]);
+    }
+
+    for (int i = 0; i < l_k*m; ++i) {
+        printf("[%i]: Col l_A[%i]=%f\n", id, i, l_A[i]);
+    }
+
+
+
+
+
     // C only matters on process 0 and should be allocated outside this function
     double *local_C = allocate_double_vector(m*n);
     cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, m, n, l_k, 1, l_A, m, l_B, k, 0, local_C, m);
