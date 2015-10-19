@@ -38,6 +38,10 @@ void blas3_inner_product(double *A, double *B, double *C, int m, int k, int n) {
 double frobenius_check(double *known, double *computed, int m, int n, int id, int np) {
 	int l_num_elements = m*n / np;
 
+    if (computed == NULL) {
+        return euclidean_norm(known, m*n, id, np);
+    }
+
 	double *difference = allocate_double_vector(l_num_elements);
 
 	for (int i = 0; i < l_num_elements; i++) {
