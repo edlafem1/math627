@@ -101,9 +101,9 @@ void parallel_blas3_product(double *A, double *B, double *C, int m, int k, int n
     if (id == 0) {
         // copy numbers from B to l_B
         
-        for (int row = 0; row < l_k; ++row) {
-            for (int col = 0; col < n; ++col) {
-                l_B[row*n + col] = B[col*k + row];
+        for (int col = 0; col < n; ++col) {
+            for (int row = 0; row < l_k; ++row) {
+                l_B[row + l_k*col] = B[row + k*col];
             }
         }
 
