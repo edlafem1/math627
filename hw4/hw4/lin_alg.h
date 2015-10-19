@@ -2,6 +2,7 @@
 #define LIN_ALG
 #include "utilities.h"
 #include "memory.h"
+#include <string.h>
 
 /* Stuff */
 

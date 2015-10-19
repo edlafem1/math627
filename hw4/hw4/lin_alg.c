@@ -102,7 +102,7 @@ void parallel_blas3_product(double *A, double *B, double *C, int m, int k, int n
             }
         }
         for (int i = 1; i < np; ++i) {
-            MPI_Send(&(B[(i*l_k) + k * 0]), 1, block_row_t, i, MPI_COMM_WORLD);
+            MPI_Send(&(B[(i*l_k) + k * 0]), 1, block_row_t, i, 0, MPI_COMM_WORLD);
         }
     }
     else {
