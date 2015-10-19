@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
         start_time = MPI_Wtime();
         parallel_blas3_product(A, B, D, m, k, n, id, np);
         end_time = MPI_Wtime();
-        double f_norm = 1;// frobenius_check(D, C, m, n, id, np);
+        double f_norm = frobenius_check(D, C, m, n, id, np);
         if (id == 0) {
             printf("parallel BLAS3:\n");
             print_Matrix(0, D, m, n, id, np);
