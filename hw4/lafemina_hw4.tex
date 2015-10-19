@@ -68,7 +68,7 @@ $65536$ & $ 163840 $\\
 \end{center}
 Table 1. Based off of memory limitations alone, we must restrict our tests to using a maximum $m=k=n$ of $32768$ because we can only use up to $63000$ MB of memory on the latest model processors available.
 
-The following table reports the time in seconds needed to complete each method of computing the matrix product at different values for $m=k=n$ as well as speedup, however some tests exceeded maximum allowable run times and an estimated values have been put in parenthesis:
+The following table(Table 2) reports the time in seconds needed to complete each method of computing the matrix product at different values for $m=k=n$ as well as speedup, however some tests exceeded maximum allowable run times and an estimated values have been put in parenthesis:
 \clearpage
 \begin{table}
 \makebox[\linewidth]{
@@ -102,6 +102,17 @@ m & k & n & Naive & BLAS 1 & BLAS 2 & BLAS 3\\
 }
 \end{table}
 
+To achieve even greater speedup, we wish to compute the matrix product in parallel. To do this, we recognize that our third BLAS function computes successive outer products of subsections of the matrix and uses the sum of the outer products to produce the final result. As defined in the Intel Math Kernel documentation, the \texttt{cblas\_dgemm} function performs the following operation:
+$$ C := \alpha*AB + \beta*C. $$
+We notice that when $\alpha=1$ and $\beta=0$ we get our desired matrix product $AB$ and internally, the function computes smaller outer products of pieces of $A$ and $B$ that can fit in the CPU's cache. Because the order of addition to $C$ does not matter, we can split $A$ and $B$ ourselves across several processes, perform the \texttt{cblas\_dgemm} function with $l\_A, l\_B,$ and $local\_C$. As long as $l\_A \in \mathbb{R}^{m \times l\_k}, l\_B \in \mathbb{R}^{l\_k \times n}$ for some $l\_k=\frac{k}{np}$ we will get a resultant $local\_C \in \mathbb{R}^{m \times n}$ whose $ij$-th entry is
+$$ local\_C_{ij} = \mathbf{l\_a}_i \mathbf{l\_b}_j^T = \sum_{q=0}^{l\_k-1} {a_{iq}b_{qj}}, \enspace 0 \leq i,j < l\_k, \mathbf{l\_a}_{i} \in l\_A, \mathbf{l\_b}_{j} \in l\_B. $$
+We notice that
+$$ C = AB = \sum_{q=0}^{k-1} {\mathbf{a}_{i}\mathbf{b}_{j}^{T}} = \sum {local\_C}, \enspace 0 \leq i,j < k, \mathbf{a}_i\in A, \mathbf{b}_j \in B.$$
+Thus we can compute $local\_C$ on different processes and the sum of all $local\_C$ will be the desired matrix product $C$. To verify this computation, we again checked that the Frobenius norm of the difference of the computed value and the correct result which we know by construction of $A$ and $B$. In all cases, the Frobenius norm was $0$ and we are confident we have a correct implementation of a matrix product.
+
+To distribute the rows and columns of $A$ and $B$ across $np$ processes, we created MPI derived datatypes. We created a datatype for columns using \textbb{MPI\_Type\_vector} because our matrix $B$ is stored in a row-major format and thus each element of a row $B$ is exactly $k$ away from the previous element. We used \mathbb{MPI\_Type\_contiguous} to create a datatype for the columns of $A$ because they are stored next to each other. We then used \textbb{MPI\_Send} and \textbb{MPI\_Recv} to distribute $l\_k$ rows and columns across $np$ processes and performed our calculations of $local\_C$. We then used \textbb{MPI\_Reduce} to sum all the $local\_C$ values on process $0$ and report our results.
+
+%% tables here
 
 \end{document}
 
