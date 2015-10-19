@@ -100,9 +100,13 @@ void parallel_blas3_product(double *A, double *B, double *C, int m, int k, int n
 /////////////////////////////////////////////////////////////////////////////
     if (id == 0) {
         // copy numbers from B to l_B
-        for (int i = 0; i < l_k * n; ++i) {
-            l_B[i] = B[i*k];
+        
+        for (int row = 0; row < l_k; ++row) {
+            for (int col = 0; col < n; ++col) {
+                l_B[row*n + col] = B[col*k + row];
+            }
         }
+
         for (int i = 1; i < np; ++i) {
             MPI_Send(&(B[i*l_k]), 1, block_row_t, i, 0, MPI_COMM_WORLD);
         }
