@@ -35,7 +35,7 @@ Assumes dimensions of A are n x n and dimensions of x and y are n x 1.
 void matrix_vector_mult(double *l_y, double *l_A, double *l_x, double *temp_y, double *y, int n, int id, int np);
 
 // prints an mxn matrix
-void print_Matrix(double *l_matrix, int m, int n, int id, int np);
+void print_Matrix(int split, double *l_matrix, int m, int n, int id, int np);
 
 #endif
 

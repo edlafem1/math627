@@ -61,12 +61,12 @@ void matrix_vector_mult(double *l_y, double *l_A, double *l_x, double *temp_y, d
 }
 
 // prints an mxn matrix
-void print_Matrix(double *l_matrix, int m, int n, int id, int np) {
+void print_Matrix(int split, double *l_matrix, int m, int n, int id, int np) {
     // create a matrix A for use on only process 0 to gather all local pieces into one place
     double *A;
 #ifdef PARALLEL
     int destination = 0;
-    if (np > 1) {
+    if (np > 1 && split == 1) {
         if (id == 0) {
             printf("trying to allocate for print matrix\n");
             A = allocate_double_vector(m*n);
@@ -94,7 +94,7 @@ void print_Matrix(double *l_matrix, int m, int n, int id, int np) {
             printf("\n");
         }
 #ifdef PARALLEL
-        if (np > 1)
+        if (np > 1 && split == 1)
             free(A); // only allocated on process destination=0
     }
 #endif
