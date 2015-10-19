@@ -54,6 +54,17 @@ int main(int argc, char *argv[])
         printf("\n");
         double *D = allocate_double_vector(m*n);
         start_time = MPI_Wtime();
+        parallel_blas3_product(A, B, D, m, k, n, id, np);
+        end_time = MPI_Wtime();
+        printf("parallel BLAS3:\n");
+        print_Matrix(D, m, n, id, np);
+        printf("Frobenius Norm: %f\n", frobenius_check(D, C, m, n, id, np));
+        printf("Elapsed Time: %f\n", end_time - start_time);
+        printf("\n");
+
+        goto free_stuff;
+
+        start_time = MPI_Wtime();
         blas3_inner_product(A, B, D, m, k, n);
         end_time = MPI_Wtime();
         printf("BLAS3:\n");
@@ -99,6 +110,7 @@ int main(int argc, char *argv[])
 
 
 
+    free_stuff:
         free(A);
         free(B);
         free(C);

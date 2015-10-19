@@ -48,3 +48,68 @@ double frobenius_check(double *known, double *computed, int m, int n, int id, in
 
     return e_norm;
 }
+
+
+void parallel_blas3_product(double *A, double *B, double *C, int m, int k, int n, int id, int np) {
+    if (k % np != 0) {
+        if (id == 0)
+            fprintf(stderr, "k is not divisible by np.\n");
+
+        MPI_Abort(MPI_COMM_WORLD, 1);
+        
+    }
+    MPI_Status status;
+    int l_k = k / np;
+    double *l_A = allocate_double_vector(l_k * m);
+    double *l_B = allocate_double_vector(l_k * k);
+    MPI_Datatype block_col_t;
+    MPI_Datatype block_row_t;
+    
+    // for blocks in B = k x n
+    MPI_Type_vector(
+        n*l_k,          // count = number of blocks, i.e. length of column * l_k(num rows)
+        1,              // blocklen = number of things in each block
+        k,              // stride = difference between start of blocks
+        MPI_DOUBLE,     // old datatype
+        &block_row_t    // new datatype
+        );
+    MPI_Type_commit(&block_row_t);
+
+    // for column of A= m x k
+    MPI_Type_contiguous(
+        m * l_k,        // count = number of items
+        MPI_DOUBLE,     // old_type = type of items
+        &block_col_t    // new_mpi_type = the new datatype
+        );
+    MPI_Type_commit(&block_col_t);
+
+    if (id == 0) {
+        // copy correct elements from A to l_A
+        memcpy(l_A, A, sizeof(double) * l_k * m);
+        for (int i = 1; i < np; ++i) {
+            MPI_Send(&(A[0 + m*(i*l_k)]), 1, block_col_t, i, 0, MPI_COMM_WORLD);
+        }
+    }
+    else {
+        MPI_Recv(l_A, (m*l_k), MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, &status);
+    }
+
+    if (id == 0) {
+        // copy numbers from B to l_B
+        for (int col = 0; col < n; ++col) {
+            for (int row = 0; row < l_k; ++row) {
+                l_B[row + l_k * col] = B[row + k * col];
+            }
+        }
+        for (int i = 1; i < np; ++i) {
+            MPI_Send(&(B[(i*l_k) + k * 0]), 1, block_row_t, i, MPI_COMM_WORLD);
+        }
+    }
+    else {
+        MPI_Recv(l_B, (l_k*n), MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, &status);
+    }
+
+    // C should be allocated and passed into this function
+    cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, m, n, l_k, 1, l_A, m, l_B, k, 0, C, m);
+    MPI_Reduce(C, C, m*n, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+}

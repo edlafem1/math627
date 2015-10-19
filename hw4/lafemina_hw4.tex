@@ -68,47 +68,35 @@ $65536$ & $ 163840 $\\
 \end{center}
 Table 1. Based off of memory limitations alone, we must restrict our tests to using a maximum $m=k=n$ of $32768$ because we can only use up to $63000$ MB of memory on the latest model processors available.
 
-The following table reports the time in seconds needed to complete each method of computing the matrix product at different values for $m=k=n$ as well as speedup and efficiency, however some tests exceeded maximum allowable run times and an estimated runtime has been put in parenthesis:
+The following table reports the time in seconds needed to complete each method of computing the matrix product at different values for $m=k=n$ as well as speedup, however some tests exceeded maximum allowable run times and an estimated values have been put in parenthesis:
+\clearpage
 \begin{table}
 \makebox[\linewidth]{
 \begin{tabular}{ |c|c|c|c|c|c|c|  }
 \hline
-\multicolumn{7}{|c|}{Observed Wall Time in minutes}\\
+\multicolumn{7}{|c|}{Wall Time in minutes}\\
 \hline
 m & k & n & Naive & BLAS 1 & BLAS 2 & BLAS 3\\
 \hline
-1024 & 1024	& 1024	& <0.01 & 0.03 & <0.01 & <0.01\\
-2048 & 2048 & 2048 & 0.08 & 1.42 & 0.11 & 0.02\\
-4096 & 4096 & 4096 & 0.75 & 16.51 & 0.87 & 0.09\\
-8192 & 8192 & 8192 & 6.02 & 139.42 & 8.00 & 0.76\\
-16384 & 16384 & 16384 & (58.4) & (1241) & 76.71 & 7.31\\
-32768 & 32768 & 32768 & (481) & (10228) & (631) & 60.17\\
+1024  & 1024  & 1024  & $<$0.01 & 0.03   & $<$0.01 & $<$0.01 \\
+2048  & 2048  & 2048  & 0.08  & 1.42   & 0.11  & 0.02  \\
+4096  & 4096  & 4096  & 0.75  & 16.51  & 0.87  & 0.09  \\
+8192  & 8192  & 8192  & 6.02  & 139.42 & 8.00  & 0.76  \\
+16384 & 16384 & 16384 & (41)  & (788)  & 76.71 & 7.31  \\
+32768 & 32768 & 32768 & (342) & (6498) & (421) & 60.17 \\
 
 \hline
 \hline
-\multicolumn{7}{|c|}{Observed Speedup $S_p$}\\
+\multicolumn{7}{|c|}{Speedup}\\
 \hline
 m & k & n & Naive & BLAS 1 & BLAS 2 & BLAS 3\\
 \hline
-$1024  $&$ 0.02  $&$ 0.01  $&$ <0.00 $&$ <0.00 $&$ <0.00 $&$ <0.00 $\\
-$2048  $&$ 0.01  $&$ 0.04  $&$ 0.02  $&$ 0.01  $&$ 0.01  $&$ <0.00 $\\
-$4096  $&$ 0.04  $&$ 0.02  $&$ 0.13  $&$ 0.06  $&$ 0.04  $&$ 0.02  $\\
-$8192  $&$ 1.98  $&$ 1.03  $&$ 0.54  $&$ 0.29  $&$ 0.15  $&$ 0.08  $\\
-$16384 $&$ 8.51  $&$ 4.32  $&$ 2.28  $&$ 1.28  $&$ 0.64  $&$ 0.33  $\\
-$32768 $&$ 37.36 $&$ 18.78 $&$ 9.98  $&$ 5.48  $&$ 2.73  $&$ 1.40  $\\
-\hline
-\hline
-\multicolumn{7}{|c|}{Observed Efficiency $E_p$}\\
-\hline
-m & k & n & Naive & BLAS 1 & BLAS 2 & BLAS 3\\
-\hline
-$1024  $&$ 0.02  $&$ 0.01  $&$ <0.00 $&$ <0.00 $&$ <0.00 $&$ <0.00 $\\
-$2048  $&$ 0.01  $&$ 0.04  $&$ 0.02  $&$ 0.01  $&$ 0.01  $&$ <0.00 $\\
-$4096  $&$ 0.04  $&$ 0.02  $&$ 0.13  $&$ 0.06  $&$ 0.04  $&$ 0.02  $\\
-$8192  $&$ 1.98  $&$ 1.03  $&$ 0.54  $&$ 0.29  $&$ 0.15  $&$ 0.08  $\\
-$16384 $&$ 8.51  $&$ 4.32  $&$ 2.28  $&$ 1.28  $&$ 0.64  $&$ 0.33  $\\
-$32768 $&$ 37.36 $&$ 18.78 $&$ 9.98  $&$ 5.48  $&$ 2.73  $&$ 1.40  $\\
-\hline
+1024  & 1024  & 1024  & 1 & 0.203   & 0.796   & 3.711   \\
+2048  & 2048  & 2048  & 1 & 0.057   & 0.721   & 3.600   \\
+4096  & 4096  & 4096  & 1 & 0.045   & 0.859   & 7.967   \\
+8192  & 8192  & 8192  & 1 & 0.043   & 0.753   & 7.876   \\
+16384 & 16384 & 16384 & 1 & (0.047) & (0.761) & (7.987) \\
+32768 & 32768 & 32768 & 1 & (0.047) & (0.761) & (7.999) \\
 \hline
 \end{tabular}
 }

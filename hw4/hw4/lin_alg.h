@@ -15,6 +15,7 @@ void blas3_inner_product(double *A, double *B, double *C, int m, int k, int n);
 
 double frobenius_check(double *known, double *computed, int m, int n, int id, int np);
 
+void parallel_blas3_product(double *A, double *B, double *C, int m, int k, int n, int id, int np);
 
 
 #endif
