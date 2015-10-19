@@ -33,12 +33,15 @@ int main(int argc, char *argv[])
         k = (int)atof(argv[2]);
         n = (int)atof(argv[3]);
     }
-    if (id == 0) {
-        double start_time, end_time;
+    
+    double start_time, end_time;
+    double *A, *B, *C, *D;
 
-        double *A = allocate_double_vector(m*k);
-        double *B = allocate_double_vector(k*n);
-        double *C = allocate_double_vector(m*n);
+    if (id == 0) {
+
+        A = allocate_double_vector(m*k);
+        B = allocate_double_vector(k*n);
+        C = allocate_double_vector(m*n);
         setABC_example(A, B, C, m, k, n);
         printf("np=%i\n", np);
         /*
@@ -48,22 +51,26 @@ int main(int argc, char *argv[])
         print_Matrix(B, k, n, id, np);
         printf("Matrix C:\n");
         print_Matrix(C, m, n, id, np);
-    */        
-    
-        // begin compute
+    */
+
+    // begin compute
         printf("\n");
-        double *D = allocate_double_vector(m*n);
+        D = allocate_double_vector(m*n);
+    }
         start_time = MPI_Wtime();
         parallel_blas3_product(A, B, D, m, k, n, id, np);
         end_time = MPI_Wtime();
-        printf("parallel BLAS3:\n");
-        print_Matrix(D, m, n, id, np);
-        printf("Frobenius Norm: %f\n", frobenius_check(D, C, m, n, id, np));
-        printf("Elapsed Time: %f\n", end_time - start_time);
-        printf("\n");
+        if (id == 0) {
+            printf("parallel BLAS3:\n");
+            print_Matrix(D, m, n, id, np);
+            printf("Frobenius Norm: %f\n", frobenius_check(D, C, m, n, id, np));
+            printf("Elapsed Time: %f\n", end_time - start_time);
+            printf("\n");
+        }
 
-        goto free_stuff;
-
+    if (id == 0 && 1 == 0) { // short out for now
+        free(D);
+        D = allocate_double_vector(m*n);
         start_time = MPI_Wtime();
         blas3_inner_product(A, B, D, m, k, n);
         end_time = MPI_Wtime();
@@ -110,13 +117,15 @@ int main(int argc, char *argv[])
 
 
 
-    free_stuff:
+    }
+
+free_stuff:
+    if (id == 0) {
         free(A);
         free(B);
         free(C);
         free(D);
     }
-
 
 
 #ifdef PARALLEL
