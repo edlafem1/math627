@@ -130,7 +130,7 @@ void parallel_blas3_product(double *A, double *B, double *C, int m, int k, int n
 
     // C only matters on process 0 and should be allocated outside this function
     double *local_C = allocate_double_vector(m*n);
-    cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, m, n, l_k, 1, l_A, m, l_B, k, 1, local_C, m);
+    cblas_dgemm(CblasColMajor, CblasTrans, CblasTrans, m, n, l_k, 1, l_A, m, l_B, l_k, 0, local_C, m);
     MPI_Reduce(local_C, C, m*n, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
     printf("[%i] local_C[1,1]=%f\n", id, local_C[1 + m * 1]);
     free(local_C);
