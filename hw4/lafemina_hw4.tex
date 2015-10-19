@@ -1,5 +1,6 @@
 \documentclass[11pt]{article}
 \usepackage{amsmath}
+\usepackage{amsfonts}
 
 \usepackage[table]{xcolor}
  
@@ -25,15 +26,117 @@
 
 \author{Edward LaFemina \\
 		\it{University of Maryland, Baltimore County}}
-\title{CMSC 411 HW 4}
+
+\title{Math 627 HW 4}
 \date{\today}
 
 \begin{document}
 \maketitle
+\pagebreak
 
-\section*{Problem 1}
+The product of two matrices $ A \in \mathbb{R}^{m \times k}, B \in \mathbb{R}^{k \times n} $ results in a matrix $ C \in \mathbb{R}^{m \times n} $ where the $ij$-th entry is
+$$ C_{ij} = \sum_{q=0}^{k-1} A_{iq}B_{qj}. $$
+In a naive computer implementation of this product, a programmer must use three loops, one for $i, j,$ and $q$. For matrices with dimensions larger than $1024$, the ordering of these loops is significant. The implementation discussed in this paper uses a row-major format for storing matrices in memory where the columns of a matrix are stored consecutively in a contiguous block of memory containing the whole matrix. To obtain best performance, ordering the loops such that $j$ is iterated on the outside loop, $i$ on the inside, and $q$ in the middle proved to be optimal for this method. This ordering resulted in a time of about $361$ seconds versus another ordering of $j-i-q$ which resulted in a performance of about 7289 seconds for $m=k=n=8192$. To determine if there is a less time consuming way to compute this product, three Basic Linear Algebra Subprogram(BLAS) functions were tested.
 
+The first of the BLAS functions we will discuss is the \texttt{cblas\_ddot} BLAS level 1 function. This function computes the dot product of two vectors returning a scalar. To use this to compute the matrix product, we can think of the product $ C = AB $ where $ C_{ij} $ is the dot product of the $i$-th row of $A$ with the $j$-th column of $B$. Thus, a program to compute the matrix product in this way requires two loops and again, the order of the loops is significant because of the row-major alignment of our matrices in memory. It was found that having the $j$ loop on the outside and the $i$ loop on the inside improved performance. As shown in Table 1, this BLAS 1 function resulted in slower times than our naive implementation.
 
+The second of the BLAS functions we will discuss is the \texttt{cblas\_dger} BLAS level 2 function. To use this function to compute the matrix product, we must write the product $C$ as:
+$$ C = AB = \sum_{q=0}^{k-1} {a_{q}b_{q}^{T}}. $$
+The \texttt{cblas\_dger} function computes the outer product of the vectors $a_{q}$ and ${b_{q}^{T}}$ where $a_{q}$ is the $q$-th column of $A$ and ${b_{q}^{T}}$ s the $q$-th row of $B$. This results in an $m \times n$ matrix. Each iteration of this summation is called a rank-1 update of matrix $C$ which culminates into the product $C=AB$. As shown in Table 2, this method of computing the matrix product is almost an average $13\times$ speedup over the BLAS 1 method and about a $1.2\times$ speedup over the naive implementation.
+
+The third and final BLAS function we will discuss is the \texttt{cblas\_dgemm} BLAS level 3 function. This function computes the matrix product directly and is specifically optimized to perform the operation in the least amount of time possible. As shown in Table 2, this method of computing the matrix product is by far the best with a speedup of about $5.7\times$ over the naive method, $108\times$ over the BLAS 1 method, and $7\times$ over the BLAS 2 method. For this reason, we recommend the use of the \texttt{cblas\_dgemm} function when computing matrix products.
+
+To verify that all four of these methods compute the matrix product correctly, we constructed $A$ and $B$ such that we could easily construct the correct result $C$. For each of the four methods, we stored the result of the product in $D$. To verify the correctness of the result, we took the Frobenius norm of the difference of $C$ and $D$. The Frobenius norm $||\cdot||_F$ is computed
+$$ ||A||_F = \sqrt{\sum_{i=1}^{m}{\sum_{j=1}^{n}{|a_ij|^2}}}$$
+which is the same as the Euclidean norm of the $m \times n$ vector we get when storing the matrix in a row-major fashion. Thus we can use the Euclidean norm function developed and tested against Matlab results in earlier assignments or use the square root of the value obtained by calling the BLAS level 1 \texttt{cblas\_dot} function supplying the matrix $A$ for both vectors and treating it as such. We are thus able to determine the correctness of our matrix product functions by computing $ ||C-D||_F$. A value of $0$ indicates that $D=C$ and our method of computing the matrix product is correct. All four methods yielded Frobenius norms of $0$.
+
+To test each method of computing the matrix product, we must allocate memory for $A, B, C, D$ and one $m \times n$ vector to hold the difference $C-D$. For testing, we restricted our cases to values of $m,k,$ and $n$ such that $m=k=n$. Thus we have $4$ $m \times m$ matrices and $1$ $m \times m$ vector of doubles. Since a double requires $8$ bytes, our program will use about $5*8*m^2$ bytes of memory. A memory estimation table for different values of $m=k=n$ follows:
+\begin{center}
+\begin{tabular}{ |c|c| } 
+\hline
+m=k=n & size in MB \\
+\hline
+$1024 $& $ 40 $\\ 
+$2048$ & $ 160 $\\
+$4096$ & $ 640 $\\
+$8192$ & $ 2560 $\\
+$16384$ & $ 10240 $\\
+$32768$ & $ 40960 $\\
+$65536$ & $ 163840 $\\
+\hline
+\end{tabular}
+\end{center}
+Table 1. Based off of memory limitations alone, we must restrict our tests to using a maximum $m=k=n$ of $32768$ because we can only use up to $63000$ MB of memory on the latest model processors available.
+
+The following table reports the time in seconds needed to complete each method of computing the matrix product at different values for $m=k=n$ as well as speedup and efficiency, however some tests exceeded maximum allowable run times and an estimated runtime has been put in parenthesis:
+\begin{table}
+\makebox[\linewidth]{
+\begin{tabular}{ |c|c|c|c|c|c|c|  }
+\hline
+\multicolumn{7}{|c|}{Observed Wall Time in minutes}\\
+\hline
+m & k & n & Naive & BLAS 1 & BLAS 2 & BLAS 3\\
+\hline
+1024 & 1024	& 1024	& <0.01 & 0.03 & <0.01 & <0.01\\
+2048 & 2048 & 2048 & 0.08 & 1.42 & 0.11 & 0.02\\
+4096 & 4096 & 4096 & 0.75 & 16.51 & 0.87 & 0.09\\
+8192 & 8192 & 8192 & 6.02 & 139.42 & 8.00 & 0.76\\
+16384 & 16384 & 16384 & (58.4) & (1241) & 76.71 & 7.31\\
+32768 & 32768 & 32768 & (481) & (10228) & (631) & 60.17\\
+
+\hline
+\hline
+\multicolumn{7}{|c|}{Observed Speedup $S_p$}\\
+\hline
+m & k & n & Naive & BLAS 1 & BLAS 2 & BLAS 3\\
+\hline
+$1024  $&$ 0.02  $&$ 0.01  $&$ <0.00 $&$ <0.00 $&$ <0.00 $&$ <0.00 $\\
+$2048  $&$ 0.01  $&$ 0.04  $&$ 0.02  $&$ 0.01  $&$ 0.01  $&$ <0.00 $\\
+$4096  $&$ 0.04  $&$ 0.02  $&$ 0.13  $&$ 0.06  $&$ 0.04  $&$ 0.02  $\\
+$8192  $&$ 1.98  $&$ 1.03  $&$ 0.54  $&$ 0.29  $&$ 0.15  $&$ 0.08  $\\
+$16384 $&$ 8.51  $&$ 4.32  $&$ 2.28  $&$ 1.28  $&$ 0.64  $&$ 0.33  $\\
+$32768 $&$ 37.36 $&$ 18.78 $&$ 9.98  $&$ 5.48  $&$ 2.73  $&$ 1.40  $\\
+\hline
+\hline
+\multicolumn{7}{|c|}{Observed Efficiency $E_p$}\\
+\hline
+m & k & n & Naive & BLAS 1 & BLAS 2 & BLAS 3\\
+\hline
+$1024  $&$ 0.02  $&$ 0.01  $&$ <0.00 $&$ <0.00 $&$ <0.00 $&$ <0.00 $\\
+$2048  $&$ 0.01  $&$ 0.04  $&$ 0.02  $&$ 0.01  $&$ 0.01  $&$ <0.00 $\\
+$4096  $&$ 0.04  $&$ 0.02  $&$ 0.13  $&$ 0.06  $&$ 0.04  $&$ 0.02  $\\
+$8192  $&$ 1.98  $&$ 1.03  $&$ 0.54  $&$ 0.29  $&$ 0.15  $&$ 0.08  $\\
+$16384 $&$ 8.51  $&$ 4.32  $&$ 2.28  $&$ 1.28  $&$ 0.64  $&$ 0.33  $\\
+$32768 $&$ 37.36 $&$ 18.78 $&$ 9.98  $&$ 5.48  $&$ 2.73  $&$ 1.40  $\\
+\hline
+\hline
+\end{tabular}
+}
+\end{table}
 
 
 \end{document}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
