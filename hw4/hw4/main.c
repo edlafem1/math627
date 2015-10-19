@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
         printf("\n");
     }
 
-    if (id == 0 && 1 == 0) { // short out for now
+    if (id == 0 && 1 == 0) { // short out to allow problem 2 to run without error
         free(D);
         D = allocate_double_vector(m*n);
         start_time = MPI_Wtime();
