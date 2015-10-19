@@ -42,6 +42,7 @@ int main(int argc, char *argv[])
         A = allocate_double_vector(m*k);
         B = allocate_double_vector(k*n);
         C = allocate_double_vector(m*n);
+        malloc(1 << 10);
         setABC_example(A, B, C, m, k, n);
         printf("np=%i\n", np);
         /*
