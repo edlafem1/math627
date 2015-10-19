@@ -71,8 +71,8 @@ void parallel_blas3_product(double *A, double *B, double *C, int m, int k, int n
     
     // for blocks in B = k x n
     MPI_Type_vector(
-        n*l_k,          // count = number of blocks, i.e. length of column * l_k(num rows)
-        1,              // blocklen = number of things in each block
+        n,          // count = number of blocks, i.e. length of column * l_k(num rows)
+        l_k,              // blocklen = number of things in each block
         k,              // stride = difference between start of blocks
         MPI_DOUBLE,     // old datatype
         &block_row_t    // new datatype
