@@ -45,13 +45,13 @@ int main(int argc, char *argv[])
         setABC_example(A, B, C, m, k, n);
         printf("np=%i\n", np);
         /*
+    */
         printf("Matrix A:\n");
         print_Matrix(A, m, k, id, np);
         printf("Matrix B:\n");
         print_Matrix(B, k, n, id, np);
         printf("Matrix C:\n");
         print_Matrix(C, m, n, id, np);
-    */
 
     // begin compute
         printf("\n");
