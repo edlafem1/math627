@@ -120,7 +120,6 @@ int main(int argc, char *argv[])
 
     }
 
-free_stuff:
     if (id == 0) {
         free(A);
         free(B);
