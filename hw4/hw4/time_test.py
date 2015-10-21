@@ -1,9 +1,9 @@
-ppns = [1, 2, 4, 8, 16, 16, 16]
-cpus = [1, 1, 1, 1,  1,  2,  4]
+ppns = [1, 2, 2, 2, 2, 2]
+cpus = [1, 1, 2, 4, 8, 16]
 
 for i in range(len(cpus)):
     for mkn in [1024, 2048, 4096, 8192, 16384, 32768]:
-        filename = "run_power_" + str(cpus[i]) + "_" + str(ppns[i]) + ".slurm"
+        filename = str(mkn) + "run_power_" + str(cpus[i]) + "_" + str(ppns[i]) + ".slurm"
         slurm = open(filename, 'w')
         slurm.write("#!/bin/bash\n")
         slurm.write("#SBATCH --job-name=p" + str(mkn) + "\n")
