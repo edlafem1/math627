@@ -149,7 +149,7 @@ int main(int argc, char **argv) {
     */
     if (id == 0) {
         printf("%15s %15s %22s %15s %22s\n", "N", "DOF", "relres", "iter", "time");
-        printf("%15d %15d %22.16e %15d %22.16e\n", N, (double)N*N, relres, iter, (end_time - start_time));
+        printf("%15d %15f %22.16e %15d %22.16e\n", N, (double)N*N, relres, iter, (end_time - start_time));
         /*
         printf("N:            %d\n", N);
         printf("DOF:          %d\n", N*(double)N);
