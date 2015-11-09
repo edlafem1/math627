@@ -125,7 +125,8 @@ int main(int argc, char **argv) {
     for (int qq = 0; qq < np; qq++) {
         if (id == qq)
             for (i = 0; i < l_n; i++) {
-                printf("%f\n", l_x[i]);
+                
+                printf("%i: %f\n", id, l_x[i]);
             }
         MPI_Barrier(MPI_COMM_WORLD);
     }
