@@ -30,7 +30,6 @@ int main(int argc, char **argv) {
     N = atoi(argv[1]);
     dimensions = atoi(argv[2]);
 
-    /* compute n*/
     if (dimensions == 2) {
         n = (N*N);
     }
@@ -53,7 +52,7 @@ int main(int argc, char **argv) {
         MPI_Abort(MPI_COMM_WORLD, 1);
     }
 
-    /* compute size of local blocks: */
+    /* calculate size of local blocks: */
     l_N = N / np;
     l_n = n / np;
 
@@ -90,11 +89,11 @@ int main(int argc, char **argv) {
 
     /*Setup B*/
     setupB(l_r, x, y, l_N, N, h, id);
-
+    /*
     for (i = 0; i<l_N*N; i++) {
         printf("l_r[%i]= %f\n", i, l_r[i]);
     }
-
+    */
     tol = 1.0e-6;
     maxit = 99999;
 

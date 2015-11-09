@@ -49,11 +49,7 @@ double *allocate_double_vector(int n)
     if (x == NULL)
     {
         fprintf(stderr, "Problem allocating memory for vector\n");
-#ifdef PARALLEL
         MPI_Abort(MPI_COMM_WORLD, 1);
-#else
-        exit(1);
-#endif
     }
 
     return x;
