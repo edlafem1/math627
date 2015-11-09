@@ -10,7 +10,7 @@ void Ax(double *l_v, double *l_u, int l_n, int l_N, int N,
     MPI_Status status;
 
     MPI_Status statuses[4];
-    MPI_Requests requests[4];
+    MPI_Request requests[4];
     /*---------------Communication---------------*/
     // when using non-blocking comms, need to have a waitall after
     if (id % 2 == 0) {
