@@ -7,7 +7,7 @@ void Ax(double *l_v, double *l_u, int l_n, int l_N, int N,
 
     int i, l_j, j;
     double temp;
-    MPI_Status stat;
+    MPI_Status status, stat;
 
 
     if (id % 2 == 0) {
