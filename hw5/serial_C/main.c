@@ -68,7 +68,7 @@ int main(int argc, char **argv) {
 
     */
     x = allocate_double_vector(N);          /* x is a N length vector*/
-    y = allocate_double_vector(l_N*N);      /* y is a N length vector*/
+    y = allocate_double_vector(N);      /* y is a N length vector*/
     gl = allocate_double_vector(l_n / l_N); 
     gr = allocate_double_vector(l_n / l_N);
     
@@ -122,10 +122,13 @@ int main(int argc, char **argv) {
     MPI_Barrier(MPI_COMM_WORLD);
     end_time = MPI_Wtime();
 
+    if (np > 1) {
+        double *full;
+    }
+
     for (int qq = 0; qq < np; qq++) {
         if (id == qq)
             for (i = 0; i < l_n; i++) {
-                
                 printf("%i: %f\n", id, l_x[i]);
             }
         MPI_Barrier(MPI_COMM_WORLD);
