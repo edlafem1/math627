@@ -126,7 +126,7 @@ int main(int argc, char **argv) {
         MPI_Gather(l_x, l_n, MPI_DOUBLE, full, l_n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
         if (id == 0) {
             for (i = 0; i < n; i++) {
-                printf("%i: %f\n", id, full[i]);
+                printf("%i: % -24.16e\n", id, full[i]);
             }
         }
         free_vector(full);
