@@ -25,6 +25,18 @@ void Ax(double *l_v, double *l_u, int l_n, int l_N, int N,
         }
 
         /*------------------Block A------------------*/
+        for (l_j = 0; l_j < l_N; l_j++) {
+            for (i = 0; i < N; i++) {
+                temp = 4.0 * l_u[i + N*l_j];
+
+                if (l_j > 0)     temp -= l_u[i + N*(l_j - 1)];
+                if (i > 0)       temp -= l_u[i - 1 + N*l_j];
+                if (i < N - 1)   temp -= l_u[i + 1 + N*l_j];
+                if (l_j < N - 1) temp -= l_u[i + N*(l_j + 1)];
+
+                l_v[i + N*l_j] = temp;
+            }
+        }
         /*for(l_j=0; l_j<l_N;l_j++){
         for(i=0; i<N; i++){
         temp=4.0*l_u[i+N*l_j];
