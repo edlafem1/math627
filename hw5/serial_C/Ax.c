@@ -13,11 +13,12 @@ void Ax(double *l_v, double *l_u, int l_n, int l_N, int N,
     MPI_Status statuses[4];
     MPI_Request requests[4];
     /*---------------Communication---------------*/
+#ifdef NON_BLOCKING 
     MPI_Isend(&(l_u[N*l_N - N]), N, MPI_DOUBLE, idright, 1, MPI_COMM_WORLD, &(requests[0]));
     MPI_Isend(l_u, N, MPI_DOUBLE, idleft, 2, MPI_COMM_WORLD, &(requests[1]));
     MPI_Irecv(gl, N, MPI_DOUBLE, idleft, 1, MPI_COMM_WORLD, &(requests[2]));
     MPI_Irecv(gr, N, MPI_DOUBLE, idright, 2, MPI_COMM_WORLD, &(requests[3]));
-    /*
+#else
         
     // when using non-blocking comms, need to have a waitall after
     if (id % 2 == 0) {
@@ -34,7 +35,7 @@ void Ax(double *l_v, double *l_u, int l_n, int l_N, int N,
         MPI_Recv(gr, N, MPI_DOUBLE, idright, 2, MPI_COMM_WORLD, &status);
         MPI_Recv(gl, N, MPI_DOUBLE, idleft, 1, MPI_COMM_WORLD, &status);
     }
-    */
+#endif
     /*------------------Block A------------------*/
     // this is serial code
     for (l_j = 0; l_j < l_N; l_j++) {
