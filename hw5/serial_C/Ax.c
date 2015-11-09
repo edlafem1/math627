@@ -115,16 +115,16 @@ void Ax(double *l_v, double *l_u, int l_n, int l_N, int N,
         if (id % 2 == 0) {
             // 1 3 2 4
             MPI_Recv(gl, N, MPI_DOUBLE, idleft, 1, MPI_COMM_WORLD, &status);
-            MPI_Send(&(l_u[N*l_N - N]), N, MPI_DOUBLE, idright, 1, MPI_COMM_WORLD);
             MPI_Recv(gr, N, MPI_DOUBLE, idright, 2, MPI_COMM_WORLD, &status);
+            MPI_Send(&(l_u[N*l_N - N]), N, MPI_DOUBLE, idright, 1, MPI_COMM_WORLD);
             MPI_Send(l_u, N, MPI_DOUBLE, idleft, 2, MPI_COMM_WORLD);
         }
         else {
             // 3 1 4 2
+            MPI_Send(&(l_u[N*l_N - N]), N, MPI_DOUBLE, idright, 1, MPI_COMM_WORLD);
+            MPI_Send(l_u, N, MPI_DOUBLE, idleft, 2, MPI_COMM_WORLD);
             MPI_Recv(gr, N, MPI_DOUBLE, idright, 2, MPI_COMM_WORLD, &status);
             MPI_Recv(gl, N, MPI_DOUBLE, idleft, 1, MPI_COMM_WORLD, &status);
-            MPI_Send(l_u, N, MPI_DOUBLE, idleft, 2, MPI_COMM_WORLD);
-            MPI_Send(&(l_u[N*l_N - N]), N, MPI_DOUBLE, idright, 1, MPI_COMM_WORLD);
         }
         /*------------------Block A------------------*/
         // this is serial code
