@@ -122,7 +122,14 @@ int main(int argc, char **argv) {
     MPI_Barrier(MPI_COMM_WORLD);
     end_time = MPI_Wtime();
 
-
+    for (int qq = 0; qq < np; qq++) {
+        if (id == qq)
+            for (i = 0; i < l_n; i++) {
+                printf("%f\n", l_x[i]);
+            }
+        MPI_Barrier(MPI_COMM_WORLD);
+    }
+    /*
     if (id == np - 1) {
         printf("---------------\nl_x:\n");
         for (i = 0; i < l_n; i++) {
@@ -130,6 +137,7 @@ int main(int argc, char **argv) {
         }
         printf("---------------\n");
     }
+    */
     if (id == 0) {
         printf("relres %22.16e\n", relres);
         printf("iter %d\n", iter);
