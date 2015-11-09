@@ -64,7 +64,9 @@ void Ax(double *l_v, double *l_u, int l_n, int l_N, int N,
             l_v[i + N*l_j] = temp;
         }
     }
-
+#ifdef NON_BLOCKING
+    MPI_Waitall(4, requests, statuses);
+#endif
     /*------------------Block D------------------*/
     l_j = 0;
     j = l_j + id*l_N;
