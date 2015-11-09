@@ -7,6 +7,9 @@ void Ax(double *l_v, double *l_u, int l_n, int l_N, int N,
 
     int i, l_j, j;
     double temp;
+
+    goto A
+
     MPI_Status status;
 
     ///////////////////////////////////////////////////////////////////////////////////
@@ -37,6 +40,7 @@ void Ax(double *l_v, double *l_u, int l_n, int l_N, int N,
     }
 #endif
     /*------------------Block A------------------*/
+A:
     // this is serial code
     for (l_j = 0; l_j < l_N; l_j++) {
         for (i = 0; i < N; i++) {
@@ -50,7 +54,7 @@ void Ax(double *l_v, double *l_u, int l_n, int l_N, int N,
             l_v[i + N*l_j] = temp;
         }
     }
-
+    return;
     /*------------------Block B------------------*/
     for (l_j = 1; l_j < l_N - 1; l_j++) {
         for (i = 0; i < N; i++) {

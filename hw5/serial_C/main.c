@@ -67,7 +67,7 @@ int main(int argc, char **argv) {
 
     */
     x = allocate_double_vector(N);          /* x is a N length vector*/
-    y = allocate_double_vector(N);      /* y is a N length vector*/
+    y = allocate_double_vector(N);          /* y is a N length vector*/
     gl = allocate_double_vector(l_n / l_N); 
     gr = allocate_double_vector(l_n / l_N);
     
