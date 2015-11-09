@@ -1,0 +1,182 @@
+[edlafem1@maya-usr1 matlab]$ ssh n36
+Warning: Permanently added 'n36,10.1.0.36' (RSA) to the list of known hosts.
+WARNING: UNAUTHORIZED ACCESS to this computer is in violation of Criminal
+         Law Article section 8-606 and 7-302 of the Annotated Code of MD.
+
+NOTICE:  This system is for the use of authorized users only.
+         Individuals using this computer system without authority, or in
+         excess of their authority, are subject to having all of their
+         activities on this system monitored and recorded by system
+         personnel.
+
+
+
+  UMBC High Performance Computing Facility              http://hpcf.umbc.edu
+  --------------------------------------------------------------------------
+  By using this system you agree with and will adhere to the HPCF usage
+  policy.  If you have any questions or problems using this system please
+  submit a help request via the "Help Request" link found on the HPCF
+  website under "Resources for HPCF Users".
+
+  Remember that the Division of Information Technology will never ask for
+  your password. Do NOT give out this information under any circumstances.
+  --------------------------------------------------------------------------
+
+  Uptime......: 0 days 0 hours 39 minutes 27 seconds
+  Load........: 0.00 (1minute) 0.00 (5minutes) 0.02 (15minutes)
+  Memory MB...: 64,508  1,534 used  63,413 avail  62,974 free  0 swap
+  HPC Cluster.: 1969/3192 cores avail  7.47/11.09 TB mem avail  using 6014.84 KW
+  SSH Logins..: Currently 1 session on this box
+  Slurm.......: 597 jobs running of which 0 jobs are yours (using 0 cores)
+  Processes...: 612 total running of which 10 are yours
+  HDFS TotalGB: 28,947.0 UsedGB: 33.0, load min,med,max,std: 0.09,0.11,0.16,0.02
+
+To get this dialog again, type hpc_motd.  For a list of HPCF tools type hpc_tools.
+Good afternoon, Edward LaFemina.
+[edlafem1@n36 ~]$ top
+top - 13:37:11 up 39 min,  1 user,  load average: 0.00, 0.00, 0.02
+Tasks: 599 total,   1 running, 598 sleeping,   0 stopped,   0 zombie
+Cpu(s):  0.1%us,  0.2%sy,  0.0%ni, 99.6%id,  0.2%wa,  0.0%hi,  0.0%si,  0.0%st
+Mem:  66057016k total,  1571328k used, 64485688k free,    25884k buffers
+Swap: 67108856k total,        0k used, 67108856k free,   425168k cached
+
+  PID USER      PR  NI  VIRT  RES  SHR S %CPU %MEM    TIME+  COMMAND
+    9 root      20   0     0    0    0 S  2.0  0.0   0:00.11 ksoftirqd/1
+15840 edlafem1  20   0 17528 1556  856 R  2.0  0.0   0:00.01 top
+    1 root      20   0 21324 1576 1280 S  0.0  0.0   0:01.29 init
+    2 root      20   0     0    0    0 S  0.0  0.0   0:00.00 kthreadd
+    3 root      RT   0     0    0    0 S  0.0  0.0   0:00.01 migration/0
+    4 root      20   0     0    0    0 S  0.0  0.0   0:00.00 ksoftirqd/0
+    5 root      RT   0     0    0    0 S  0.0  0.0   0:00.00 migration/0
+    6 root      RT   0     0    0    0 S  0.0  0.0   0:09.53 watchdog/0
+    7 root      RT   0     0    0    0 S  0.0  0.0   0:00.00 migration/1
+    8 root      RT   0     0    0    0 S  0.0  0.0   0:00.00 migration/1
+   10 root      RT   0     0    0    0 S  0.0  0.0   0:00.00 watchdog/1
+   11 root      RT   0     0    0    0 S  0.0  0.0   0:00.01 migration/2
+   12 root      RT   0     0    0    0 S  0.0  0.0   0:00.00 migration/2
+   13 root      20   0     0    0    0 S  0.0  0.0   0:00.02 ksoftirqd/2
+   14 root      RT   0     0    0    0 S  0.0  0.0   0:00.00 watchdog/2
+   15 root      RT   0     0    0    0 S  0.0  0.0   0:00.46 migration/3
+   16 root      RT   0     0    0    0 S  0.0  0.0   0:00.00 migration/3
+   17 root      20   0     0    0    0 S  0.0  0.0   0:00.02 ksoftirqd/3
+   18 root      RT   0     0    0    0 S  0.0  0.0   0:00.00 watchdog/3
+   19 root      RT   0     0    0    0 S  0.0  0.0   0:00.00 migration/4
+   20 root      RT   0     0    0    0 S  0.0  0.0   0:00.00 migration/4
+   21 root      20   0     0    0    0 S  0.0  0.0   0:00.01 ksoftirqd/4
+   22 root      RT   0     0    0    0 S  0.0  0.0   0:00.00 watchdog/4
+   23 root      RT   0     0    0    0 S  0.0  0.0   0:00.00 migration/5
+   24 root      RT   0     0    0    0 S  0.0  0.0   0:00.00 migration/5
+   25 root      20   0     0    0    0 S  0.0  0.0   0:00.00 ksoftirqd/5
+   26 root      RT   0     0    0    0 S  0.0  0.0   0:00.00 watchdog/5
+   27 root      RT   0     0    0    0 S  0.0  0.0   0:00.00 migration/6
+   28 root      RT   0     0    0    0 S  0.0  0.0   0:00.00 migration/6
+   29 root      20   0     0    0    0 S  0.0  0.0   0:00.00 ksoftirqd/6
+   30 root      RT   0     0    0    0 S  0.0  0.0   0:00.00 watchdog/6
+   31 root      RT   0     0    0    0 S  0.0  0.0   0:00.00 migration/7
+   32 root      RT   0     0    0    0 S  0.0  0.0   0:00.00 migration/7
+   33 root      20   0     0    0    0 S  0.0  0.0   0:00.00 ksoftirqd/7
+   34 root      RT   0     0    0    0 S  0.0  0.0   0:00.00 watchdog/7
+   35 root      RT   0     0    0    0 S  0.0  0.0   0:00.00 migration/8
+   36 root      RT   0     0    0    0 S  0.0  0.0   0:00.00 migration/8
+   37 root      20   0     0    0    0 S  0.0  0.0   0:00.00 ksoftirqd/8
+   38 root      RT   0     0    0    0 S  0.0  0.0   0:00.00 watchdog/8
+   39 root      RT   0     0    0    0 S  0.0  0.0   0:00.00 migration/9
+   40 root      RT   0     0    0    0 S  0.0  0.0   0:00.00 migration/9
+   41 root      20   0     0    0    0 S  0.0  0.0   0:00.00 ksoftirqd/9
+[edlafem1@n36 ~]$
+[edlafem1@n36 ~]$ cls
+total 92K
+drwx------   9 edlafem1 student 4.0K Oct 21 13:22 .
+drwxr-xr-x 470 root     root     20K Oct 16 14:13 ..
+lrwxrwxrwx   1 edlafem1 student   33 Sep 21 18:50 assignments -> student_user/math627/assignments/
+-rw-------   1 edlafem1 student  16K Oct 21 13:37 .bash_history
+-rw-r--r--   1 edlafem1 student   18 Jan 16  2015 .bash_logout
+-rw-r--r--   1 edlafem1 student  176 Jan 16  2015 .bash_profile
+-rw-r--r--   1 edlafem1 student  465 Sep  9 00:40 .bashrc
+-rw-r--r--   1 edlafem1 student  500 Nov 27  2014 .emacs
+drwxrwx---  14 edlafem1 student 4.0K Sep 20 00:28 .felix
+drwxr-xr-x   2 edlafem1 student 4.0K Oct 21 13:22 .fontconfig
+-rw-rw----   1 edlafem1 student   56 Sep  8 19:16 .gitconfig
+lrwxrwxrwx   1 root     root      21 Aug 23 09:42 hadoop_user -> /hadoop/user/edlafem1
+drwxr-x---   3 edlafem1 student 4.0K Aug 30 14:47 intel
+-rw-r--r--   1 edlafem1 student  171 Apr  3  2015 .kshrc
+drwxrwx---   4 edlafem1 student 4.0K Sep  8 19:07 math627
+drwxrwx---   3 edlafem1 student 4.0K Oct 21 13:17 .matlab
+drwxrw----   3 edlafem1 student 4.0K Sep  8 19:11 .pki
+-rw-------   1 edlafem1 student    0 Oct 17 17:43 .python-history
+drwx------   2 edlafem1 student 4.0K Aug 27 22:40 .ssh
+lrwxrwxrwx   1 root     root      27 Aug 26 19:04 student_common -> /umbc/lustre/student/common
+lrwxrwxrwx   1 root     root      35 Aug 26 19:04 student_user -> /umbc/lustre/student/users/edlafem1
+[edlafem1@n36 ~]$ cd assignments/hw5/matlab/
+[edlafem1@n36 matlab]$ ls
+total 20K
+drwxrwx--- 2 edlafem1 student 4.0K Oct 21 13:16 .
+drwxrwx--- 3 edlafem1 student 4.0K Oct 21 13:15 ..
+-rw-rw---- 1 edlafem1 student 1.6K Jun 21  2012 driver_cg.m
+-rw-rw---- 1 edlafem1 student 1.4K Jun 21  2012 driver_ge.m
+-rw-rw---- 1 edlafem1 student  190 Aug  2  2012 plotxsinx.m
+[edlafem1@n36 matlab]$ matlab
+MATLAB is selecting SOFTWARE OPENGL rendering.
+
+                                   < M A T L A B (R) >
+                         Copyright 1984-2015 The MathWorks, Inc.
+                         R2015a (8.5.0.197613) 64-bit (glnxa64)
+                                    February 12, 2015
+
+
+To get started, type one of these: helpwin, helpdesk, or demo.
+For product information, visit www.mathworks.com.
+
+
+        Academic License
+
+>> driver_cg(1024)
+Warning: MATLAB has disabled some advanced graphics rendering features by switching to
+software OpenGL. For more information, click <a href="matlab:opengl('problems')">here</a>.
+N =  1024
+tol =    1.0e-06, maxit = 99999
+flag = 0, iter = 1581, relres =   9.3988767152822187e-07
+h                  =   9.7560975609756097e-04
+h^2                =   9.5181439619274241e-07
+enorminf           =   3.1266064957069517e-06
+C = enorminf / h^2 =   3.2848909495521164e+00
+wall clock time    =      51.58 seconds
+>> driver_cg(512)
+N =   512
+tol =    1.0e-06, maxit = 99999
+flag = 0, iter = 783, relres =   9.0704916571021489e-07
+h                  =   1.9493177387914229e-03
+h^2                =   3.7998396467669058e-06
+enorminf           =   1.2494278923247393e-05
+C = enorminf / h^2 =   3.2881068899520938e+00
+wall clock time    =       6.49 seconds
+>>
+>> driver_cg(256)
+N =   256
+tol =    1.0e-06, maxit = 99999
+flag = 0, iter = 387, relres =   8.9244312019219279e-07
+h                  =   3.8910505836575876e-03
+h^2                =   1.5140274644582053e-05
+enorminf           =   4.9797438439358466e-05
+C = enorminf / h^2 =   3.2890710114811874e+00
+wall clock time    =       1.03 seconds
+>> driver_cg(128)
+N =   128
+tol =    1.0e-06, maxit = 99999
+flag = 0, iter = 192, relres =   9.3340276789489392e-07
+h                  =   7.7519379844961239e-03
+h^2                =   6.0092542515473829e-05
+enorminf           =   1.9764834768387640e-04
+C = enorminf / h^2 =   3.2890661538073873e+00
+wall clock time    =       0.13 seconds
+>> driver_cg(2048)
+N =  2048
+tol =    1.0e-06, maxit = 99999
+flag = 0, iter = 3192, relres =   9.8763686500041428e-07
+h                  =   4.8804294777940460e-04
+h^2                =   2.3818591887721065e-07
+enorminf           =   7.8019395677308978e-07
+C = enorminf / h^2 =   3.2755670883100967e+00
+wall clock time    =     426.84 seconds
+>>
+>> driver_cg(4096)

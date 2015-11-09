@@ -1,0 +1,334 @@
+login as: edlafem1
+WARNING: UNAUTHORIZED ACCESS to this computer is in violation of Criminal
+         Law Article section 8-606 and 7-302 of the Annotated Code of MD.
+
+NOTICE:  This system is for the use of authorized users only.
+         Individuals using this computer system without authority, or in
+         excess of their authority, are subject to having all of their
+         activities on this system monitored and recorded by system
+         personnel.
+
+
+edlafem1@maya.rs.umbc.edu's password:
+Last login: Wed Oct 21 13:10:50 2015 from 130.85.58.229
+
+  UMBC High Performance Computing Facility              http://hpcf.umbc.edu
+  --------------------------------------------------------------------------
+  By using this system you agree with and will adhere to the HPCF usage
+  policy.  If you have any questions or problems using this system please
+  submit a help request via the "Help Request" link found on the HPCF
+  website under "Resources for HPCF Users".
+
+  Remember that the Division of Information Technology will never ask for
+  your password. Do NOT give out this information under any circumstances.
+  --------------------------------------------------------------------------
+
+  Load........: 0.40 (1minute) 0.40 (5minutes) 0.44 (15minutes)
+  Uptime......: 70 days 12 hours 43 minutes 10 seconds
+  Memory MB...: 129,150  49,588 used  79,763 avail  79,561 free  0 swap
+  SSH Logins..: Currently 50 sessions on this box
+  Processes...: 884 total running of which 19 are yours
+s  HPC Cluster.: 1842/3192 cores avail  6.64/11.09 TB mem avail  using 6018.56 KW
+s  HDFS TotalGB: 28,947.0 UsedGB: 33.0, load min,med,max,std: 0.09,0.11,0.16,0.02
+  Slurm.......: 653 jobs running of which 0 jobs are yours (using 0 cores)
+
+To get this dialog again, type hpc_motd.  For a list of HPCF tools type hpc_tools.
+Good afternoon, Edward LaFemina.  Current weather: Partly Cloudy 70.0 F (21.1 C).
+[edlafem1@maya-usr1 ~]$ ssh n71
+Warning: Permanently added 'n71,10.1.0.71' (RSA) to the list of known hosts.
+WARNING: UNAUTHORIZED ACCESS to this computer is in violation of Criminal
+         Law Article section 8-606 and 7-302 of the Annotated Code of MD.
+
+NOTICE:  This system is for the use of authorized users only.
+         Individuals using this computer system without authority, or in
+         excess of their authority, are subject to having all of their
+         activities on this system monitored and recorded by system
+         personnel.
+
+
+
+  UMBC High Performance Computing Facility              http://hpcf.umbc.edu
+  --------------------------------------------------------------------------
+  By using this system you agree with and will adhere to the HPCF usage
+  policy.  If you have any questions or problems using this system please
+  submit a help request via the "Help Request" link found on the HPCF
+  website under "Resources for HPCF Users".
+
+  Remember that the Division of Information Technology will never ask for
+  your password. Do NOT give out this information under any circumstances.
+  --------------------------------------------------------------------------
+
+  Load........: 0.00 (1minute) 0.00 (5minutes) 0.00 (15minutes)
+  Uptime......: 14 days 2 hours 1 minute 44 seconds
+  Memory MB...: 24,149  9,414 used  21,574 avail  14,734 free  0 swap
+  HPC Cluster.: 1841/3192 cores avail  6.62/11.09 TB mem avail  using 6021.76 KW
+  SSH Logins..: Currently 1 session on this box
+  HDFS TotalGB: 28,947.0 UsedGB: 33.0, load min,med,max,std: 0.09,0.11,0.16,0.02
+  Processes...: 396 total running of which 9 are yours
+  Slurm.......: 652 jobs running of which 0 jobs are yours (using 0 cores)
+
+To get this dialog again, type hpc_motd.  For a list of HPCF tools type hpc_tools.
+Good afternoon, Edward LaFemina.
+[edlafem1@n71 ~]$ cls
+total 92K
+drwx------   9 edlafem1 student 4.0K Oct 21 13:22 .
+drwxr-xr-x 470 root     root     20K Oct 16 14:13 ..
+lrwxrwxrwx   1 edlafem1 student   33 Sep 21 18:50 assignments -> student_user/math627/assignments/
+-rw-------   1 edlafem1 student  16K Oct 21 13:25 .bash_history
+-rw-r--r--   1 edlafem1 student   18 Jan 16  2015 .bash_logout
+-rw-r--r--   1 edlafem1 student  176 Jan 16  2015 .bash_profile
+-rw-r--r--   1 edlafem1 student  465 Sep  9 00:40 .bashrc
+-rw-r--r--   1 edlafem1 student  500 Nov 27  2014 .emacs
+drwxrwx---  14 edlafem1 student 4.0K Sep 20 00:28 .felix
+drwxr-xr-x   2 edlafem1 student 4.0K Oct 21 13:22 .fontconfig
+-rw-rw----   1 edlafem1 student   56 Sep  8 19:16 .gitconfig
+lrwxrwxrwx   1 root     root      21 Aug 23 09:42 hadoop_user -> /hadoop/user/edlafem1
+drwxr-x---   3 edlafem1 student 4.0K Aug 30 14:47 intel
+-rw-r--r--   1 edlafem1 student  171 Apr  3  2015 .kshrc
+drwxrwx---   4 edlafem1 student 4.0K Sep  8 19:07 math627
+drwxrwx---   3 edlafem1 student 4.0K Oct 21 13:17 .matlab
+drwxrw----   3 edlafem1 student 4.0K Sep  8 19:11 .pki
+-rw-------   1 edlafem1 student    0 Oct 17 17:43 .python-history
+drwx------   2 edlafem1 student 4.0K Aug 27 22:40 .ssh
+lrwxrwxrwx   1 root     root      27 Aug 26 19:04 student_common -> /umbc/lustre/student/common
+lrwxrwxrwx   1 root     root      35 Aug 26 19:04 student_user -> /umbc/lustre/student/users/edlafem1
+[edlafem1@n71 ~]$ cd assignments/hw5/matlab/
+[edlafem1@n71 matlab]$ top
+top - 13:33:53 up 14 days,  2:02,  1 user,  load average: 0.00, 0.00, 0.00
+Tasks: 384 total,   1 running, 383 sleeping,   0 stopped,   0 zombie
+Cpu(s):  0.9%us,  0.9%sy,  0.0%ni, 98.3%id,  0.0%wa,  0.0%hi,  0.0%si,  0.0%st
+Mem:  24728588k total,  9637596k used, 15090992k free,  1389908k buffers
+Swap: 25165816k total,        0k used, 25165816k free,  5614508k cached
+
+  PID USER      PR  NI  VIRT  RES  SHR S %CPU %MEM    TIME+  COMMAND
+    1 root      20   0 21436 1588 1280 S  0.0  0.0   0:00.91 init
+    2 root      20   0     0    0    0 S  0.0  0.0   0:00.01 kthreadd
+    3 root      RT   0     0    0    0 S  0.0  0.0   0:01.89 migration/0
+[edlafem1@maya-usr1 ~]$ ssh n37
+Warning: Permanently added 'n37,10.1.0.37' (RSA) to the list of known hosts.
+WARNING: UNAUTHORIZED ACCESS to this computer is in violation of Criminal
+         Law Article section 8-606 and 7-302 of the Annotated Code of MD.
+
+NOTICE:  This system is for the use of authorized users only.
+         Individuals using this computer system without authority, or in
+         excess of their authority, are subject to having all of their
+         activities on this system monitored and recorded by system
+         personnel.
+
+
+
+  UMBC High Performance Computing Facility              http://hpcf.umbc.edu
+  --------------------------------------------------------------------------
+  By using this system you agree with and will adhere to the HPCF usage
+  policy.  If you have any questions or problems using this system please
+  submit a help request via the "Help Request" link found on the HPCF
+  website under "Resources for HPCF Users".
+
+  Remember that the Division of Information Technology will never ask for
+  your password. Do NOT give out this information under any circumstances.
+  --------------------------------------------------------------------------
+
+  Uptime......: 0 days 0 hours 40 minutes 24 seconds
+  Load........: 0.00 (1minute) 0.02 (5minutes) 0.05 (15minutes)
+  HPC Cluster.: 1959/3192 cores avail  7.41/11.09 TB mem avail  using 6073.96 KW
+  Memory MB...: 64,508  1,531 used  63,414 avail  62,976 free  0 swap
+  Slurm.......: 652 jobs running of which 0 jobs are yours (using 0 cores)
+  Processes...: 612 total running of which 12 are yours
+  HDFS TotalGB: 28,947.0 UsedGB: 33.0, load min,med,max,std: 0.09,0.11,0.16,0.02
+  SSH Logins..: Currently 1 session on this box
+
+To get this dialog again, type hpc_motd.  For a list of HPCF tools type hpc_tools.
+Good afternoon, Edward LaFemina.
+[edlafem1@n37 ~]$ top
+top - 13:38:09 up 40 min,  1 user,  load average: 0.00, 0.02, 0.05
+Tasks: 599 total,   1 running, 598 sleeping,   0 stopped,   0 zombie
+Cpu(s):  0.1%us,  0.2%sy,  0.0%ni, 99.6%id,  0.2%wa,  0.0%hi,  0.0%si,  0.0%st
+Mem:  66057016k total,  1569728k used, 64487288k free,    24192k buffers
+Swap: 67108856k total,        0k used, 67108856k free,   425356k cached
+
+  PID USER      PR  NI  VIRT  RES  SHR S %CPU %MEM    TIME+  COMMAND
+16107 edlafem1  20   0 17528 1552  856 R  2.0  0.0   0:00.01 top
+    1 root      20   0 21436 1584 1280 S  0.0  0.0   0:01.29 init
+    2 root      20   0     0    0    0 S  0.0  0.0   0:00.00 kthreadd
+    3 root      RT   0     0    0    0 S  0.0  0.0   0:00.00 migration/0
+    4 root      20   0     0    0    0 S  0.0  0.0   0:00.01 ksoftirqd/0
+    5 root      RT   0     0    0    0 S  0.0  0.0   0:00.00 migration/0
+    6 root      RT   0     0    0    0 S  0.0  0.0   0:00.00 watchdog/0
+    7 root      RT   0     0    0    0 S  0.0  0.0   0:00.09 migration/1
+    8 root      RT   0     0    0    0 S  0.0  0.0   0:00.00 migration/1
+    9 root      20   0     0    0    0 S  0.0  0.0   0:00.11 ksoftirqd/1
+   10 root      RT   0     0    0    0 S  0.0  0.0   0:09.82 watchdog/1
+   11 root      RT   0     0    0    0 S  0.0  0.0   0:00.01 migration/2
+   12 root      RT   0     0    0    0 S  0.0  0.0   0:00.00 migration/2
+   13 root      20   0     0    0    0 S  0.0  0.0   0:00.02 ksoftirqd/2
+   14 root      RT   0     0    0    0 S  0.0  0.0   0:00.00 watchdog/2
+   15 root      RT   0     0    0    0 S  0.0  0.0   0:00.63 migration/3
+   16 root      RT   0     0    0    0 S  0.0  0.0   0:00.00 migration/3
+[edlafem1@n37 ~]$
+[edlafem1@n37 ~]$ cd assignments/hw5/matlab/
+[edlafem1@n37 matlab]$ cls
+total 20K
+drwxrwx--- 2 edlafem1 student 4.0K Oct 21 13:16 .
+drwxrwx--- 3 edlafem1 student 4.0K Oct 21 13:15 ..
+-rw-rw---- 1 edlafem1 student 1.6K Jun 21  2012 driver_cg.m
+-rw-rw---- 1 edlafem1 student 1.4K Jun 21  2012 driver_ge.m
+-rw-rw---- 1 edlafem1 student  190 Aug  2  2012 plotxsinx.m
+[edlafem1@n37 matlab]$ matlab
+MATLAB is selecting SOFTWARE OPENGL rendering.
+
+                            < M A T L A B (R) >
+                  Copyright 1984-2015 The MathWorks, Inc.
+                   R2015a (8.5.0.197613) 64-bit (glnxa64)
+                             February 12, 2015
+
+
+To get started, type one of these: helpwin, helpdesk, or demo.
+For product information, visit www.mathworks.com.
+
+
+        Academic License
+
+>> driver_cg(32)
+Warning: MATLAB has disabled some advanced graphics rendering features by
+switching to software OpenGL. For more information, click <a
+href="matlab:opengl('problems')">here</a>.
+N =    32
+tol =    1.0e-06, maxit = 99999
+flag = 0, iter = 48, relres =   5.5636640693516110e-07
+h                  =   3.0303030303030304e-02
+h^2                =   9.1827364554637292e-04
+enorminf           =   3.0127765546471563e-03
+C = enorminf / h^2 =   3.2809136680107529e+00
+wall clock time    =       0.42 seconds
+>>
+>>
+>>
+>>
+>> driver_cg(32)
+N =    32
+tol =    1.0e-06, maxit = 99999
+flag = 0, iter = 48, relres =   5.5636640693516110e-07
+h                  =   3.0303030303030304e-02
+h^2                =   9.1827364554637292e-04
+enorminf           =   3.0127765546471563e-03
+C = enorminf / h^2 =   3.2809136680107529e+00
+wall clock time    =       0.01 seconds
+>> driver_cg(64)
+N =    64
+tol =    1.0e-06, maxit = 99999
+flag = 0, iter = 96, relres =   7.0188563006243075e-07
+h                  =   1.5384615384615385e-02
+h^2                =   2.3668639053254440e-04
+enorminf           =   7.7810619700680039e-04
+C = enorminf / h^2 =   3.2874986823537311e+00
+wall clock time    =       0.04 seconds
+>> driver_cg(6128)
+Operation terminated by user during kron (line 48)
+
+
+In driver_cg>setupA (line 61)
+  A = kron(I,T) + kron(T,I);
+
+In driver_cg (line 12)
+  A = setupA(N);
+
+>> exit
+[edlafem1@n37 matlab]$
+[edlafem1@n37 matlab]$
+[edlafem1@n37 matlab]$ clear
+[edlafem1@n37 matlab]$ matlab
+MATLAB is selecting SOFTWARE OPENGL rendering.
+
+                            < M A T L A B (R) >
+                  Copyright 1984-2015 The MathWorks, Inc.
+                   R2015a (8.5.0.197613) 64-bit (glnxa64)
+                             February 12, 2015
+
+
+To get started, type one of these: helpwin, helpdesk, or demo.
+For product information, visit www.mathworks.com.
+
+
+        Academic License
+
+>> driver_ge(32)
+Warning: MATLAB has disabled some advanced graphics rendering features by
+switching to software OpenGL. For more information, click <a
+href="matlab:opengl('problems')">here</a>.
+N =    32
+h                  =   3.0303030303030304e-02
+h^2                =   9.1827364554637292e-04
+enorminf           =   3.0127943178556160e-03
+C = enorminf / h^2 =   3.2809330121447653e+00
+wall clock time    =       0.03 seconds
+>> driver_ge(64)
+N =    64
+h                  =   1.5384615384615385e-02
+h^2                =   2.3668639053254440e-04
+enorminf           =   7.7812147640843321e-04
+C = enorminf / h^2 =   3.2875632378256299e+00
+wall clock time    =       0.01 seconds
+>> driver_ge(32)
+N =    32
+h                  =   3.0303030303030304e-02
+h^2                =   9.1827364554637292e-04
+enorminf           =   3.0127943178556160e-03
+C = enorminf / h^2 =   3.2809330121447653e+00
+wall clock time    =       0.00 seconds
+>> driver_ge(128)
+N =   128
+h                  =   7.7519379844961239e-03
+h^2                =   6.0092542515473829e-05
+enorminf           =   1.9766136774213017e-04
+C = enorminf / h^2 =   3.2892828205967883e+00
+wall clock time    =       0.36 seconds
+>> driver_ge(256)
+N =   256
+h                  =   3.8910505836575876e-03
+h^2                =   1.5140274644582053e-05
+enorminf           =   4.9807274568713922e-05
+C = enorminf / h^2 =   3.2897206779889858e+00
+wall clock time    =       0.15 seconds
+>> driver_ge(256)
+N =   256
+h                  =   3.8910505836575876e-03
+h^2                =   1.5140274644582053e-05
+enorminf           =   4.9807274568713922e-05
+C = enorminf / h^2 =   3.2897206779889858e+00
+wall clock time    =       0.14 seconds
+>> driver_ge(512)
+N =   512
+h                  =   1.9493177387914229e-03
+h^2                =   3.7998396467669058e-06
+enorminf           =   1.2500832076267621e-05
+C = enorminf / h^2 =   3.2898314766792738e+00
+wall clock time    =       0.67 seconds
+>> driver_ge(1024)
+N =  1024
+h                  =   9.7560975609756097e-04
+h^2                =   9.5181439619274241e-07
+enorminf           =   3.1313404715849202e-06
+C = enorminf / h^2 =   3.2898645829589070e+00
+wall clock time    =       3.15 seconds
+>> driver_ge(2048)
+N =  2048
+h                  =   4.8804294777940460e-04
+h^2                =   2.3818591887721065e-07
+enorminf           =   7.8362162447831452e-07
+C = enorminf / h^2 =   3.2899578118313801e+00
+wall clock time    =      15.99 seconds
+>> driver_ge(4096)
+N =  4096
+h                  =   2.4408103490358799e-04
+h^2                =   5.9575551599606540e-08
+enorminf           =   1.9608351109479116e-07
+C = enorminf / h^2 =   3.2913419318821076e+00
+wall clock time    =      70.87 seconds
+>> driver_ge(8192)
+N =  8192
+h                  =   1.2205541315757354e-04
+h^2                =   1.4897523881065976e-08
+enorminf           =   4.9362982812439782e-08
+C = enorminf / h^2 =   3.3135025126677404e+00
+wall clock time    =     408.65 seconds
+>> driver_ge(16384)
