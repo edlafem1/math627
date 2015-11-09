@@ -122,20 +122,19 @@ int main(int argc, char **argv) {
     MPI_Barrier(MPI_COMM_WORLD);
     end_time = MPI_Wtime();
 
-    if (id == 0) {
-        printf("elapsed time: %f\n", (end_time - start_time));
-    }
 
-    printf("---------------\nl_x:\n");
-    for (i = 0; i<l_n; i++) {
-        printf("%f\n", l_x[i]);
+    if (id == np - 1) {
+        printf("---------------\nl_x:\n");
+        for (i = 0; i < l_n; i++) {
+            printf("%f\n", l_x[i]);
+        }
+        printf("---------------\n");
     }
-    printf("---------------\n");
     if (id == 0) {
         printf("relres %22.16e\n", relres);
         printf("iter %d\n", iter);
+        printf("elapsed time: %f\n", (end_time - start_time));
     }
-
 
 
     free_vector(x);
