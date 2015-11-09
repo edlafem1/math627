@@ -1,6 +1,6 @@
-OBJS := main.o memory.o utilities.o lin_alg.o
+OBJS := main.o utilities.o Ax.o cg.o
 
-EXECUTABLE := power
+EXECUTABLE := poisson
 
 # choose compiler:
 CC := mpiicc
@@ -14,9 +14,7 @@ CFLAGS := -O3 -std=c99 -Wall -mkl
 # flags for GNU compiler gcc anywhere:
 # CFLAGS := -O3 -std=c99 -Wall -Wno-unused-variable
 
-DEFS := -DBLAS -DPARALLEL
-#  -DPARALLEL
-# -DBLAS
+DEFS :=
 INCLUDES :=
 LDFLAGS := -lm
 

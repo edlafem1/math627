@@ -13,4 +13,6 @@ double parallel_dot(double *l_x, double *l_y, int l_n, MPI_Comm comm);
 
 double *allocate_double_vector(int n);
 
+void free_vector(void *x);
+
 #endif

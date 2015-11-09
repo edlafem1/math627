@@ -112,7 +112,7 @@ int main(int argc, char argv[]) {
         idright = MPI_PROC_NULL;
     }
 
-    MPI_Barrier();
+    MPI_Barrier(MPI_COMM_WORLD);
     start_time = MPI_Wtime();
     
 
@@ -120,7 +120,7 @@ int main(int argc, char argv[]) {
         l_r, tol, maxit,            /*input*/
         l_p, l_q, l_n, l_N, N, id, idleft, idright, np, MPI_COMM_WORLD, gl, gr);
 
-    MPI_Barrier();
+    MPI_Barrier(MPI_COMM_WORLD);
     end_time = MPI_Wtime();
 
     if (id == 0) {
