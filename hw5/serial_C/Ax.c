@@ -9,8 +9,8 @@ void Ax(double *l_v, double *l_u, int l_n, int l_N, int N,
     double temp;
     MPI_Status status, stat;
 
-    if (1 == 1) {
-
+    if (1 == 0) {
+        // eli code
         if (id % 2 == 0) {
             MPI_Recv(gl, N, MPI_DOUBLE, idleft, 1, comm, &stat);
             MPI_Recv(gr, N, MPI_DOUBLE, idright, 2, comm, &stat);
