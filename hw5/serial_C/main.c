@@ -123,9 +123,16 @@ int main(int argc, char **argv) {
     end_time = MPI_Wtime();
 
     if (np > 1) {
-        double *full;
+        double *full = allocate_double_vector(n);
+        MPI_Gather(l_x, l_n, MPI_DOUBLE, full, l_n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        if (id == 0) {
+            for (i = 0; i < n; i++) {
+                printf("%i: %f\n", id, full[i]);
+            }
+        }
+        free_vector(full);
     }
-
+    /*
     for (int qq = 0; qq < np; qq++) {
         if (id == qq)
             for (i = 0; i < l_n; i++) {
@@ -133,6 +140,7 @@ int main(int argc, char **argv) {
             }
         MPI_Barrier(MPI_COMM_WORLD);
     }
+    /*
     /*
     if (id == np - 1) {
         printf("---------------\nl_x:\n");
