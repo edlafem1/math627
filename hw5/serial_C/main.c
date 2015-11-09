@@ -1,4 +1,4 @@
-#include "cg.h"
+#include "cg.h"
 
 int main(int argc, char **argv) {
     int i, j, id, np, processor_name_len;
@@ -9,7 +9,6 @@ int main(int argc, char **argv) {
     double *x, *y, *gl, *gr;
     double h, tol, relres;
 
-    MPI_Status stat;
     MPI_Init(&argc, &argv);
 
     /* Check processes: */
@@ -149,9 +148,15 @@ int main(int argc, char **argv) {
     }
     */
     if (id == 0) {
-        printf("relres %22.16e\n", relres);
-        printf("iter %d\n", iter);
-        printf("elapsed time: %f\n", (end_time - start_time));
+        printf("%15s %15s %22s %15s %22s\n", "N", "DOF", "relres", "iter", "time");
+        printf("%15d %15d %22.16e %15d %22.16e\n", N, (double)N*N, relres, iter, (end_time - start_time));
+        /*
+        printf("N:            %d\n", N);
+        printf("DOF:          %d\n", N*(double)N);
+        printf("relres:       %22.16e\n", relres);
+        printf("iter:         %d\n", iter);
+        printf("elapsed time: %22.16e\n", (end_time - start_time));
+        */
     }
 
 
