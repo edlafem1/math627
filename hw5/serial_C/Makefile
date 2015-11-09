@@ -8,13 +8,13 @@ CC := mpiicc
 
 # choose flags:
 # flags for Intel compiler icc on maya:
-CFLAGS := -O3 -std=c99 -Wall -mkl
+CFLAGS := -O3 -std=c99 -Wall
 # flags for Portland Group compiler pgcc on maya:
 # CFLAGS := -O3 -c99 -Minform=warn -fastsse
 # flags for GNU compiler gcc anywhere:
 # CFLAGS := -O3 -std=c99 -Wall -Wno-unused-variable
 
-DEFS :=
+DEFS := -DPARALLEL
 INCLUDES :=
 LDFLAGS := -lm
 
