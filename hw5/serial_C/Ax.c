@@ -8,9 +8,9 @@ void Ax(double *l_v, double *l_u, int l_n, int l_N, int N,
     int i, l_j, j;
     double temp;
 
-    goto A
 
     MPI_Status status;
+    goto A;
 
     ///////////////////////////////////////////////////////////////////////////////////
     MPI_Status statuses[4];
