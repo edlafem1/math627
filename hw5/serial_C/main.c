@@ -1,6 +1,6 @@
 #include "cg.h"
 
-int main(int argc, char argv[]) {
+int main(int argc, char **argv) {
     int i, j, id, np, processor_name_len;
     int maxit, idleft, idright, flag, iter;
     char processor_name[MPI_MAX_PROCESSOR_NAME];
