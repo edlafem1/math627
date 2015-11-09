@@ -1,8 +1,6 @@
 #ifndef AX_H
 #define AX_H
 
-#include <mpi.h>
-
 #include "main.h"
 
 void Ax(double *l_v, double *l_u, int l_n, int l_N, int N,
