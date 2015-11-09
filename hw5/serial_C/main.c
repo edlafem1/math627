@@ -30,10 +30,10 @@ int main(int argc, char **argv) {
     dimensions = atoi(argv[2]);
 
     if (dimensions == 2) {
-        n = (N*N);
+        n = N*N;
     }
     else if (dimensions == 3) {
-        n = (N*N*N);
+        n = N*N*N;
     }
     else {
         printf("Error: dimensions must equal 2 or 3");
@@ -83,16 +83,11 @@ int main(int argc, char **argv) {
     for (i = 1; i <= N; i++) {
         x[i - 1] = i*h;
         y[i - 1] = i*h;
-        //printf("x[%i]= %f",i, x[i]);
     }
 
     /*Setup B*/
     setupB(l_r, x, y, l_N, N, h, id);
-    /*
-    for (i = 0; i<l_N*N; i++) {
-        printf("l_r[%i]= %f\n", i, l_r[i]);
-    }
-    */
+
     tol = 1.0e-6;
     maxit = 99999;
 
@@ -121,32 +116,17 @@ int main(int argc, char **argv) {
     MPI_Barrier(MPI_COMM_WORLD);
     end_time = MPI_Wtime();
 
-        double *full = allocate_double_vector(n);
-        MPI_Gather(l_x, l_n, MPI_DOUBLE, full, l_n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-        if (id == 0) {
-            for (i = 0; i < n; i++) {
-                printf("%i: % -24.16e\n", id, full[i]);
-            }
-        }
-        free_vector(full);
     /*
-    for (int qq = 0; qq < np; qq++) {
-        if (id == qq)
-            for (i = 0; i < l_n; i++) {
-                printf("%i: %f\n", id, l_x[i]);
-            }
-        MPI_Barrier(MPI_COMM_WORLD);
-    }
-    */
-    /*
-    if (id == np - 1) {
-        printf("---------------\nl_x:\n");
-        for (i = 0; i < l_n; i++) {
-            printf("%f\n", l_x[i]);
+    double *full = allocate_double_vector(n);
+    MPI_Gather(l_x, l_n, MPI_DOUBLE, full, l_n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    if (id == 0) {
+        for (i = 0; i < n; i++) {
+            printf("%i: % -24.16e\n", id, full[i]);
         }
-        printf("---------------\n");
     }
+    free_vector(full);
     */
+
     if (id == 0) {
         printf("%15s %15s %22s %15s %22s\n", "N", "DOF", "relres", "iter", "time");
         printf("%15d %15.f %22.16e %15d %22.16e\n", N, (double)N*N, relres, iter, (end_time - start_time));
