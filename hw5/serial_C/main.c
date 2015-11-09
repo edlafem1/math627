@@ -1,4 +1,4 @@
-#include "cg.h"
+#include "main.h"
 
 int main(int argc, char **argv) {
     int i, j, id, np, processor_name_len;
