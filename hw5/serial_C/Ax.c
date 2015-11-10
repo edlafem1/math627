@@ -8,6 +8,7 @@ void Ax(double *l_v, double *l_u, int l_n, int l_N, int N,
     int i, l_j, j;
     double temp;
 
+#ifdef PARALLEL
     MPI_Status status;
     ///////////////////////////////////////////////////////////////////////////////////
     MPI_Status statuses[4];
@@ -36,6 +37,9 @@ void Ax(double *l_v, double *l_u, int l_n, int l_N, int N,
         MPI_Recv(gl, N, MPI_DOUBLE, idleft, 1, MPI_COMM_WORLD, &status);
     }
 #endif
+#endif
+
+#ifndef PARALLEL
     /*------------------Block A------------------*/
     // this is serial code
     for (l_j = 0; l_j < l_N; l_j++) {
@@ -50,7 +54,7 @@ void Ax(double *l_v, double *l_u, int l_n, int l_N, int N,
             l_v[i + N*l_j] = temp;
         }
     }
-
+#else
     /*------------------Block B------------------*/
     for (l_j = 1; l_j < l_N - 1; l_j++) {
         for (i = 0; i < N; i++) {
@@ -93,4 +97,5 @@ void Ax(double *l_v, double *l_u, int l_n, int l_N, int N,
 
         l_v[i + N*l_j] = temp;
     }
+#endif
 }
