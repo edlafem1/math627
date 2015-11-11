@@ -117,14 +117,15 @@ int main(int argc, char **argv) {
     end_time = MPI_Wtime();
 
     
+    /*
     double *full = allocate_double_vector(n);
     MPI_Gather(l_x, l_n, MPI_DOUBLE, full, l_n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
     double diff_norm = fd_norm(full, h, N);
-    /*
     if (id == 0) {
         for (i = 0; i < n; i++) {
             printf("%i: % -24.16e\n", id, full[i]);
         }
+        //printf("||u-u_h||=%22.16e\n", diff_norm);
     }
     */
     free_vector(full);
@@ -133,7 +134,6 @@ int main(int argc, char **argv) {
     if (id == 0) {
         printf("%15s %15s %22s %15s %22s\n", "N", "DOF", "relres", "iter", "time");
         printf("%15d %15.f %22.16e %15d %22.16e\n", N, (double)N*N, relres, iter, (end_time - start_time));
-        printf("||u-u_h||=%22.16e\n", diff_norm);
         /*
         printf("N:            %d\n", N);
         printf("DOF:          %d\n", N*(double)N);
