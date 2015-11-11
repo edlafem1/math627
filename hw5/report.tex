@@ -33,15 +33,16 @@
 \begin{document}
 \maketitle
 
-\section*{Abstract}
-
+\begin{abstract}
+This paper will describe the results of solving the Poisson problem with homogeneous Dirichlet boundary by the discretized finite difference method conditions on the maya 2013 cluster. The specific goal is to compare blocking and non-blocking communication between processes using MPI functions. We first perform the conjugate gradient method of solving this problem using Matlab. We then use a serial matrix-vector product function and serial dot-product function in a conjugate gradient function provided by Dr. Gobbert. We then move to parallelize our computation by writing a parallel matrix-vector product function. Because we must divide the matrix, we must communicate some points of our domain to other processes and receive some in return. It is here that we make our comparison. Due to high utilization of maya 2013, we were not able to obtain any results at this time and cannot make a recommendation  on blocking vs non-blocking communication.
+\end{abstract}
 \section{Introduction}
 The MPI programming package is used to facilitate communications between processes running in parallel on potentially massively distributed sytsems. Basic send and receive operations can be either blocking or non-blocking. Blocking communications causes the calling process to stall while waiting for a message to be delivered to another process, or waiting on a message from another process. We will be comparing performance of Matlab, serial C code, parallel C code with blocking communications, and parallel C code with non-blocking communications. To do so, we will work on a classical test problem given by the numerical solution with finite differences for the Poisson problem with homogeneous Dirichlet boundary conditions.
 
 All computation is performed on any of the 72 nodes in maya 2013, each with two eight-core 2.6 GHz Intel E5-2650v2 Ivy Bridge CPUs with 64GB of memory per node. Nodes are connected by a high-speed quad-data rage InfiniBand network. The Intel C compiler version 14.0 is used with options \texttt{-std=c99 -Wall -O3} with Intel MPI version 4.1. When running tests, we required exclusive access to a node, even if we only used a single core.
 
 \section{Problem Statement}
-The Poisson problem with homogeneious Dirichlet boundary conditions, given as
+The Poisson problem with homogeneous Dirichlet boundary conditions, given as
 \begin{align*}
 &-\triangle u=f &\text{in}\hspace{1em}& \Omega\\
 &u=0            &\text{on}\hspace{1em}& \partial\Omega
@@ -87,7 +88,6 @@ N & DOF & $||u-u_h||$ & Ratio & \#iter & Time(s) \\
 
 \subsection{Serial C}
 Unlike Matlab, C has no built in functions to perform matrix operations or the conjugate gradient method. To best follow the Matlab code, we reused a serial matrix-vector function we developed previously as well as a serial dot product function developed previously. The code to perform the conjugate gradient method was supplied by Dr. Gobbert. All that remained for us to do is setup the $b$ vector by calculating $h^2 * f(x_i, y_i)$. Below is a table representing a convergence study done on the serial code to determine correctness of results and also display expected vs actual memory usage. All tests were run using $1$ node with $1$ process per node. In all cases we were well below the maximum number of iterations we specified(99999) and the number of iterations taken is the same as the number taken by the Matlab implementation of our code. This indicates that the solution our code is calculating matches that given by the Matlab code. It should be noted that the Ratio and finite difference are not as expected. This could indicate error in the calculations of the solution, or it could be an error in the calculation of the norm of the finite difference. Because the number of iterations is the same for both the C code and Matlab code, we believe the error to be in calculating the norm of the finite difference.
-
 \begin{table}[!htbp]
 \makebox[\linewidth]{
 \begin{tabular}{ |c|c|c|c|c|c|c|c|  }
@@ -113,7 +113,6 @@ N & DOF & $||u-u_h||$ & Ratio & \#iter & Time(s) & Predicted Memory(GB) & Actual
 \end{tabular}
 }
 \end{table}
-\pagebreak
 
 \subsection{Parallel C - Blocking}
 Progressing from serial code, we parallelized our matrix-vector product function. Because we used a colunn major storage format, splitting the matrix $A$ over several processes by dividing it into blocks of columns is equivalent to dividing the domain $\Omega$ into subdomains horizontally. This meant that the computation at the points on the top and bottom rows of our subdomain relied on points stored on another process, and possibly another processor. To handle this, we first sent the points we stored locally to processes that would need them and waited to receive the points we needed. Because we used blocking communication for this stage, our process waited for the communicaton to stop and then moved on to perform computation at the interior points of our subdomain and lastly performed computation on the boundry points.
@@ -135,14 +134,6 @@ N & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes & 32 nodes & 64 nodes \\
 1024 & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
 2048 & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
 \hline
-\end{tabular}
-}
-\end{table}
-\pagebreak
-
-\begin{table}[!htbp]
-\makebox[\linewidth]{
-\begin{tabular}{ |c|c|c|c|c|c|c|c|  }
 \hline
 \multicolumn{8}{|c|}{(b) Mesh resolution N $\times$ N = 2048 $\times$ 2048, system dimension 4,194,304}\\
 \hline
@@ -195,6 +186,13 @@ N & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes & 32 nodes & 64 nodes \\
 1024 & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
 2048 & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
 \hline
+\end{tabular}
+}
+\end{table}
+
+\begin{table}[!htbp]
+\makebox[\linewidth]{
+\begin{tabular}{ |c|c|c|c|c|c|c|c|  }
 \hline
 \multicolumn{8}{|c|}{(f) Mesh resolution N $\times$ N = 32768 $\times$ 32768, system dimension 1,073,741,824}\\
 \hline
@@ -211,13 +209,13 @@ N & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes & 32 nodes & 64 nodes \\
 \end{tabular}
 }
 \end{table}
-
-
+\pagebreak
+\pagebreak
 \subsection{Parallel C - Non-Blocking}
 To change from blocking to non-blocking communication, we simply had to change the function names we were already using to the ones that indicated non-blocking communication and add a different set of parameters that are MPI specific and do not affect any of the computations. Because we start the communication before any computation, the non-blocking nature of the communication allows the program to start computations on interior points while it waits for the communication to finish. After the interior point computations are complete, we make sure the communications are finished by using the MPI\_Waitall function to block for a short time while any ongoing communication is finished. Below is a table of times for the same run configuration as above, but this time using non-blocking communication functions.
 \begin{table}[!htbp]
 \makebox[\linewidth]{
-\begin{tabular}{ |c|c|c|c|c|c|c|c|  }
+\begin{tabular}{ |c|c|c|c|c|c|c|c| }
 \hline
 \multicolumn{8}{|c|}{(a) Mesh resolution N  $\times$  N = 1024 $\times$ 1024, system dimension 1,048,576}\\
 \hline
@@ -270,6 +268,13 @@ N & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes & 32 nodes & 64 nodes \\
 1024 & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
 2048 & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
 \hline
+\end{tabular}
+}
+\end{table}
+
+\begin{table}[!htbp]
+\makebox[\linewidth]{
+\begin{tabular}{ |c|c|c|c|c|c|c|c|  }
 \hline
 \multicolumn{8}{|c|}{(e) Mesh resolution N $\times$ N = 16384 $\times$ 16384, system dimension 268,435,456}\\
 \hline
@@ -301,7 +306,11 @@ N & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes & 32 nodes & 64 nodes \\
 \end{table}
 \pagebreak
 \section{Conclusions}
+Due to high utilization of the maya cluster, very little data was able to be collected and thus we cannot draw any conclusions at this time.
+\section*{References}
 
+$\left[2\right]$  Ecaterina Coman, Matthew Brewster, et al. A Comparative Evaluation of Matlab, Octave, FreeMat, Scilab, R, and IDL on Tara. Technical Report HPCF–2012-15, UMBC High Performance Computing Facility, University of Maryland, Baltimore County, 2012.\\
+$\left[2\right]$  Samuel Khuvis and Matthias Gobbert. Parallel Performance Studies for an Elliptic Test Problem on the Cluster maya. Technical Report HPCF–2015-6, UMBC High Performance Computing Facility, University of Maryland, Baltimore County, 2015.
 \end{document}
 
 
