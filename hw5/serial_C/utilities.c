@@ -60,31 +60,7 @@ void free_vector(void *x)
     free(x);
 }
 
+double fd_norm() {
 
-
-/*
-Need to make my parallel_dot function work with his cg.c
-Make Ax function do blocks A, B, D(C is a waitAll)
-    communication can be done after block B
-
-
-In main:
-    In 2-dimensions, N=n*n
-    l_N = N/np;
-    l_n = n/np
-    allocate variables
-    h=1/(N+1)
-    setup X and Y
-    setupB
-
-    tolerance stuff
-    if(id>0) idleft=id-1;
-    else     idleft=MPI_PROC_NULL;
-    if(id<np-1) idright=id+1;
-    else        idright=MPI_PROC_NULL;
-
-    call cg(); //solution vector is l_x
-
-    print results
-*/
+}
 
