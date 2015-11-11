@@ -1,0 +1,158 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+\usepackage[table]{xcolor}
+ 
+\usepackage{xcolor}
+\usepackage{listings}
+
+\lstdefinestyle{customc}{
+  belowcaptionskip=1\baselineskip,
+  breaklines=true,
+  frame=L,
+  xleftmargin=\parindent,
+  language=C,
+  showstringspaces=false,
+  basicstyle=\footnotesize\ttfamily,
+  keywordstyle=\bfseries\color{green!40!black},
+  commentstyle=\ttfamily\color{purple!40!black},
+  identifierstyle=\color{blue},
+  stringstyle=\color{orange},
+}
+\lstset{escapechar=@,style=customc}
+
+\usepackage{graphicx}
+
+\author{Edward LaFemina \\
+		\it{University of Maryland, Baltimore County}}
+
+\title{A Comparison of Blocking and Non-Blocking Communications}
+\date{\today}
+\begin{document}
+\maketitle
+
+\section*{Abstract}
+
+\section{Introduction}
+The MPI programming package is used to facilitate communications between processes running in parallel on potentially massively distributed sytsems. Basic send and receive operations can be either blocking or non-blocking. Blocking communications causes the calling process to stall while waiting for a message to be delivered to another process, or waiting on a message from another process. We will be comparing performance of Matlab, serial C code, parallel C code with blocking communications, and parallel C code with non-blocking communications. To do so, we will work on a classical test problem given by the numerical solution with finite differences for the Poisson problem with homogeneous Dirichlet boundary conditions.
+
+\section{Problem Statement}
+The Poisson problem with homogeneious Dirichlet boundary conditions, given as
+\begin{align*}
+&-\triangle u=f &\text{in}\hspace{1em}& \Omega\\
+&u=0            &\text{on}\hspace{1em}& \partial\Omega
+\end{align*}
+Here, $\partial\Omega$ denotes teh boundry of the domain $\Omega$ and the Laplace operator is defined as
+$$\triangle u=\frac{\partial ^2 u}{\partial x^2}+\frac{\partial ^2 u}{\partial y^2}.$$
+We will consider the problem on the two dimensional unit squre $\Omega=(0,1)\times (0,1)\subset \mathbb{R}^2$. Thus, we can rewrite the boundry conditions previously stated as
+\begin{align*}
+&-\frac{\partial ^2 u}{\partial x^2}-\frac{\partial ^2 u}{\partial y^2}=f(x,y)&\\
+&u(0,y)=u(1,y)=u(x,0)=u(x,1)=0 &
+\end{align*}
+$\text{for}\hspace{1em} 0<x<1,\hspace{1em} 0<y<1$ where $f$ is given as
+$$f(x,y)=-2\pi ^2 cos(2\pi x)sin^2 (\pi y)-2\pi ^2 sin^2(\pi x)cos(2\pi y).$$
+This problem is designed to yield the true solution
+$$u(x,y)=sin^2 (\pi x)sin^2 (\pi y).$$
+\section{Numerical Method}
+To solve the Poisson problem with homogeneous Dirichlet boundry conditions, we have discretized it on a mesh of points $\Omega_h ={(x_i, y_j)=(ih,jh),i,j=0,...N+1}$ with uniform mesh width $h=\frac{1}{N+1}$. This yields equations that ban be organized into a linear system $Au=b$ of $N^2$ equations for approximations of $u_{i,j}$[1\S 3.2]. Because of our boundry conditions, we know there are exactly $N^2$ unknowns. From [5,14] we understand the matrix $A$ is symmetric and positive definite, implying the linear system has a unique solution and also guarantees that the iterative conjugate gradient method converges. For details about how the matrix $A$ and vector $b$ are constructed, see HCPF-2012-15\S3.2[1].
+
+To confirm the convergence of the finite difference method, we use the finite difference error. This is defined as the difference between the true solution $u(x,y)$ and the calculated numeric solution defined on the mesh points $u_x(x_i,y_i)=u_{i,j}$. We expect that as $N$ gets larger and $h=\frac{1}{N+1}$ gets smaller the finite difference error denoted $||u-u_h||$ will become smaller. We can then expect the ratio of errors on consecutively refined meshes to approach $4$ by looking at Eqn. 3.7 from HPCF-2012-15[1]. If the ratio we compute approaches $4$, we can be confident that our approximations are converging to the true solution.
+
+
+\section{Results}
+
+\subsection{Matlab}
+Matlab code using the conjugate gradient method to solve the Poisson problem with homogeneous Dirichlet boundry conditions was provided by Dr. Gobbert. Below are results from running the conjugate gradient method in Matlab at various values of $N$. Notice that as $N$ increases, the ratio of the finite difference error converges to $4$, indicating that our approximation converges to the true solution as we increase $N$.
+\begin{table}[!htbp]
+\makebox[\linewidth]{
+\begin{tabular}{ |c|c|c|c|c|c|  }
+\hline
+\multicolumn{6}{|c|}{Wall Time in minutes}\\
+\hline
+N & DOF & $||u-u_h||$ & Ratio & \#iter & Time \\
+\hline
+32   & 1024    & 3.012e-3 & N/A    & 48   & 0.03 \\
+64   & 4096    & 7.781e-4 & 3.8719 & 96   & 1.42   \\
+128  & 16384   & 1.976e-4 & 3.9368 & 192  & 16.51  \\
+256  & 65536   & 4.979e-5 & 3.9691 & 387  & 139.42 \\
+512  & 262144  & 1.249e-5 & 3.9857 & 783  & (788)  \\
+1024 & 1048576 & 3.126e-6 & 3.9960 & 1581 & (6498) \\
+2048 & 4194304 & 7.801e-7 & 4.0075 & 3192 & (6498) \\
+\hline
+\end{tabular}
+}
+\end{table}
+
+\subsection{Serial C}
+Unlike Matlab, C has no built in functions to perform matrix operations or the conjugate gradient method. To best follow the Matlab code, we reused a serial matrix-vector function we developed previously as well as a serial dot product function developed previously. The code to perform the conjugate gradient method was supplied by Dr. Gobbert. All that remained for us to do is setup the $b$ vector by calculating $h^2 * f(x_i, y_i)$. Below is a table representing a convergence study done on the serial code to determine correctness of results and also display expected vs actual memory usage. All tests were run using $1$ node with $1$ process per node.
+
+
+\subsection{Parallel C - Blocking}
+Progressing from serial code, we parallelized our matrix-vector product function. Because we used a colunn major storage format, splitting the matrix $A$ over several processes by dividing it into blocks of columns is equivalent to dividing the domain $\Omega$ into subdomains horizontally. This meant that the computation at the points on the top and bottom rows of our subdomain relied on points stored on another process, and possibly another processor. To handle this, we first sent the points we stored locally to processes that would need them and waited to receive the points we needed. Because we used blocking communication for this stage, our process waited for the communicaton to stop and then moved on to perform computation at the interior points of our subdomain and lastly performed computation on the boundry points.
+Below is a table of every possible combination of processors per node and number of processors for $1,2,4,8,$ and $15$ processes per node and $1,2,4,8,16,32,$ and $64$ nodes at all values of $N=1024, 2048, 4096, 8192, 16384, 32768$.
+
+\begin{table}[!htbp]
+\makebox[\linewidth]{
+\begin{tabular}{ |c|c|c|c|c|c|  }
+\hline
+\multicolumn{6}{|c|}{Wall Time in minutes}\\
+\hline
+N & DOF & $||u-u_h||$ & Ratio & \#iter & Time \\
+\hline
+32   & 1024    & 3.012e-3 & N/A    & 48   & 0.03 \\
+64   & 4096    & 7.781e-4 & 3.8719 & 96   & 1.42   \\
+128  & 16384   & 1.976e-4 & 3.9368 & 192  & 16.51  \\
+256  & 65536   & 4.979e-5 & 3.9691 & 387  & 139.42 \\
+512  & 262144  & 1.249e-5 & 3.9857 & 783  & (788)  \\
+1024 & 1048576 & 3.126e-6 & 3.9960 & 1581 & (6498) \\
+2048 & 4194304 & 7.801e-7 & 4.0075 & 3192 & (6498) \\
+
+\hline
+\hline
+\multicolumn{6}{|c|}{Speedup}\\
+\hline
+N & DOF & $||u-u_h||$ & Ratio & \#iter & Time \\
+\hline
+32   & 1024    & 3.012-3 & N/A    & 48   & 0.03 \\
+64   & 4096    & 7.781-4 & 3.8719 & 96   & 1.42   \\
+128  & 16384   & 1.976-4 & 3.9368 & 192  & 16.51  \\
+256  & 65536   & 4.979-5 & 3.9691 & 387  & 139.42 \\
+512  & 262144  & 1.249-5 & 3.9857 & 783  & (788)  \\
+1024 & 1048576 & 3.126-6 & 3.9960 & 1581 & (6498) \\
+2048 & 4194304 & 7.801-7 & 4.0075 & 3192 & (6498) \\
+\hline
+\end{tabular}
+}
+\end{table}
+
+\subsection{Parallel C - Non-Blocking}
+To change from blocking to non-blocking communication, we simply had to change the function names we were already using to the ones that indicated non-blocking communication and add a different set of parameters that are MPI specific and do not affect any of the computations. Because we start the communication before any computation, the non-blocking nature of the communication allows the program to start computations on interior points while it waits for the communication to finish. After the interior point computations are complete, we make sure the communications are finished by using the MPI\_Waitall function to block for a short time while any ongoing communication is finished. Below is a table of times for the same run configuration as above, but this time using non-blocking communication functions.
+
+\section{Conclusions}
+
+\end{document}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
