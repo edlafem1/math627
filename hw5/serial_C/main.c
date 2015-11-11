@@ -117,18 +117,18 @@ int main(int argc, char **argv) {
     end_time = MPI_Wtime();
 
     
+    /*
     double *full = allocate_double_vector(n);
     MPI_Gather(l_x, l_n, MPI_DOUBLE, full, l_n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
     double diff_norm = fd_norm(full, h, N);
     if (id == 0) {
-    /*
         for (i = 0; i < n; i++) {
             printf("%i: % -24.16e\n", id, full[i]);
         }
-    */
         printf("||u-u_h||=%22.16e\n", diff_norm);
     }
     free_vector(full);
+    */
     
 
     if (id == 0) {
