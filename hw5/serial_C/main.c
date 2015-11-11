@@ -127,8 +127,8 @@ int main(int argc, char **argv) {
         }
         //printf("||u-u_h||=%22.16e\n", diff_norm);
     }
-    */
     free_vector(full);
+    */
     
 
     if (id == 0) {
