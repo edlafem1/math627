@@ -61,6 +61,6 @@ void free_vector(void *x)
 }
 
 double fd_norm() {
-
+    return 0;
 }
 
