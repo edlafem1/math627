@@ -5,7 +5,7 @@ int main(int argc, char **argv) {
     int maxit, idleft, idright, flag, iter;
     char processor_name[MPI_MAX_PROCESSOR_NAME];
     int dimensions, N, l_N, n, l_n;
-    double *l_r, *l_x, *l_p, *l_q;
+    double *l_r, *l_u, *l_p, *l_q;
     double *x, *y, *gl, *gr;
     double h, tol, relres;
 
@@ -62,7 +62,7 @@ int main(int argc, char **argv) {
         fflush(stdout);
     }
     /*
-    vectors l_x, l_r, l_p, l_q should be of
+    vectors l_u, l_r, l_p, l_q should be of
     length l_n and gl and gr should be of length l_n / l_N
 
     */
@@ -71,7 +71,7 @@ int main(int argc, char **argv) {
     gl = allocate_double_vector(l_n / l_N); 
     gr = allocate_double_vector(l_n / l_N);
     
-    l_x = allocate_double_vector(l_n);                          
+    l_u = allocate_double_vector(l_n);                          
     l_r = allocate_double_vector(l_n);
     l_p = allocate_double_vector(l_n);
     l_q = allocate_double_vector(l_n);
@@ -109,7 +109,7 @@ int main(int argc, char **argv) {
     start_time = MPI_Wtime();
     
 
-    cg(l_x, &flag, &relres, &iter,  /*output*/
+    cg(l_u, &flag, &relres, &iter,  /*output*/
         l_r, tol, maxit,            /*input*/
         l_p, l_q, l_n, l_N, N, id, idleft, idright, np, MPI_COMM_WORLD, gl, gr);
 
@@ -117,19 +117,16 @@ int main(int argc, char **argv) {
     end_time = MPI_Wtime();
 
     
-    
-    double *full = allocate_double_vector(n);
-    MPI_Gather(l_x, l_n, MPI_DOUBLE, full, l_n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-    double diff_norm = fd_norm(full, h, N);
+    /*
+    max(l_u[point on mesh]-F(i,j)) on each process
+    Reduce with opeartion MAX to get actual norm
+    */
+    double l_diff_norm = fd_norm(l_u, x, y, l_N, N, h, id);
+    double diff_norm;
+    MPI_Reduce(&l_diff_norm, &diff_norm, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
     if (id == 0) {
-        /*
-        for (i = 0; i < n; i++) {
-            printf("%i: % -24.16e\n", id, full[i]);
-        }
-        */
         printf("||u-u_h||=%22.16e\n", diff_norm);
     }
-    free_vector(full);
     
     
 
@@ -151,7 +148,7 @@ int main(int argc, char **argv) {
     free_vector(l_r);
     free_vector(gl);
     free_vector(gr);
-    free_vector(l_x);
+    free_vector(l_u);
     free_vector(l_p);
     free_vector(l_q);
     MPI_Finalize();

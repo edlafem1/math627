@@ -15,6 +15,6 @@ double *allocate_double_vector(int n);
 
 void free_vector(void *x);
 
-double fd_norm(double *l_x, int h, int N);
+double fd_norm(double *l_u, double *x, double *y, int l_N, int N, double h, int id);
 
 #endif

@@ -6,9 +6,9 @@ void setupB(double *l_r, double *x, double *y, int l_N, int N, double h, int id)
     // l_r is where we store B
     int l_j, j, i;
     for(l_j = 0; l_j < l_N; l_j++) {
-        j = l_j + id*l_N; // <<<<<<<<<<<<<<< WHY IS THIS NOT USED? Ahh, see below
+        j = l_j + id*l_N;
         for (i = 0; i < N; i++) {
-            l_r[i + N*l_j] = (h*h)*f(x[i], y[j]); // y[i] changed to y[j];
+            l_r[i + N*l_j] = (h*h)*f(x[i], y[j]);
         }
     }
 
@@ -65,11 +65,13 @@ double F(double x, double y) {
     return (sin(M_PI*x)*sin(M_PI*x))*(sin(M_PI*y)*sin(M_PI*y));
 }
 
-double fd_norm(double *l_x, int h, int N) {
+double fd_norm(double *l_u, double *x, double *y, int l_N, int N, double h, int id) {
     double diff, max = 0;
-    for (int i = 1; i <= N; ++i) { // col(i.e. x axis)
-        for (int j = 1; j <= N; ++j) { // row(i.e. y axis)
-            diff = F(i*h, j*h) - l_x[N*(i-1) + (j-1)];
+    int l_j, j, i;
+    for (l_j = 0; l_j < l_N; l_j++) {
+        j = l_j + id*l_N;
+        for (i = 0; i < N; i++) {
+            diff = F(x[i], y[j]) - l_u[i+l_N*l_j];
             if (diff < 0) diff *= -1;
             if (diff > max) max = diff;
         }
