@@ -1,4 +1,5 @@
 \documentclass[11pt]{article}
+\usepackage[margin=0.75in]{geometry}
 \usepackage{amsmath}
 \usepackage{amsfonts}
 
@@ -37,6 +38,8 @@
 \section{Introduction}
 The MPI programming package is used to facilitate communications between processes running in parallel on potentially massively distributed sytsems. Basic send and receive operations can be either blocking or non-blocking. Blocking communications causes the calling process to stall while waiting for a message to be delivered to another process, or waiting on a message from another process. We will be comparing performance of Matlab, serial C code, parallel C code with blocking communications, and parallel C code with non-blocking communications. To do so, we will work on a classical test problem given by the numerical solution with finite differences for the Poisson problem with homogeneous Dirichlet boundary conditions.
 
+All computation is performed on any of the 72 nodes in maya 2013, each with two eight-core 2.6 GHz Intel E5-2650v2 Ivy Bridge CPUs with 64GB of memory per node. Nodes are connected by a high-speed quad-data rage InfiniBand network. The Intel C compiler version 14.0 is used with options \texttt{-std=c99 -Wall -O3} with Intel MPI version 4.1. When running tests, we required exclusive access to a node, even if we only used a single core.
+
 \section{Problem Statement}
 The Poisson problem with homogeneious Dirichlet boundary conditions, given as
 \begin{align*}
@@ -59,67 +62,58 @@ To solve the Poisson problem with homogeneous Dirichlet boundry conditions, we h
 
 To confirm the convergence of the finite difference method, we use the finite difference error. This is defined as the difference between the true solution $u(x,y)$ and the calculated numeric solution defined on the mesh points $u_x(x_i,y_i)=u_{i,j}$. We expect that as $N$ gets larger and $h=\frac{1}{N+1}$ gets smaller the finite difference error denoted $||u-u_h||$ will become smaller. We can then expect the ratio of errors on consecutively refined meshes to approach $4$ by looking at Eqn. 3.7 from HPCF-2012-15[1]. If the ratio we compute approaches $4$, we can be confident that our approximations are converging to the true solution.
 
-
 \section{Results}
-
 \subsection{Matlab}
 Matlab code using the conjugate gradient method to solve the Poisson problem with homogeneous Dirichlet boundry conditions was provided by Dr. Gobbert. Below are results from running the conjugate gradient method in Matlab at various values of $N$. Notice that as $N$ increases, the ratio of the finite difference error converges to $4$, indicating that our approximation converges to the true solution as we increase $N$.
 \begin{table}[!htbp]
 \makebox[\linewidth]{
 \begin{tabular}{ |c|c|c|c|c|c|  }
 \hline
-\multicolumn{6}{|c|}{Wall Time in minutes}\\
+\multicolumn{6}{|c|}{Convergence Study of Matlab Code}\\
 \hline
-N & DOF & $||u-u_h||$ & Ratio & \#iter & Time \\
+N & DOF & $||u-u_h||$ & Ratio & \#iter & Time(s) \\
 \hline
-32   & 1024    & 3.012e-3 & N/A    & 48   & 0.03 \\
-64   & 4096    & 7.781e-4 & 3.8719 & 96   & 1.42   \\
-128  & 16384   & 1.976e-4 & 3.9368 & 192  & 16.51  \\
-256  & 65536   & 4.979e-5 & 3.9691 & 387  & 139.42 \\
-512  & 262144  & 1.249e-5 & 3.9857 & 783  & (788)  \\
-1024 & 1048576 & 3.126e-6 & 3.9960 & 1581 & (6498) \\
-2048 & 4194304 & 7.801e-7 & 4.0075 & 3192 & (6498) \\
+32   & 1024    & 3.012e-3 & N/A    & 48   & 0.01   \\
+64   & 4096    & 7.781e-4 & 3.8719 & 96   & 0.05   \\
+128  & 16384   & 1.976e-4 & 3.9368 & 192  & 0.13   \\
+256  & 65536   & 4.979e-5 & 3.9691 & 387  & 1.03   \\
+512  & 262144  & 1.249e-5 & 3.9857 & 783  & 6.49   \\
+1024 & 1048576 & 3.126e-6 & 3.9960 & 1581 & 51.58  \\
+2048 & 4194304 & 7.801e-7 & 4.0075 & 3192 & 426.84 \\
 \hline
 \end{tabular}
 }
 \end{table}
 
 \subsection{Serial C}
-Unlike Matlab, C has no built in functions to perform matrix operations or the conjugate gradient method. To best follow the Matlab code, we reused a serial matrix-vector function we developed previously as well as a serial dot product function developed previously. The code to perform the conjugate gradient method was supplied by Dr. Gobbert. All that remained for us to do is setup the $b$ vector by calculating $h^2 * f(x_i, y_i)$. Below is a table representing a convergence study done on the serial code to determine correctness of results and also display expected vs actual memory usage. All tests were run using $1$ node with $1$ process per node.
+Unlike Matlab, C has no built in functions to perform matrix operations or the conjugate gradient method. To best follow the Matlab code, we reused a serial matrix-vector function we developed previously as well as a serial dot product function developed previously. The code to perform the conjugate gradient method was supplied by Dr. Gobbert. All that remained for us to do is setup the $b$ vector by calculating $h^2 * f(x_i, y_i)$. Below is a table representing a convergence study done on the serial code to determine correctness of results and also display expected vs actual memory usage. All tests were run using $1$ node with $1$ process per node. In all cases we were well below the maximum number of iterations we specified(99999) and the number of iterations taken is the same as the number taken by the Matlab implementation of our code. This indicates that the solution our code is calculating matches that given by the Matlab code. It should be noted that the Ratio and finite difference are not as expected. This could indicate error in the calculations of the solution, or it could be an error in the calculation of the norm of the finite difference. Because the number of iterations is the same for both the C code and Matlab code, we believe the error to be in calculating the norm of the finite difference.
 
 \begin{table}[!htbp]
 \makebox[\linewidth]{
-\begin{tabular}{ |c|c|c|c|c|c|  }
+\begin{tabular}{ |c|c|c|c|c|c|c|c|  }
 \hline
-\multicolumn{6}{|c|}{Wall Time in minutes}\\
+\multicolumn{8}{|c|}{Convergence Study of C Code}\\
 \hline
-N & DOF & $||u-u_h||$ & Ratio & \#iter & Time \\
+N & DOF & $||u-u_h||$ & Ratio & \#iter & Time(s) & Predicted Memory(GB) & Actual Memory(GB) \\
 \hline
-32   & 1024    & 3.012e-3 & N/A    & 48   & 0.03 \\
-64   & 4096    & 7.781e-4 & 3.8719 & 96   & 1.42   \\
-128  & 16384   & 1.976e-4 & 3.9368 & 192  & 16.51  \\
-256  & 65536   & 4.979e-5 & 3.9691 & 387  & 139.42 \\
-512  & 262144  & 1.249e-5 & 3.9857 & 783  & (788)  \\
-1024 & 1048576 & 3.126e-6 & 3.9960 & 1581 & (6498) \\
-2048 & 4194304 & 7.801e-7 & 4.0075 & 3192 & (6498) \\
-
-\hline
-\hline
-\multicolumn{6}{|c|}{Speedup}\\
-\hline
-N & DOF & $||u-u_h||$ & Ratio & \#iter & Time \\
-\hline
-32   & 1024    & 3.012-3 & N/A    & 48   & 0.03 \\
-64   & 4096    & 7.781-4 & 3.8719 & 96   & 1.42   \\
-128  & 16384   & 1.976-4 & 3.9368 & 192  & 16.51  \\
-256  & 65536   & 4.979-5 & 3.9691 & 387  & 139.42 \\
-512  & 262144  & 1.249-5 & 3.9857 & 783  & (788)  \\
-1024 & 1048576 & 3.126-6 & 3.9960 & 1581 & (6498) \\
-2048 & 4194304 & 7.801-7 & 4.0075 & 3192 & (6498) \\
+32    & 1024    & ------ & N/A    & ------ & ------ & $< 1$ & $< 1$  \\
+64    & 4096    & ------ & ------ & ------ & ------ & $< 1$ & $< 1$  \\
+128   & 16384   & ------ & ------ & ------ & ------ & $< 1$ & $< 1$  \\
+256   & 65536   & ------ & ------ & ------ & ------ & $< 1$ & $< 1$  \\
+512   & 262144  & ------ & ------ & ------ & ------ & $< 1$ & $< 1$  \\
+                                                                       
+1024  & 1048576 & ------ & ------ & 1581   & 9.460  & $< 1$ & $< 1$  \\
+2048  & 4194304 & ------ & ------ & 3192   & 9.799  & $< 1$ & $< 1$  \\
+                                                                       
+4096  & 4194304 & ------ & ------ & ------ & ------ & $< 1$ & ------ \\           
+8192  & 4194304 & ------ & ------ & ------ & ------ &   2   & ------ \\
+16384 & 4194304 & ------ & ------ & ------ & ------ &   8   & ------ \\
+32768 & 4194304 & ------ & ------ & ------ & ------ &  32   & ------ \\
 \hline
 \end{tabular}
 }
 \end{table}
+\pagebreak
 
 \subsection{Parallel C - Blocking}
 Progressing from serial code, we parallelized our matrix-vector product function. Because we used a colunn major storage format, splitting the matrix $A$ over several processes by dividing it into blocks of columns is equivalent to dividing the domain $\Omega$ into subdomains horizontally. This meant that the computation at the points on the top and bottom rows of our subdomain relied on points stored on another process, and possibly another processor. To handle this, we first sent the points we stored locally to processes that would need them and waited to receive the points we needed. Because we used blocking communication for this stage, our process waited for the communicaton to stop and then moved on to perform computation at the interior points of our subdomain and lastly performed computation on the boundry points.
@@ -129,39 +123,183 @@ Below is a table of every possible combination of processors per node and number
 \makebox[\linewidth]{
 \begin{tabular}{ |c|c|c|c|c|c|c|c|  }
 \hline
-\multicolumn{8}{|c|}{(a) Mesh resolution N × N = 1024 × 1024, system dimension 1,048,576}\\
+\multicolumn{8}{|c|}{(a) Mesh resolution N  $\times$  N = 1024 $\times$ 1024, system dimension 1,048,576}\\
 \hline
- & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes & 32 nodes & 64 nodes \\
+N & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes & 32 nodes & 64 nodes \\
 \hline
-32   & 1024    & 3.012e-3 & N/A    & 48   & 0.03 \\
-64   & 4096    & 7.781e-4 & 3.8719 & 96   & 1.42   \\
-128  & 16384   & 1.976e-4 & 3.9368 & 192  & 16.51  \\
-256  & 65536   & 4.979e-5 & 3.9691 & 387  & 139.42 \\
-512  & 262144  & 1.249e-5 & 3.9857 & 783  & (788)  \\
-1024 & 1048576 & 3.126e-6 & 3.9960 & 1581 & (6498) \\
-2048 & 4194304 & 7.801e-7 & 4.0075 & 3192 & (6498) \\
+32   & ----- & ----- & N/A   & ----- & ----- & ----- & ----- \\
+64   & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+128  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+256  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+512  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+1024 & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+2048 & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+\hline
+\end{tabular}
+}
+\end{table}
+\pagebreak
 
+\begin{table}[!htbp]
+\makebox[\linewidth]{
+\begin{tabular}{ |c|c|c|c|c|c|c|c|  }
+\hline
+\multicolumn{8}{|c|}{(b) Mesh resolution N $\times$ N = 2048 $\times$ 2048, system dimension 4,194,304}\\
+\hline
+N & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes & 32 nodes & 64 nodes \\
+\hline
+32   & ----- & ----- & N/A   & ----- & ----- & ----- & ----- \\
+64   & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+128  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+256  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+512  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+1024 & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+2048 & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
 \hline
 \hline
-\multicolumn{6}{|c|}{Speedup}\\
+\multicolumn{8}{|c|}{(c) Mesh resolution N $\times$ N = 4096 $\times$ 4096, system dimension 16,777,216}\\
 \hline
-N & DOF & $||u-u_h||$ & Ratio & \#iter & Time \\
+N & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes & 32 nodes & 64 nodes \\
 \hline
-32   & 1024    & 3.012-3 & N/A    & 48   & 0.03 \\
-64   & 4096    & 7.781-4 & 3.8719 & 96   & 1.42   \\
-128  & 16384   & 1.976-4 & 3.9368 & 192  & 16.51  \\
-256  & 65536   & 4.979-5 & 3.9691 & 387  & 139.42 \\
-512  & 262144  & 1.249-5 & 3.9857 & 783  & (788)  \\
-1024 & 1048576 & 3.126-6 & 3.9960 & 1581 & (6498) \\
-2048 & 4194304 & 7.801-7 & 4.0075 & 3192 & (6498) \\
+32   & ----- & ----- & N/A   & ----- & ----- & ----- & ----- \\
+64   & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+128  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+256  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+512  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+1024 & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+2048 & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+\hline
+\hline
+\multicolumn{8}{|c|}{(d) Mesh resolution N $\times$ N = 8192 $\times$ 8192, system dimension 67,108,864}\\
+\hline
+N & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes & 32 nodes & 64 nodes \\
+\hline
+32   & ----- & ----- & N/A   & ----- & ----- & ----- & ----- \\
+64   & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+128  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+256  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+512  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+1024 & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+2048 & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+\hline
+\hline
+\multicolumn{8}{|c|}{(e) Mesh resolution N $\times$ N = 16384 $\times$ 16384, system dimension 268,435,456}\\
+\hline
+N & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes & 32 nodes & 64 nodes \\
+\hline
+32   & ----- & ----- & N/A   & ----- & ----- & ----- & ----- \\
+64   & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+128  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+256  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+512  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+1024 & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+2048 & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+\hline
+\hline
+\multicolumn{8}{|c|}{(f) Mesh resolution N $\times$ N = 32768 $\times$ 32768, system dimension 1,073,741,824}\\
+\hline
+N & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes & 32 nodes & 64 nodes \\
+\hline
+32   & ----- & ----- & N/A   & ----- & ----- & ----- & ----- \\
+64   & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+128  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+256  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+512  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+1024 & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+2048 & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
 \hline
 \end{tabular}
 }
 \end{table}
 
+
 \subsection{Parallel C - Non-Blocking}
 To change from blocking to non-blocking communication, we simply had to change the function names we were already using to the ones that indicated non-blocking communication and add a different set of parameters that are MPI specific and do not affect any of the computations. Because we start the communication before any computation, the non-blocking nature of the communication allows the program to start computations on interior points while it waits for the communication to finish. After the interior point computations are complete, we make sure the communications are finished by using the MPI\_Waitall function to block for a short time while any ongoing communication is finished. Below is a table of times for the same run configuration as above, but this time using non-blocking communication functions.
-
+\begin{table}[!htbp]
+\makebox[\linewidth]{
+\begin{tabular}{ |c|c|c|c|c|c|c|c|  }
+\hline
+\multicolumn{8}{|c|}{(a) Mesh resolution N  $\times$  N = 1024 $\times$ 1024, system dimension 1,048,576}\\
+\hline
+N & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes & 32 nodes & 64 nodes \\
+\hline
+32   & ----- & ----- & N/A   & ----- & ----- & ----- & ----- \\
+64   & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+128  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+256  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+512  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+1024 & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+2048 & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+\hline
+\hline
+\multicolumn{8}{|c|}{(b) Mesh resolution N $\times$ N = 2048 $\times$ 2048, system dimension 4,194,304}\\
+\hline
+N & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes & 32 nodes & 64 nodes \\
+\hline
+32   & ----- & ----- & N/A   & ----- & ----- & ----- & ----- \\
+64   & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+128  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+256  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+512  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+1024 & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+2048 & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+\hline
+\hline
+\multicolumn{8}{|c|}{(c) Mesh resolution N $\times$ N = 4096 $\times$ 4096, system dimension 16,777,216}\\
+\hline
+N & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes & 32 nodes & 64 nodes \\
+\hline
+32   & ----- & ----- & N/A   & ----- & ----- & ----- & ----- \\
+64   & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+128  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+256  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+512  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+1024 & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+2048 & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+\hline
+\hline
+\multicolumn{8}{|c|}{(d) Mesh resolution N $\times$ N = 8192 $\times$ 8192, system dimension 67,108,864}\\
+\hline
+N & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes & 32 nodes & 64 nodes \\
+\hline
+32   & ----- & ----- & N/A   & ----- & ----- & ----- & ----- \\
+64   & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+128  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+256  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+512  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+1024 & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+2048 & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+\hline
+\hline
+\multicolumn{8}{|c|}{(e) Mesh resolution N $\times$ N = 16384 $\times$ 16384, system dimension 268,435,456}\\
+\hline
+N & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes & 32 nodes & 64 nodes \\
+\hline
+32   & ----- & ----- & N/A   & ----- & ----- & ----- & ----- \\
+64   & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+128  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+256  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+512  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+1024 & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+2048 & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+\hline
+\hline
+\multicolumn{8}{|c|}{(f) Mesh resolution N $\times$ N = 32768 $\times$ 32768, system dimension 1,073,741,824}\\
+\hline
+N & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes & 32 nodes & 64 nodes \\
+\hline
+32   & ----- & ----- & N/A   & ----- & ----- & ----- & ----- \\
+64   & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+128  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+256  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+512  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+1024 & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+2048 & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+\hline
+\end{tabular}
+}
+\end{table}
+\pagebreak
 \section{Conclusions}
 
 \end{document}
