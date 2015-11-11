@@ -65,7 +65,7 @@ To confirm the convergence of the finite difference method, we use the finite di
 
 \section{Results}
 \subsection{Matlab}
-Matlab code using the conjugate gradient method to solve the Poisson problem with homogeneous Dirichlet boundry conditions was provided by Dr. Gobbert. Below are results from running the conjugate gradient method in Matlab at various values of $N$. Notice that as $N$ increases, the ratio of the finite difference error converges to $4$, indicating that our approximation converges to the true solution as we increase $N$.
+Matlab code using the conjugate gradient method to solve the Poisson problem with homogeneous Dirichlet boundry conditions was provided by Dr. Gobbert. Below are results from running the conjugate gradient method in Matlab at various values of $N$. Notice that as $N$ increases, the ratio of the finite difference error converges to $4$, indicating that our approximation converges to the true solution as we increase $N$. We will time all runs from here on by placing calls to \texttt{MPI\_Barrier} and \texttt{MPI\_Wtime} before and after the call to the conjugate gradient function. This will ensure that all processes are at those spots before the conjugate gradient method starts and when it is finished.
 \begin{table}[!htbp]
 \makebox[\linewidth]{
 \begin{tabular}{ |c|c|c|c|c|c|  }
@@ -85,9 +85,9 @@ N & DOF & $||u-u_h||$ & Ratio & \#iter & Time(s) \\
 \end{tabular}
 }
 \end{table}
-
+\pagebreak
 \subsection{Serial C}
-Unlike Matlab, C has no built in functions to perform matrix operations or the conjugate gradient method. To best follow the Matlab code, we reused a serial matrix-vector function we developed previously as well as a serial dot product function developed previously. The code to perform the conjugate gradient method was supplied by Dr. Gobbert. All that remained for us to do is setup the $b$ vector by calculating $h^2 * f(x_i, y_i)$. Below is a table representing a convergence study done on the serial code to determine correctness of results and also display expected vs actual memory usage. All tests were run using $1$ node with $1$ process per node. In all cases we were well below the maximum number of iterations we specified(99999) and the number of iterations taken is the same as the number taken by the Matlab implementation of our code. This indicates that the solution our code is calculating matches that given by the Matlab code. It should be noted that the Ratio and finite difference are not as expected. This could indicate error in the calculations of the solution, or it could be an error in the calculation of the norm of the finite difference. Because the number of iterations is the same for both the C code and Matlab code, we believe the error to be in calculating the norm of the finite difference.
+Unlike Matlab, C has no built in functions to perform matrix operations or the conjugate gradient method. To best follow the Matlab code, we reused a serial matrix-vector function we developed previously as well as a serial dot product function developed previously. The code to perform the conjugate gradient method was supplied by Dr. Gobbert. All that remained for us to do is setup the $b$ vector by calculating $h^2 * f(x_i, y_i)$. Below is a table representing a convergence study done on the serial code to determine correctness of results and also display expected vs actual memory usage. Our estimates are based off the fact that the program needs four vectors of doubles, each of length $N^2$. All tests were run using one node with one process per node. In all cases we were well below the maximum number of iterations we specified(99999) and the number of iterations taken is the same as the number taken by the Matlab implementation of our code. This indicates that the solution our code is calculating matches that given by the Matlab code. It should be noted that the Ratio and finite difference are not as expected. This could indicate error in the calculations of the solution, or it could be an error in the calculation of the norm of the finite difference. Because the number of iterations is the same for both the C code and Matlab code, we believe the error to be in calculating the norm of the finite difference.
 \begin{table}[!htbp]
 \makebox[\linewidth]{
 \begin{tabular}{ |c|c|c|c|c|c|c|c|  }
@@ -116,7 +116,7 @@ N & DOF & $||u-u_h||$ & Ratio & \#iter & Time(s) & Predicted Memory(GB) & Actual
 
 \subsection{Parallel C - Blocking}
 Progressing from serial code, we parallelized our matrix-vector product function. Because we used a colunn major storage format, splitting the matrix $A$ over several processes by dividing it into blocks of columns is equivalent to dividing the domain $\Omega$ into subdomains horizontally. This meant that the computation at the points on the top and bottom rows of our subdomain relied on points stored on another process, and possibly another processor. To handle this, we first sent the points we stored locally to processes that would need them and waited to receive the points we needed. Because we used blocking communication for this stage, our process waited for the communicaton to stop and then moved on to perform computation at the interior points of our subdomain and lastly performed computation on the boundry points.
-Below is a table of every possible combination of processors per node and number of processors for $1,2,4,8,$ and $15$ processes per node and $1,2,4,8,16,32,$ and $64$ nodes at all values of $N=1024, 2048, 4096, 8192, 16384, 32768$.
+Below is a table of times(in seconds) to complete the conjugate gradient method for every possible combination of processors per node and number of processors for $1,2,4,8,$ and $15$ processes per node and $1,2,4,8,16,32,$ and $64$ nodes at all values of $N=1024, 2048, 4096, 8192, 16384, 32768$. Note: an entry of NOMEM indicates the process ran out of available memory on the node
 
 \begin{table}[!htbp]
 \makebox[\linewidth]{
@@ -124,87 +124,68 @@ Below is a table of every possible combination of processors per node and number
 \hline
 \multicolumn{8}{|c|}{(a) Mesh resolution N  $\times$  N = 1024 $\times$ 1024, system dimension 1,048,576}\\
 \hline
-N & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes & 32 nodes & 64 nodes \\
+                    & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes & 32 nodes & 64 nodes \\
 \hline
-32   & ----- & ----- & N/A   & ----- & ----- & ----- & ----- \\
-64   & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-128  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-256  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-512  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-1024 & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-2048 & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+1 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+2 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+4 process per node  & ----- & ----- & ----- & ----- & ----- & 0.343 & ----- \\
+8 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+16 process per node & ----- & ----- & ----- & ----- & 0.833 & ----- & ----- \\
 \hline
 \hline
 \multicolumn{8}{|c|}{(b) Mesh resolution N $\times$ N = 2048 $\times$ 2048, system dimension 4,194,304}\\
 \hline
-N & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes & 32 nodes & 64 nodes \\
+ & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes & 32 nodes & 64 nodes \\
 \hline
-32   & ----- & ----- & N/A   & ----- & ----- & ----- & ----- \\
-64   & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-128  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-256  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-512  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-1024 & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-2048 & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+1 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+2 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+4 process per node  & ----- & ----- & ----- & ----- & ----- & 1.185 & ----- \\
+8 process per node  & ----- & ----- & ----- & ----- & ----- & 1.222 & ----- \\
+16 process per node & ----- & ----- & ----- & ----- & 2.035 & ----- & ----- \\
 \hline
 \hline
 \multicolumn{8}{|c|}{(c) Mesh resolution N $\times$ N = 4096 $\times$ 4096, system dimension 16,777,216}\\
 \hline
-N & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes & 32 nodes & 64 nodes \\
+ & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes & 32 nodes & 64 nodes \\
 \hline
-32   & ----- & ----- & N/A   & ----- & ----- & ----- & ----- \\
-64   & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-128  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-256  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-512  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-1024 & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-2048 & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+1 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+2 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+4 process per node  & ----- & ----- & ----- & ----- & ----- & 6.650 & ----- \\
+8 process per node  & ----- & ----- & ----- & ----- & ----- & 4.840 & ----- \\
+16 process per node & ----- & ----- & ----- & ----- & 6.695 & ----- & ----- \\
 \hline
 \hline
 \multicolumn{8}{|c|}{(d) Mesh resolution N $\times$ N = 8192 $\times$ 8192, system dimension 67,108,864}\\
 \hline
-N & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes & 32 nodes & 64 nodes \\
+ & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes & 32 nodes & 64 nodes \\
 \hline
-32   & ----- & ----- & N/A   & ----- & ----- & ----- & ----- \\
-64   & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-128  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-256  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-512  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-1024 & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-2048 & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+1 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+2 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+4 process per node  & ----- & ----- & ----- & ----- & ----- & 130.450 & ----- \\
+8 process per node  & ----- & ----- & ----- & ----- & ----- & 160.331 & ----- \\
+16 process per node & ----- & ----- & ----- & ----- & 176.196 & ----- & ----- \\
 \hline
 \hline
 \multicolumn{8}{|c|}{(e) Mesh resolution N $\times$ N = 16384 $\times$ 16384, system dimension 268,435,456}\\
 \hline
-N & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes & 32 nodes & 64 nodes \\
+ & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes & 32 nodes & 64 nodes \\
 \hline
-32   & ----- & ----- & N/A   & ----- & ----- & ----- & ----- \\
-64   & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-128  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-256  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-512  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-1024 & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-2048 & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+1 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+2 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+4 process per node  & ----- & ----- & ----- & ----- & ----- & 859.908 & ----- \\
+8 process per node  & ----- & ----- & ----- & ----- & ----- & 931.909 & ----- \\
+16 process per node & ----- & ----- & ----- & ----- & 1015.491 & ----- & ----- \\
 \hline
-\end{tabular}
-}
-\end{table}
-
-\begin{table}[!htbp]
-\makebox[\linewidth]{
-\begin{tabular}{ |c|c|c|c|c|c|c|c|  }
 \hline
 \multicolumn{8}{|c|}{(f) Mesh resolution N $\times$ N = 32768 $\times$ 32768, system dimension 1,073,741,824}\\
 \hline
-N & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes & 32 nodes & 64 nodes \\
+ & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes & 32 nodes & 64 nodes \\
 \hline
-32   & ----- & ----- & N/A   & ----- & ----- & ----- & ----- \\
-64   & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-128  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-256  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-512  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-1024 & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-2048 & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+1 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+2 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+4 process per node  & ----- & ----- & ----- & ----- & ----- & 6164.287 & ----- \\
+8 process per node  & ----- & ----- & ----- & ----- & ----- & 6296.488 & ----- \\
+16 process per node & ----- & ----- & ----- & ----- & NOMEM & ----- & ----- \\
 \hline
 \end{tabular}
 }
@@ -212,61 +193,64 @@ N & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes & 32 nodes & 64 nodes \\
 \pagebreak
 \pagebreak
 \subsection{Parallel C - Non-Blocking}
-To change from blocking to non-blocking communication, we simply had to change the function names we were already using to the ones that indicated non-blocking communication and add a different set of parameters that are MPI specific and do not affect any of the computations. Because we start the communication before any computation, the non-blocking nature of the communication allows the program to start computations on interior points while it waits for the communication to finish. After the interior point computations are complete, we make sure the communications are finished by using the MPI\_Waitall function to block for a short time while any ongoing communication is finished. Below is a table of times for the same run configuration as above, but this time using non-blocking communication functions.
+To change from blocking to non-blocking communication, we simply had to change the function names we were already using to the ones that indicated non-blocking communication and add a different set of parameters that are MPI specific and do not affect any of the computations. Because we start the communication before any computation, the non-blocking nature of the communication allows the program to start computations on interior points while it waits for the communication to finish. After the interior point computations are complete, we make sure the communications are finished by using the MPI\_Waitall function to block for a short time while any ongoing communication is finished. Below is a table of times(in seconds) it takes for our conjugate gradient method to finish for the same run configuration as above, but this time using non-blocking communication functions.
 \begin{table}[!htbp]
 \makebox[\linewidth]{
 \begin{tabular}{ |c|c|c|c|c|c|c|c| }
 \hline
 \multicolumn{8}{|c|}{(a) Mesh resolution N  $\times$  N = 1024 $\times$ 1024, system dimension 1,048,576}\\
 \hline
-N & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes & 32 nodes & 64 nodes \\
+ & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes & 32 nodes & 64 nodes \\
 \hline
-32   & ----- & ----- & N/A   & ----- & ----- & ----- & ----- \\
-64   & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-128  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-256  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-512  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-1024 & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-2048 & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+1 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+2 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+4 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+8 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+16 process per node & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
 \hline
 \hline
 \multicolumn{8}{|c|}{(b) Mesh resolution N $\times$ N = 2048 $\times$ 2048, system dimension 4,194,304}\\
 \hline
-N & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes & 32 nodes & 64 nodes \\
+ & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes & 32 nodes & 64 nodes \\
 \hline
-32   & ----- & ----- & N/A   & ----- & ----- & ----- & ----- \\
-64   & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-128  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-256  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-512  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-1024 & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-2048 & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+1 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+2 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+4 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+8 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+16 process per node & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
 \hline
 \hline
 \multicolumn{8}{|c|}{(c) Mesh resolution N $\times$ N = 4096 $\times$ 4096, system dimension 16,777,216}\\
 \hline
-N & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes & 32 nodes & 64 nodes \\
+ & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes & 32 nodes & 64 nodes \\
 \hline
-32   & ----- & ----- & N/A   & ----- & ----- & ----- & ----- \\
-64   & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-128  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-256  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-512  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-1024 & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-2048 & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+1 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+2 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+4 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+8 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+16 process per node & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
 \hline
 \hline
 \multicolumn{8}{|c|}{(d) Mesh resolution N $\times$ N = 8192 $\times$ 8192, system dimension 67,108,864}\\
 \hline
-N & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes & 32 nodes & 64 nodes \\
+ & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes & 32 nodes & 64 nodes \\
 \hline
-32   & ----- & ----- & N/A   & ----- & ----- & ----- & ----- \\
-64   & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-128  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-256  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-512  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-1024 & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-2048 & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+1 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+2 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+4 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+8 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+16 process per node & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+\hline
+\hline
+\multicolumn{8}{|c|}{(e) Mesh resolution N $\times$ N = 16384 $\times$ 16384, system dimension 268,435,456}\\
+\hline
+ & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes & 32 nodes & 64 nodes \\
+\hline
+1 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+2 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+4 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+8 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+16 process per node & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
 \hline
 \end{tabular}
 }
@@ -275,31 +259,17 @@ N & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes & 32 nodes & 64 nodes \\
 \begin{table}[!htbp]
 \makebox[\linewidth]{
 \begin{tabular}{ |c|c|c|c|c|c|c|c|  }
-\hline
-\multicolumn{8}{|c|}{(e) Mesh resolution N $\times$ N = 16384 $\times$ 16384, system dimension 268,435,456}\\
-\hline
-N & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes & 32 nodes & 64 nodes \\
-\hline
-32   & ----- & ----- & N/A   & ----- & ----- & ----- & ----- \\
-64   & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-128  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-256  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-512  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-1024 & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-2048 & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-\hline
+
 \hline
 \multicolumn{8}{|c|}{(f) Mesh resolution N $\times$ N = 32768 $\times$ 32768, system dimension 1,073,741,824}\\
 \hline
-N & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes & 32 nodes & 64 nodes \\
+ & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes & 32 nodes & 64 nodes \\
 \hline
-32   & ----- & ----- & N/A   & ----- & ----- & ----- & ----- \\
-64   & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-128  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-256  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-512  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-1024 & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-2048 & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+1 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+2 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+4 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+8 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+16 process per node & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
 \hline
 \end{tabular}
 }
