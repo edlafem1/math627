@@ -87,11 +87,6 @@ N & DOF & $||u-u_h||$ & Ratio & \#iter & Time \\
 \subsection{Serial C}
 Unlike Matlab, C has no built in functions to perform matrix operations or the conjugate gradient method. To best follow the Matlab code, we reused a serial matrix-vector function we developed previously as well as a serial dot product function developed previously. The code to perform the conjugate gradient method was supplied by Dr. Gobbert. All that remained for us to do is setup the $b$ vector by calculating $h^2 * f(x_i, y_i)$. Below is a table representing a convergence study done on the serial code to determine correctness of results and also display expected vs actual memory usage. All tests were run using $1$ node with $1$ process per node.
 
-
-\subsection{Parallel C - Blocking}
-Progressing from serial code, we parallelized our matrix-vector product function. Because we used a colunn major storage format, splitting the matrix $A$ over several processes by dividing it into blocks of columns is equivalent to dividing the domain $\Omega$ into subdomains horizontally. This meant that the computation at the points on the top and bottom rows of our subdomain relied on points stored on another process, and possibly another processor. To handle this, we first sent the points we stored locally to processes that would need them and waited to receive the points we needed. Because we used blocking communication for this stage, our process waited for the communicaton to stop and then moved on to perform computation at the interior points of our subdomain and lastly performed computation on the boundry points.
-Below is a table of every possible combination of processors per node and number of processors for $1,2,4,8,$ and $15$ processes per node and $1,2,4,8,16,32,$ and $64$ nodes at all values of $N=1024, 2048, 4096, 8192, 16384, 32768$.
-
 \begin{table}[!htbp]
 \makebox[\linewidth]{
 \begin{tabular}{ |c|c|c|c|c|c|  }
@@ -99,6 +94,44 @@ Below is a table of every possible combination of processors per node and number
 \multicolumn{6}{|c|}{Wall Time in minutes}\\
 \hline
 N & DOF & $||u-u_h||$ & Ratio & \#iter & Time \\
+\hline
+32   & 1024    & 3.012e-3 & N/A    & 48   & 0.03 \\
+64   & 4096    & 7.781e-4 & 3.8719 & 96   & 1.42   \\
+128  & 16384   & 1.976e-4 & 3.9368 & 192  & 16.51  \\
+256  & 65536   & 4.979e-5 & 3.9691 & 387  & 139.42 \\
+512  & 262144  & 1.249e-5 & 3.9857 & 783  & (788)  \\
+1024 & 1048576 & 3.126e-6 & 3.9960 & 1581 & (6498) \\
+2048 & 4194304 & 7.801e-7 & 4.0075 & 3192 & (6498) \\
+
+\hline
+\hline
+\multicolumn{6}{|c|}{Speedup}\\
+\hline
+N & DOF & $||u-u_h||$ & Ratio & \#iter & Time \\
+\hline
+32   & 1024    & 3.012-3 & N/A    & 48   & 0.03 \\
+64   & 4096    & 7.781-4 & 3.8719 & 96   & 1.42   \\
+128  & 16384   & 1.976-4 & 3.9368 & 192  & 16.51  \\
+256  & 65536   & 4.979-5 & 3.9691 & 387  & 139.42 \\
+512  & 262144  & 1.249-5 & 3.9857 & 783  & (788)  \\
+1024 & 1048576 & 3.126-6 & 3.9960 & 1581 & (6498) \\
+2048 & 4194304 & 7.801-7 & 4.0075 & 3192 & (6498) \\
+\hline
+\end{tabular}
+}
+\end{table}
+
+\subsection{Parallel C - Blocking}
+Progressing from serial code, we parallelized our matrix-vector product function. Because we used a colunn major storage format, splitting the matrix $A$ over several processes by dividing it into blocks of columns is equivalent to dividing the domain $\Omega$ into subdomains horizontally. This meant that the computation at the points on the top and bottom rows of our subdomain relied on points stored on another process, and possibly another processor. To handle this, we first sent the points we stored locally to processes that would need them and waited to receive the points we needed. Because we used blocking communication for this stage, our process waited for the communicaton to stop and then moved on to perform computation at the interior points of our subdomain and lastly performed computation on the boundry points.
+Below is a table of every possible combination of processors per node and number of processors for $1,2,4,8,$ and $15$ processes per node and $1,2,4,8,16,32,$ and $64$ nodes at all values of $N=1024, 2048, 4096, 8192, 16384, 32768$.
+
+\begin{table}[!htbp]
+\makebox[\linewidth]{
+\begin{tabular}{ |c|c|c|c|c|c|c|c|  }
+\hline
+\multicolumn{8}{|c|}{(a) Mesh resolution N × N = 1024 × 1024, system dimension 1,048,576}\\
+\hline
+ & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes & 32 nodes & 64 nodes \\
 \hline
 32   & 1024    & 3.012e-3 & N/A    & 48   & 0.03 \\
 64   & 4096    & 7.781e-4 & 3.8719 & 96   & 1.42   \\
