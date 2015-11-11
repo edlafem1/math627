@@ -118,7 +118,7 @@ int main(int argc, char **argv) {
 
     
     double *full = allocate_double_vector(n);
-    MPI_Gather(l_r, l_n, MPI_DOUBLE, full, l_n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    MPI_Gather(l_p, l_n, MPI_DOUBLE, full, l_n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
     double diff_norm = fd_norm(full, h, N);
     /*
     if (id == 0) {
