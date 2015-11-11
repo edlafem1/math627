@@ -67,8 +67,8 @@ double F(double x, double y) {
 
 double fd_norm(double *l_x, int h, int N) {
     double diff, max = 0;
-    for (int i = 0; i < N; ++i) { // col(i.e. x axis)
-        for (int j = 0; j < N; ++j) { // row(i.e. y axis)
+    for (int i = 1; i <= N; ++i) { // col(i.e. x axis)
+        for (int j = 1; j <= N; ++j) { // row(i.e. y axis)
             diff = F(i*h, j*h) - l_x[i + N*j];
             if (diff < 0) diff *= -1;
             if (diff > max) max = diff;
