@@ -6,9 +6,9 @@ void setupB(double *l_r, double *x, double *y, int l_N, int N, double h, int id)
     // l_r is where we store B
     int l_j, j, i;
     for(l_j = 0; l_j < l_N; l_j++) {
-        j = l_j + id*l_N;
+        j = l_j + id*l_N; // <<<<<<<<<<<<<<< WHY IS THIS NOT USED? Ahh, see below
         for (i = 0; i < N; i++) {
-            l_r[i + N*l_j] = (h*h)*f(x[i], y[i]);
+            l_r[i + N*l_j] = (h*h)*f(x[i], y[j]); // y[i] changed to y[j];
         }
     }
 
