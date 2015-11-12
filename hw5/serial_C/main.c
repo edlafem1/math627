@@ -120,6 +120,7 @@ int main(int argc, char **argv) {
     double diff_norm;
     MPI_Reduce(&l_diff_norm, &diff_norm, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
     
+    /*
     double *full;
     if (id == 0) full = allocate_double_vector(n);
     MPI_Gather(l_u, l_n, MPI_DOUBLE, full, l_n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
@@ -128,6 +129,7 @@ int main(int argc, char **argv) {
             printf("u[%i]=%f\n", qrx, full[qrx]);
         free_vector(full);
     }
+    */
 
     if (id == 0) {
         printf("%15s %15s %22s %15s %22s\n", "N", "DOF", "relres", "iter", "time");
