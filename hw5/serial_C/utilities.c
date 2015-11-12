@@ -23,7 +23,6 @@ Computes dot product of two n-length column vectors and returns result.
 Note, l_x and l_y represent only the portion of the vector that this function will process
 */
 double parallel_dot(double *l_x, double *l_y, int l_n, MPI_Comm comm) {
-    int id, np;
     double dot_product = 0;
     double l_sum = 0; // the local sum of the products each process computes
 
@@ -32,11 +31,11 @@ double parallel_dot(double *l_x, double *l_y, int l_n, MPI_Comm comm) {
         l_sum += (l_x[l_i] * l_y[l_i]);
     }
 
-    if (np > 1)
-        MPI_Allreduce(&l_sum, &dot_product, 1, MPI_DOUBLE, MPI_SUM, comm);
-    else {
-        dot_product = l_sum;
-    }
+#ifdef PARALLEL
+    MPI_Allreduce(&l_sum, &dot_product, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+#else
+    dot_product = l_sum;
+#endif
     return dot_product;
 }
 

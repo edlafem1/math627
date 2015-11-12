@@ -116,11 +116,6 @@ int main(int argc, char **argv) {
     MPI_Barrier(MPI_COMM_WORLD);
     end_time = MPI_Wtime();
 
-    
-    /*
-    max(l_u[point on mesh]-F(i,j)) on each process
-    Reduce with opeartion MAX to get actual norm
-    */
     double l_diff_norm = fd_norm(l_u, x, y, l_N, N, h, id);
     double diff_norm;
     MPI_Reduce(&l_diff_norm, &diff_norm, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
