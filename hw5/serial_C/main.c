@@ -123,7 +123,14 @@ int main(int argc, char **argv) {
         printf("||u-u_h||=%22.16e\n", diff_norm);
     }
     
-    
+    double *full;
+    if (id == 0) full = allocate_double_vector(n);
+    MPI_Gather(l_u, l_n, MPI_DOUBLE, full, l_n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    if (id == 0) {
+        for (int qrx = 0; qrx < n; qrx++)
+            printf("u[%i]=%f\n", qrx, full[qrx]);
+        free_vector(full);
+    }
 
     if (id == 0) {
         printf("%15s %15s %22s %15s %22s\n", "N", "DOF", "relres", "iter", "time");
