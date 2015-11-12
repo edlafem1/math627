@@ -32,7 +32,6 @@ double parallel_dot(double *l_x, double *l_y, int l_n, MPI_Comm comm) {
     }
 
 #ifdef PARALLEL
-    printf("Parallel in use\n");
     MPI_Allreduce(&l_sum, &dot_product, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
 #else
     dot_product = l_sum;
@@ -72,7 +71,7 @@ double fd_norm(double *l_u, double *x, double *y, int l_N, int N, double h, int 
         j = l_j + id*l_N;
         for (i = 0; i < N; i++) {
             diff = F(x[i], y[j]) - l_u[i+l_N*l_j];
-            if (diff < 0) diff *= -1;
+            if (diff < 0) diff *= -1.0;
             if (diff > max) max = diff;
         }
     }

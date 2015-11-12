@@ -119,9 +119,6 @@ int main(int argc, char **argv) {
     double l_diff_norm = fd_norm(l_u, x, y, l_N, N, h, id);
     double diff_norm;
     MPI_Reduce(&l_diff_norm, &diff_norm, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
-    if (id == 0) {
-        printf("||u-u_h||=%22.16e\n", diff_norm);
-    }
     
     double *full;
     if (id == 0) full = allocate_double_vector(n);
@@ -135,6 +132,7 @@ int main(int argc, char **argv) {
     if (id == 0) {
         printf("%15s %15s %22s %15s %22s\n", "N", "DOF", "relres", "iter", "time");
         printf("%15d %15.f %22.16e %15d %22.16e\n", N, (double)N*N, relres, iter, (end_time - start_time));
+        printf("||u-u_h||=%22.16e\n", diff_norm);
         /*
         printf("N:            %d\n", N);
         printf("DOF:          %d\n", N*(double)N);
