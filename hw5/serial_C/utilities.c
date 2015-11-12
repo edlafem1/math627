@@ -3,7 +3,7 @@
 
 void setupB(double *l_r, double *x, double *y, int l_N, int N, double h, int id) {
     // copy code from Gobbert notes #18
-    // l_r is where we store B
+    // l_r is where we store b
     int l_j, j, i;
     for(l_j = 0; l_j < l_N; l_j++) {
         j = l_j + id*l_N;
@@ -15,7 +15,7 @@ void setupB(double *l_r, double *x, double *y, int l_N, int N, double h, int id)
 }
 
 double f(double X, double Y) {
-    return ((-2.0*(M_PI*M_PI))*(cos(2.0*M_PI*X)*((sin(M_PI*Y))*(sin(M_PI*Y))) + ((sin(M_PI*X))*(sin(M_PI*X)))*cos(2.0*M_PI*Y))); // << THIS IS MATLAB CODE
+    return ((-2.0*(M_PI*M_PI))*(cos(2.0*M_PI*X)*((sin(M_PI*Y))*(sin(M_PI*Y))) + ((sin(M_PI*X))*(sin(M_PI*X)))*cos(2.0*M_PI*Y)));
 }
 
 /*
