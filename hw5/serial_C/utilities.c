@@ -32,7 +32,7 @@ double parallel_dot(double *l_x, double *l_y, int l_n, MPI_Comm comm) {
     }
 
 #ifdef PARALLEL
-    if (id == 0) printf("Parallel in use\n");
+    printf("Parallel in use\n");
     MPI_Allreduce(&l_sum, &dot_product, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
 #else
     dot_product = l_sum;
