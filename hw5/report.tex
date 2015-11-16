@@ -88,6 +88,9 @@ N & DOF & $||u-u_h||$ & Ratio & \#iter & Time(s) \\
 \pagebreak
 \subsection{Serial C}
 Unlike Matlab, C has no built in functions to perform matrix operations or the conjugate gradient method. To best follow the Matlab code, we reused a serial matrix-vector function we developed previously as well as a serial dot product function developed previously. The code to perform the conjugate gradient method was supplied by Dr. Gobbert. All that remained for us to do is setup the $b$ vector by calculating $h^2 * f(x_i, y_i)$. Below is a table representing a convergence study done on the serial code to determine correctness of results and also display expected vs actual memory usage. Our estimates are based off the fact that the program needs four vectors of doubles, each of length $N^2$. All tests were run using one node with one process per node. In all cases we were well below the maximum number of iterations we specified(99999) and the number of iterations taken is the same as the number taken by the Matlab implementation of our code. This indicates that the solution our code is calculating matches that given by the Matlab code. It should be noted that the Ratio and finite difference are not as expected. This could indicate error in the calculations of the solution, or it could be an error in the calculation of the norm of the finite difference. Because the number of iterations is the same for both the C code and Matlab code, we believe the error to be in calculating the norm of the finite difference.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% SOMETHING IS WRONG HERE
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{table}[!htbp]
 \makebox[\linewidth]{
 \begin{tabular}{ |c|c|c|c|c|c|c|c|  }
@@ -96,96 +99,95 @@ Unlike Matlab, C has no built in functions to perform matrix operations or the c
 \hline
 N & DOF & $||u-u_h||$ & Ratio & \#iter & Time(s) & Predicted Memory(GB) & Actual Memory(GB) \\
 \hline
-32    & 1024    & ------ & N/A    & ------ & ------ & $< 1$ & $< 1$  \\
-64    & 4096    & ------ & ------ & ------ & ------ & $< 1$ & $< 1$  \\
-128   & 16384   & ------ & ------ & ------ & ------ & $< 1$ & $< 1$  \\
-256   & 65536   & ------ & ------ & ------ & ------ & $< 1$ & $< 1$  \\
-512   & 262144  & ------ & ------ & ------ & ------ & $< 1$ & $< 1$  \\
-                                                                       
-1024  & 1048576 & ------ & ------ & 1581   & 9.460  & $< 1$ & $< 1$  \\
-2048  & 4194304 & ------ & ------ & 3192   & 9.799  & $< 1$ & $< 1$  \\
-                                                                       
-4096  & 4194304 & ------ & ------ & ------ & ------ & $< 1$ & ------ \\           
-8192  & 4194304 & ------ & ------ & ------ & ------ &   2   & ------ \\
-16384 & 4194304 & ------ & ------ & ------ & ------ &   8   & ------ \\
-32768 & 4194304 & ------ & ------ & ------ & ------ &  32   & ------ \\
+32    & 1024    & $3.0127E-03$ & N/A    & 48    & 0.0123     & $< 1$ & $< 1$  \\
+64    & 4096    & $7.7811E-04$ & 3.8719 & 96    & 0.0030     & $< 1$ & $< 1$  \\
+128   & 16384   & $1.9765E-04$ & 3.9368 & 192   & 0.0321     & $< 1$ & $< 1$  \\
+256   & 65536   & $4.9797E-05$ & 3.9690 & 387   & 0.1688     & $< 1$ & $< 1$  \\
+512   & 262144  & $1.2494E-05$ & 3.9856 & 783   & 1.2435     & $< 1$ & $< 1$  \\
+1024  & 1048576 & $3.1266E-06$ & 3.9961 & 1581  & 12.4322    & $< 1$ & $< 1$  \\
+2048  & 4194304 & $7.8019E-07$ & 4.0075 & 3192  & 124.3381   & $< 1$ & $< 1$  \\
+4096  & 4194304 & $1.9366E-07$ & 4.0287 & 6542  & 1002.8323  & $< 1$ & $< 1$  \\           
+8192  & 4194304 & $4.7376E-08$ & 4.0877 & 13033 & 8090.2605  &   2   & 2.03   \\
+16384 & 4194304 & $1.1543E-08$ & 4.1045 & 26316 & 66648.1740 &   8   & 8.03   \\
+32768 & 4194304 &  ----------  & ------ & ----- & ---------- &  32   & ------ \\
 \hline
+\multicolumn{8}{|c|}{The case $N=32768$ timed out when running one maya with \texttt{qos=medium}\\
 \end{tabular}
 }
 \end{table}
 
 \subsection{Parallel C - Blocking}
 Progressing from serial code, we parallelized our matrix-vector product function. Because we used a colunn major storage format, splitting the matrix $A$ over several processes by dividing it into blocks of columns is equivalent to dividing the domain $\Omega$ into subdomains horizontally. This meant that the computation at the points on the top and bottom rows of our subdomain relied on points stored on another process, and possibly another processor. To handle this, we first sent the points we stored locally to processes that would need them and waited to receive the points we needed. Because we used blocking communication for this stage, our process waited for the communicaton to stop and then moved on to perform computation at the interior points of our subdomain and lastly performed computation on the boundry points.
-Below is a table of times(in seconds) to complete the conjugate gradient method for every possible combination of processors per node and number of processors for $1,2,4,8,$ and $15$ processes per node and $1,2,4,8,16,32,$ and $64$ nodes at all values of $N=1024, 2048, 4096, 8192, 16384, 32768$. Note: an entry of NOMEM indicates the process ran out of available memory on the node
+Below is a table of times(in seconds) to complete the conjugate gradient method for every possible combination of processors per node and number of processors for $1,2,4,8,$ and $15$ processes per node and $1,2,4,8,16,32,$ and $64$ nodes at all values of $N=1024, 2048, 4096, 8192, 16384, 32768$. Note, not all computations completed before this report was completed.
 
 \begin{table}[!htbp]
 \makebox[\linewidth]{
-\begin{tabular}{ |c|c|c|c|c|c|c|c|  }
+\begin{tabular}{ |c|c|c|c|c|c| }
 \hline
-\multicolumn{8}{|c|}{(a) Mesh resolution N  $\times$  N = 1024 $\times$ 1024, system dimension 1,048,576}\\
+\multicolumn{6}{|c|}{(a) Mesh resolution N  $\times$  N = 1024 $\times$ 1024, system dimension 1,048,576}\\
 \hline
-                    & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes & 32 nodes & 64 nodes \\
+ & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes \\
 \hline
-1 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-2 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-4 process per node  & ----- & ----- & ----- & ----- & ----- & 0.343 & ----- \\
-8 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-16 process per node & ----- & ----- & ----- & ----- & 0.833 & ----- & ----- \\
-\hline
-\hline
-\multicolumn{8}{|c|}{(b) Mesh resolution N $\times$ N = 2048 $\times$ 2048, system dimension 4,194,304}\\
-\hline
- & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes & 32 nodes & 64 nodes \\
-\hline
-1 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-2 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-4 process per node  & ----- & ----- & ----- & ----- & ----- & 1.185 & ----- \\
-8 process per node  & ----- & ----- & ----- & ----- & ----- & 1.222 & ----- \\
-16 process per node & ----- & ----- & ----- & ----- & 2.035 & ----- & ----- \\
+1 process per node  & 12.2329 & 5.1400 & -----  & -----   & 0.9088 \\
+2 process per node  & -----   & -----  & -----  & 0.8503  & 0.5849 \\
+4 process per node  & -----   & -----  & -----  & 0.5260  & -----  \\
+8 process per node  & 3.4756  & -----  & -----  & 0.4268  & -----  \\
+16 process per node & 0.8110  & -----  & 0.5435 & 0.6863  & 0.9141 \\
 \hline
 \hline
-\multicolumn{8}{|c|}{(c) Mesh resolution N $\times$ N = 4096 $\times$ 4096, system dimension 16,777,216}\\
+\multicolumn{6}{|c|}{(b) Mesh resolution N $\times$ N = 2048 $\times$ 2048, system dimension 4,194,304}\\
 \hline
- & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes & 32 nodes & 64 nodes \\
+ & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes \\
 \hline
-1 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-2 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-4 process per node  & ----- & ----- & ----- & ----- & ----- & 6.650 & ----- \\
-8 process per node  & ----- & ----- & ----- & ----- & ----- & 4.840 & ----- \\
-16 process per node & ----- & ----- & ----- & ----- & 6.695 & ----- & ----- \\
-\hline
-\hline
-\multicolumn{8}{|c|}{(d) Mesh resolution N $\times$ N = 8192 $\times$ 8192, system dimension 67,108,864}\\
-\hline
- & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes & 32 nodes & 64 nodes \\
-\hline
-1 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-2 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-4 process per node  & ----- & ----- & ----- & ----- & ----- & 130.450 & ----- \\
-8 process per node  & ----- & ----- & ----- & ----- & ----- & 160.331 & ----- \\
-16 process per node & ----- & ----- & ----- & ----- & 176.196 & ----- & ----- \\
+1 process per node  & 124.3657 & ----- & -----  & -----   & 5.9926 \\
+2 process per node  & -----    & ----- & -----  & 5.7192  & 3.2807 \\
+4 process per node  & -----    & ----- & -----  & 3.6034  & 2.0095 \\
+8 process per node  & 47.1761  & ----- & -----  & 2.0780  & -----  \\
+16 process per node & 23.3534  & ----- & 2.4149 & 1.8251  & 2.0300 \\
 \hline
 \hline
-\multicolumn{8}{|c|}{(e) Mesh resolution N $\times$ N = 16384 $\times$ 16384, system dimension 268,435,456}\\
+\multicolumn{6}{|c|}{(c) Mesh resolution N $\times$ N = 4096 $\times$ 4096, system dimension 16,777,216}\\
 \hline
- & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes & 32 nodes & 64 nodes \\
+ & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes \\
 \hline
-1 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-2 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-4 process per node  & ----- & ----- & ----- & ----- & ----- & 859.908 & ----- \\
-8 process per node  & ----- & ----- & ----- & ----- & ----- & 931.909 & ----- \\
-16 process per node & ----- & ----- & ----- & ----- & 1015.491 & ----- & ----- \\
+1 process per node  & ----- & 507.2436 & -----   & -----   & 62.1962 \\
+2 process per node  & ----- & 281.3695 & -----   & -----   & 33.5026 \\
+4 process per node  & ----- & -----    & -----   & 50.7268 & 22.4481 \\
+8 process per node  & ----- & -----    & -----   & 48.0966 & 15.6491 \\
+16 process per node & ----- & -----    & 49.7290 & 18.8387 & 6.7330  \\
 \hline
 \hline
-\multicolumn{8}{|c|}{(f) Mesh resolution N $\times$ N = 32768 $\times$ 32768, system dimension 1,073,741,824}\\
+\multicolumn{6}{|c|}{(d) Mesh resolution N $\times$ N = 8192 $\times$ 8192, system dimension 67,108,864}\\
 \hline
- & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes & 32 nodes & 64 nodes \\
+ & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes \\
 \hline
-1 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-2 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-4 process per node  & ----- & ----- & ----- & ----- & ----- & 6164.287 & ----- \\
-8 process per node  & ----- & ----- & ----- & ----- & ----- & 6296.488 & ----- \\
-16 process per node & ----- & ----- & ----- & ----- & NOMEM & ----- & ----- \\
+1 process per node  & -----     & 4081.6881 & ----- & -----    & -----    \\
+2 process per node  & -----     & 2286.0044 & ----- & 603.5596 & -----    \\
+4 process per node  & -----     & -----     & ----- & 421.3476 & -----    \\
+8 process per node  & 2995.3809 & -----     & ----- & 208.1165 & 232.6030 \\
+16 process per node & 1522.5461 & -----     & ----- & 240.9191 & 180.2524 \\
+\hline
+\hline
+\multicolumn{6}{|c|}{(e) Mesh resolution N $\times$ N = 16384 $\times$ 16384, system dimension 268,435,456}\\
+\hline
+ & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes \\
+\hline
+1 process per node  & -----      & 33475.99647 & -----     & -----     & 4539.0598 \\
+2 process per node  & -----      & -----       & -----     & -----     & 2515.7832 \\
+4 process per node  & -----      & -----       & -----     & 3397.3418 & 1778.0936 \\
+8 process per node  & 24379.6003 & -----       & -----     & -----     & 1429.0208 \\
+16 process per node & 12236.3626 & -----       & 3201.5184 & -----     & 1015.491  \\
+\hline
+\hline
+\multicolumn{6}{|c|}{(f) Mesh resolution N $\times$ N = 32768 $\times$ 32768, system dimension 1,073,741,824}\\
+\hline
+ & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes \\
+\hline
+1 process per node  & ----- & ----- & -----      & -----      & 36179.7306 \\
+2 process per node  & ----- & ----- & 76566.5580 & -----      & 20552.7364 \\
+4 process per node  & ----- & ----- & -----      & -----      & 14161.6356 \\
+8 process per node  & ----- & ----- & -----      & 25487.6948 & 13160.3221 \\
+16 process per node & ----- & ----- & 25619.7192 & 13480.9432 & 7862.5643  \\
 \hline
 \end{tabular}
 }
@@ -258,8 +260,7 @@ To change from blocking to non-blocking communication, we simply had to change t
 
 \begin{table}[!htbp]
 \makebox[\linewidth]{
-\begin{tabular}{ |c|c|c|c|c|c|c|c|  }
-
+\begin{tabular}{ |c|c|c|c|c|c|c|c| }
 \hline
 \multicolumn{8}{|c|}{(f) Mesh resolution N $\times$ N = 32768 $\times$ 32768, system dimension 1,073,741,824}\\
 \hline
