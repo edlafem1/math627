@@ -198,61 +198,61 @@ Below is a table of times(in seconds) to complete the conjugate gradient method 
 To change from blocking to non-blocking communication, we simply had to change the function names we were already using to the ones that indicated non-blocking communication and add a different set of parameters that are MPI specific and do not affect any of the computations. Because we start the communication before any computation, the non-blocking nature of the communication allows the program to start computations on interior points while it waits for the communication to finish. After the interior point computations are complete, we make sure the communications are finished by using the MPI\_Waitall function to block for a short time while any ongoing communication is finished. Below is a table of times(in seconds) it takes for our conjugate gradient method to finish for the same run configuration as above, but this time using non-blocking communication functions.
 \begin{table}[!htbp]
 \makebox[\linewidth]{
-\begin{tabular}{ |c|c|c|c|c|c|c|c| }
+\begin{tabular}{ |c|c|c|c|c|c| }
 \hline
-\multicolumn{8}{|c|}{(a) Mesh resolution N  $\times$  N = 1024 $\times$ 1024, system dimension 1,048,576}\\
+\multicolumn{6}{|c|}{(a) Mesh resolution N  $\times$  N = 1024 $\times$ 1024, system dimension 1,048,576}\\
 \hline
- & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes & 32 nodes & 64 nodes \\
+ & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes \\
 \hline
-1 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-2 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-4 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-8 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-16 process per node & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-\hline
-\hline
-\multicolumn{8}{|c|}{(b) Mesh resolution N $\times$ N = 2048 $\times$ 2048, system dimension 4,194,304}\\
-\hline
- & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes & 32 nodes & 64 nodes \\
-\hline
-1 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-2 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-4 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-8 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-16 process per node & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+1 process per node  & 11.6632 & 4.8071 & 2.4011 & 1.2593 & 0.7549 \\
+2 process per node  & 6.2762  & 2.4465 & 1.2842 & 0.7337 & 0.4288 \\
+4 process per node  & 4.4103  & 1.3596 & 0.8562 & -----  & -----  \\
+8 process per node  & 3.3875  & -----  & -----  & 0.4105 & 0.4273 \\
+16 process per node & 0.7083  & -----  & 0.4701 & -----  & -----  \\
 \hline
 \hline
-\multicolumn{8}{|c|}{(c) Mesh resolution N $\times$ N = 4096 $\times$ 4096, system dimension 16,777,216}\\
+\multicolumn{6}{|c|}{(b) Mesh resolution N $\times$ N = 2048 $\times$ 2048, system dimension 4,194,304}\\
 \hline
- & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes & 32 nodes & 64 nodes \\
+ & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes \\
 \hline
-1 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-2 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-4 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-8 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-16 process per node & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-\hline
-\hline
-\multicolumn{8}{|c|}{(d) Mesh resolution N $\times$ N = 8192 $\times$ 8192, system dimension 67,108,864}\\
-\hline
- & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes & 32 nodes & 64 nodes \\
-\hline
-1 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-2 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-4 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-8 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-16 process per node & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+1 process per node  & ----- & ----- & ----- & ----- & ----- \\
+2 process per node  & ----- & ----- & ----- & ----- & ----- \\
+4 process per node  & ----- & ----- & ----- & ----- & ----- \\
+8 process per node  & ----- & ----- & ----- & ----- & ----- \\
+16 process per node & ----- & ----- & ----- & ----- & ----- \\
 \hline
 \hline
-\multicolumn{8}{|c|}{(e) Mesh resolution N $\times$ N = 16384 $\times$ 16384, system dimension 268,435,456}\\
+\multicolumn{6}{|c|}{(c) Mesh resolution N $\times$ N = 4096 $\times$ 4096, system dimension 16,777,216}\\
 \hline
- & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes & 32 nodes & 64 nodes \\
+ & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes \\
 \hline
-1 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-2 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-4 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-8 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-16 process per node & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+1 process per node  & ----- & ----- & ----- & ----- & ----- \\
+2 process per node  & ----- & ----- & ----- & ----- & ----- \\
+4 process per node  & ----- & ----- & ----- & ----- & ----- \\
+8 process per node  & ----- & ----- & ----- & ----- & ----- \\
+16 process per node & ----- & ----- & ----- & ----- & ----- \\
+\hline
+\hline
+\multicolumn{6}{|c|}{(d) Mesh resolution N $\times$ N = 8192 $\times$ 8192, system dimension 67,108,864}\\
+\hline
+ & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes \\
+\hline
+1 process per node  & ----- & ----- & ----- & ----- & ----- \\
+2 process per node  & ----- & ----- & ----- & ----- & ----- \\
+4 process per node  & ----- & ----- & ----- & ----- & ----- \\
+8 process per node  & ----- & ----- & ----- & ----- & ----- \\
+16 process per node & ----- & ----- & ----- & ----- & ----- \\
+\hline
+\hline
+\multicolumn{6}{|c|}{(e) Mesh resolution N $\times$ N = 16384 $\times$ 16384, system dimension 268,435,456}\\
+\hline
+ & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes \\
+\hline
+1 process per node  & ----- & ----- & ----- & ----- & ----- \\
+2 process per node  & ----- & ----- & ----- & ----- & ----- \\
+4 process per node  & ----- & ----- & ----- & ----- & ----- \\
+8 process per node  & ----- & ----- & ----- & ----- & ----- \\
+16 process per node & ----- & ----- & ----- & ----- & ----- \\
 \hline
 \end{tabular}
 }
@@ -260,17 +260,17 @@ To change from blocking to non-blocking communication, we simply had to change t
 
 \begin{table}[!htbp]
 \makebox[\linewidth]{
-\begin{tabular}{ |c|c|c|c|c|c|c|c| }
+\begin{tabular}{ |c|c|c|c|c|c| }
 \hline
-\multicolumn{8}{|c|}{(f) Mesh resolution N $\times$ N = 32768 $\times$ 32768, system dimension 1,073,741,824}\\
+\multicolumn{6}{|c|}{(f) Mesh resolution N $\times$ N = 32768 $\times$ 32768, system dimension 1,073,741,824}\\
 \hline
- & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes & 32 nodes & 64 nodes \\
+ & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes \\
 \hline
-1 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-2 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-4 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-8 process per node  & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
-16 process per node & ----- & ----- & ----- & ----- & ----- & ----- & ----- \\
+1 process per node  & ----- & ----- & ----- & ----- & ----- \\
+2 process per node  & ----- & ----- & ----- & ----- & ----- \\
+4 process per node  & ----- & ----- & ----- & ----- & ----- \\
+8 process per node  & ----- & ----- & ----- & ----- & ----- \\
+16 process per node & ----- & ----- & ----- & ----- & ----- \\
 \hline
 \end{tabular}
 }
