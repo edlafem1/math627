@@ -34,7 +34,7 @@
 \maketitle
 
 \begin{abstract}
-This paper will describe the results of solving the Poisson problem with homogeneous Dirichlet boundary by the discretized finite difference method conditions on the maya 2013 cluster. The specific goal is to compare blocking and non-blocking communication between processes using MPI functions. We first perform the conjugate gradient method of solving this problem using Matlab. We then use a serial matrix-vector product function and serial dot-product function in a conjugate gradient function provided by Dr. Gobbert. We then move to parallelize our computation by writing a parallel matrix-vector product function. Because we must divide the matrix, we must communicate some points of our domain to other processes and receive some in return. It is here that we make our comparison. Due to high utilization of maya 2013, we were not able to obtain any results at this time and cannot make a recommendation  on blocking vs non-blocking communication.
+This paper will describe the results of solving the Poisson problem with homogeneous Dirichlet boundary by the discretized finite difference method conditions on the maya 2013 cluster. The specific goal is to compare blocking and non-blocking communication between processes using MPI functions. We first perform the conjugate gradient method of solving this problem using Matlab. We then use a serial matrix-vector product function and serial dot-product function in a conjugate gradient function provided by Dr. Gobbert. We then move to parallelize our computation by writing a parallel matrix-vector product function. Because we must divide the matrix, we must communicate some points of our domain to other processes and receive some in return. It is here that we make our comparison. Due to high utilization of maya 2013, we were not able to obtain any results at this time and cannot make a recommendation  on blocking vs non-blocking communication. We find that for this particulary problemm, non-blocking communication results in a significant speedup over blocking communication.
 \end{abstract}
 \section{Introduction}
 The MPI programming package is used to facilitate communications between processes running in parallel on potentially massively distributed sytsems. Basic send and receive operations can be either blocking or non-blocking. Blocking communications causes the calling process to stall while waiting for a message to be delivered to another process, or waiting on a message from another process. We will be comparing performance of Matlab, serial C code, parallel C code with blocking communications, and parallel C code with non-blocking communications. To do so, we will work on a classical test problem given by the numerical solution with finite differences for the Poisson problem with homogeneous Dirichlet boundary conditions.
@@ -87,7 +87,7 @@ N & DOF & $||u-u_h||$ & Ratio & \#iter & Time(s) \\
 \end{table}
 \pagebreak
 \subsection{Serial C}
-Unlike Matlab, C has no built in functions to perform matrix operations or the conjugate gradient method. To best follow the Matlab code, we reused a serial matrix-vector function we developed previously as well as a serial dot product function developed previously. The code to perform the conjugate gradient method was supplied by Dr. Gobbert. All that remained for us to do is setup the $b$ vector by calculating $h^2 * f(x_i, y_i)$. Below is a table representing a convergence study done on the serial code to determine correctness of results and also display expected vs actual memory usage. Our estimates are based off the fact that the program needs four vectors of doubles, each of length $N^2$. All tests were run using one node with one process per node. In all cases we were well below the maximum number of iterations we specified(99999) and the number of iterations taken is the same as the number taken by the Matlab implementation of our code. It should also be noted that the finite difference norms and ratios between them are the same as those in the Matlab code. This indicates that our C code functions properly and attains the correct result. The ratio of finite difference norms approached $4$, indicating that our approximations do converge to the true solution.
+Unlike Matlab, C has no built in functions to perform matrix operations or the conjugate gradient method. To best follow the Matlab code, we reused a serial matrix-vector function we developed previously as well as a serial dot product function developed previously. The code to perform the conjugate gradient method was supplied by Dr. Gobbert. All that remained for us to do is setup the $b$ vector by calculating $h^2 * f(x_i, y_i)$. Below is a table representing a convergence study done on the serial code to determine correctness of results and also display expected vs actual memory usage. Our estimates are based off the fact that the program needs four vectors of doubles, each of length $N^2$. All tests were run using one node with one process per node. In all cases we were well below the maximum number of iterations we specified(99999) and the number of iterations taken is the same as the number taken by the Matlab implementation of our code. It should also be noted that the finite difference norms and ratios between them are the same as those in the Matlab code. This indicates that our C code functions properly and attains the correct result. The ratio of finite difference norms approached $4$, indicating that our approximations do converge to the true solution. Note: in the following tables, boxes with dashes indicate that the particular run of the code failed to complete due to problem with network drivers except in the convergence study table where the dashes indicate that run timed out for the available node configuration on maya.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % SOMETHING IS WRONG HERE
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -109,9 +109,8 @@ N & DOF & $||u-u_h||$ & Ratio & \#iter & Time(s) & Predicted Memory(GB) & Actual
 4096  & 4194304 & $1.9366E-07$ & 4.0287 & 6542  & 1002.8323  & $< 1$ & $< 1$  \\           
 8192  & 4194304 & $4.7376E-08$ & 4.0877 & 13033 & 8090.2605  &   2   & 2.03   \\
 16384 & 4194304 & $1.1543E-08$ & 4.1045 & 26316 & 66648.1740 &   8   & 8.03   \\
-32768 & 4194304 &  ----------  & ------ & ----- & ---------- &  32   & ------ \\
+32768 & 4194304 &  -----  & ------ & ----- & ----- &  32   & ----- \\
 \hline
-\multicolumn{8}{|c|}{The case $N=32768$ timed out when running one maya with \texttt{qos=medium}\\
 \end{tabular}
 }
 \end{table}
@@ -126,7 +125,7 @@ Below is a table of times(in seconds) to complete the conjugate gradient method 
 \hline
 \multicolumn{6}{|c|}{(a) Mesh resolution N  $\times$  N = 1024 $\times$ 1024, system dimension 1,048,576}\\
 \hline
- & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes \\
+ & 1 node & 2 nodes & 4 nodes & 8 nodes & 16 nodes \\
 \hline
 1 process per node  & 12.2329 & 5.1400 & -----  & -----   & 0.9088 \\
 2 process per node  & -----   & -----  & -----  & 0.8503  & 0.5849 \\
@@ -137,7 +136,7 @@ Below is a table of times(in seconds) to complete the conjugate gradient method 
 \hline
 \multicolumn{6}{|c|}{(b) Mesh resolution N $\times$ N = 2048 $\times$ 2048, system dimension 4,194,304}\\
 \hline
- & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes \\
+ & 1 node & 2 nodes & 4 nodes & 8 nodes & 16 nodes \\
 \hline
 1 process per node  & 124.3657 & ----- & -----  & -----   & 5.9926 \\
 2 process per node  & -----    & ----- & -----  & 5.7192  & 3.2807 \\
@@ -148,7 +147,7 @@ Below is a table of times(in seconds) to complete the conjugate gradient method 
 \hline
 \multicolumn{6}{|c|}{(c) Mesh resolution N $\times$ N = 4096 $\times$ 4096, system dimension 16,777,216}\\
 \hline
- & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes \\
+ & 1 node & 2 nodes & 4 nodes & 8 nodes & 16 nodes \\
 \hline
 1 process per node  & ----- & 507.2436 & -----   & -----   & 62.1962 \\
 2 process per node  & ----- & 281.3695 & -----   & -----   & 33.5026 \\
@@ -159,7 +158,7 @@ Below is a table of times(in seconds) to complete the conjugate gradient method 
 \hline
 \multicolumn{6}{|c|}{(d) Mesh resolution N $\times$ N = 8192 $\times$ 8192, system dimension 67,108,864}\\
 \hline
- & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes \\
+ & 1 node & 2 nodes & 4 nodes & 8 nodes & 16 nodes \\
 \hline
 1 process per node  & -----     & 4081.6881 & ----- & -----    & -----    \\
 2 process per node  & -----     & 2286.0044 & ----- & 603.5596 & -----    \\
@@ -170,7 +169,7 @@ Below is a table of times(in seconds) to complete the conjugate gradient method 
 \hline
 \multicolumn{6}{|c|}{(e) Mesh resolution N $\times$ N = 16384 $\times$ 16384, system dimension 268,435,456}\\
 \hline
- & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes \\
+ & 1 node & 2 nodes & 4 nodes & 8 nodes & 16 nodes \\
 \hline
 1 process per node  & -----      & 33475.99647 & -----     & -----     & 4539.0598 \\
 2 process per node  & -----      & -----       & -----     & -----     & 2515.7832 \\
@@ -181,7 +180,7 @@ Below is a table of times(in seconds) to complete the conjugate gradient method 
 \hline
 \multicolumn{6}{|c|}{(f) Mesh resolution N $\times$ N = 32768 $\times$ 32768, system dimension 1,073,741,824}\\
 \hline
- & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes \\
+ & 1 node & 2 nodes & 4 nodes & 8 nodes & 16 nodes \\
 \hline
 1 process per node  & ----- & ----- & -----      & -----      & 36179.7306 \\
 2 process per node  & ----- & ----- & 76566.5580 & -----      & 20552.7364 \\
@@ -202,7 +201,7 @@ To change from blocking to non-blocking communication, we simply had to change t
 \hline
 \multicolumn{6}{|c|}{(a) Mesh resolution N  $\times$  N = 1024 $\times$ 1024, system dimension 1,048,576}\\
 \hline
- & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes \\
+ & 1 node & 2 nodes & 4 nodes & 8 nodes & 16 nodes \\
 \hline
 1 process per node  & 11.6632 & 4.8071 & 2.4011 & 1.2593 & 0.7549 \\
 2 process per node  & 6.2762  & 2.4465 & 1.2842 & 0.7337 & 0.4288 \\
@@ -213,46 +212,46 @@ To change from blocking to non-blocking communication, we simply had to change t
 \hline
 \multicolumn{6}{|c|}{(b) Mesh resolution N $\times$ N = 2048 $\times$ 2048, system dimension 4,194,304}\\
 \hline
- & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes \\
+ & 1 node & 2 nodes & 4 nodes & 8 nodes & 16 nodes \\
 \hline
-1 process per node  & ----- & ----- & ----- & ----- & ----- \\
-2 process per node  & ----- & ----- & ----- & ----- & ----- \\
-4 process per node  & ----- & ----- & ----- & ----- & ----- \\
-8 process per node  & ----- & ----- & ----- & ----- & ----- \\
-16 process per node & ----- & ----- & ----- & ----- & ----- \\
+1 process per node  & 124.4428 & 59.5081 & 24.5915 & 9.9484 & 5.1698 \\
+2 process per node  & 68.1641 & ----- & 14.5794 & 5.5235 & 2.8421 \\
+4 process per node  & 50.3343 & ----- & 9.6025 & 3.3712 & ----- \\
+8 process per node  & 49.8013 & ----- & 7.5038 & ----- & 1.5288 \\
+16 process per node & 23.6198 & ----- & ----- & ----- & 2.0673 \\
 \hline
 \hline
 \multicolumn{6}{|c|}{(c) Mesh resolution N $\times$ N = 4096 $\times$ 4096, system dimension 16,777,216}\\
 \hline
- & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes \\
+ & 1 node & 2 nodes & 4 nodes & 8 nodes & 16 nodes \\
 \hline
-1 process per node  & ----- & ----- & ----- & ----- & ----- \\
-2 process per node  & ----- & ----- & ----- & ----- & ----- \\
-4 process per node  & ----- & ----- & ----- & ----- & ----- \\
-8 process per node  & ----- & ----- & ----- & ----- & ----- \\
-16 process per node & ----- & ----- & ----- & ----- & ----- \\
+1 process per node  & 959.0939 & -----    & ----- & 119.9551 & 52.3684 \\
+2 process per node  & 533.9334 & 272.9432 & ----- & 69.0324 & 30.3954 \\
+4 process per node  & 398.0250 & 200.9312 & 103.2039 & 51.9004 & 21.5172 \\
+8 process per node  & 379.1216 & 193.8006 & 97.5995 & 48.8247 & 16.7083 \\
+16 process per node & 193.7211 & -----    & 40.9788 & 18.4893 & ----- \\
 \hline
 \hline
 \multicolumn{6}{|c|}{(d) Mesh resolution N $\times$ N = 8192 $\times$ 8192, system dimension 67,108,864}\\
 \hline
- & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes \\
+ & 1 node & 2 nodes & 4 nodes & 8 nodes & 16 nodes \\
 \hline
-1 process per node  & ----- & ----- & ----- & ----- & ----- \\
-2 process per node  & ----- & ----- & ----- & ----- & ----- \\
-4 process per node  & ----- & ----- & ----- & ----- & ----- \\
-8 process per node  & ----- & ----- & ----- & ----- & ----- \\
-16 process per node & ----- & ----- & ----- & ----- & ----- \\
+1 process per node  & 7907.9558 & 3991.3551 & 2006.0673 & 1025.5785 & ----- \\
+2 process per node  & 4360.8958 & 2201.3352 & 1130.1421 & 571.8579  & ----- \\
+4 process per node  & 3157.3021 & 1584.6605 & 810.1751  & 416.0834  & 224.8234 \\
+8 process per node  & 3021.2836 & -----     & -----     & 396.0974  & 205.6002 \\
+16 process per node & 1511.5842 & -----     & 398.3082  & 207.8693  & 110.6039 \\
 \hline
 \hline
 \multicolumn{6}{|c|}{(e) Mesh resolution N $\times$ N = 16384 $\times$ 16384, system dimension 268,435,456}\\
 \hline
- & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes \\
+ & 1 node & 2 nodes & 4 nodes & 8 nodes & 16 nodes \\
 \hline
-1 process per node  & ----- & ----- & ----- & ----- & ----- \\
-2 process per node  & ----- & ----- & ----- & ----- & ----- \\
-4 process per node  & ----- & ----- & ----- & ----- & ----- \\
-8 process per node  & ----- & ----- & ----- & ----- & ----- \\
-16 process per node & ----- & ----- & ----- & ----- & ----- \\
+1 process per node  & 65399.4731 & 32892.0493 & ----- & 85559.2378 & 4296.8040 \\
+2 process per node  & 36639.6959 & 18400.2125 & 9388.5257 & 4765.7079 & 2448.8810 \\
+4 process per node  & 25932.0154 & -----      & 6617.1698 & ----- & 1593.1021 \\
+8 process per node  & 16584.4994 & -----      & 6211.5078 & ----- & ----- \\
+16 process per node & 12604.3425 & -----      & ----- & ----- & ----- \\
 \hline
 \end{tabular}
 }
@@ -264,20 +263,20 @@ To change from blocking to non-blocking communication, we simply had to change t
 \hline
 \multicolumn{6}{|c|}{(f) Mesh resolution N $\times$ N = 32768 $\times$ 32768, system dimension 1,073,741,824}\\
 \hline
- & 1 node & 2 nodes & 4 noes & 8 nodes & 16 nodes \\
+ & 1 node & 2 nodes & 4 nodes & 8 nodes & 16 nodes \\
 \hline
-1 process per node  & ----- & ----- & ----- & ----- & ----- \\
-2 process per node  & ----- & ----- & ----- & ----- & ----- \\
-4 process per node  & ----- & ----- & ----- & ----- & ----- \\
-8 process per node  & ----- & ----- & ----- & ----- & ----- \\
-16 process per node & ----- & ----- & ----- & ----- & ----- \\
+1 process per node  & ----- & ----- & -----      & ----- & 35154.3336 \\
+2 process per node  & ----- & ----- & 75042.4219 & 38600.9802 & 19718.1802 \\
+4 process per node  & ----- & ----- & 53341.1805 & 27117.6061 & 13707.2172 \\
+8 process per node  & ----- & ----- & 50098.9548 & 25301.4986 & 12813.9423 \\
+16 process per node & ----- & ----- & 25250.9079 & ----- & 6656.6802 \\
 \hline
 \end{tabular}
 }
 \end{table}
 \pagebreak
 \section{Conclusions}
-Due to high utilization of the maya cluster, very little data was able to be collected and thus we cannot draw any conclusions at this time.
+Looking at the results we were able to collect, it is clear that it is much better to increase the total number of processes regardless of communication type used. It is also clear however, that it is much less time consuming to use non-blocking communication. In the case of $256$ processes with $N=32768$, non-blocking communication was about $1000$ seconds shorter than blocking communication resulting in about a $1.14$ speedup of non-blocking vs blocking. Similar speedup was achieved in other cases. Thus our recommendation would be to use non-blocking communication when possible. It should be noted that many errors occured when attempting to run various time tests. These errors occured in the network drivers and were not caused by any of our code or the manner in which we ran our code.
 \section*{References}
 
 $\left[2\right]$  Ecaterina Coman, Matthew Brewster, et al. A Comparative Evaluation of Matlab, Octave, FreeMat, Scilab, R, and IDL on Tara. Technical Report HPCF–2012-15, UMBC High Performance Computing Facility, University of Maryland, Baltimore County, 2012.\\
