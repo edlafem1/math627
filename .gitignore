@@ -13,4 +13,4 @@
 *.out
 *.err
 *.slurm
-
+hw5/serial_C/results/*

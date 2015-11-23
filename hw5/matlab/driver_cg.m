@@ -25,20 +25,20 @@ function driver_cg(N)
   U(2:end-1,2:end-1) = Uint;
 
   % plot numerical solution:
-  figure;
+%  figure;
   H = mesh(X,Y,U);
-  xlabel('x');
-  ylabel('y');
-  zlabel('u');
+%  xlabel('x');
+%  ylabel('y');
+%  zlabel('u');
 
   % compute and plot numerical error:
   Utrue = (sin(pi*X)).^2 .* (sin(pi*Y)).^2;
   E = U - Utrue;
-  figure;
+ % figure;
   H = mesh(X,Y,E);
-  xlabel('x');
-  ylabel('y');
-  zlabel('u-u_h');
+%  xlabel('x');
+%  ylabel('y');
+%  zlabel('u-u_h');
 
   % compute L^inf norm of error and print:
   enorminf = max(abs(E(:)));
@@ -50,7 +50,9 @@ function driver_cg(N)
   fprintf('enorminf           = %24.16e\n', enorminf);
   fprintf('C = enorminf / h^2 = %24.16e\n', (enorminf/h^2));
   fprintf('wall clock time    = %10.2f seconds\n', timesec);
-
+  disp(U);
+  fprintf('-------------------------------\n');
+  disp(Uint);
 
 function A = setupA(N)
   I = speye(N);
