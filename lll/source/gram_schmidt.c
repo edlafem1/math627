@@ -62,16 +62,7 @@ void qdu_decomposition(double *A, double *E, double *D, double *U, int m, int n)
                 U[i*m + j] = 1;
                 D[i*m + j] = denominator; // D[i,j] = R[i,i]
             }
-            else {
-                /*
-                printf("upper diagonal %i %i\n", i, j);
-                for (int z = 0; z < m; z++) {
-                    printf("%f\t%f\n", E[i*m + z], A[j*m + z]);
-                }
-                printf("<Ei,Aj>=%f\n", dot_product(&(E[i*m]), &(A[j*m]), m));
-                printf("Res = %f\n", dot_product(&(E[i*m]), &(A[j*m]), m) / denominator);
-                */
-                
+            else {                
                 U[j*m + i] = dot_product(&(E[i*m]), &(A[j*m]), m) / denominator; // U[i,j] = R[i,j] / R[i,i]
             }
 
