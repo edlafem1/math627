@@ -2,6 +2,7 @@
 #define LLL_H
 
 #include <math.h>
+#include "lin_alg.h"
 
 /**
 Returns 1 if |u[i,j]| <= 1/2 for all 0 <= i < j <= n-1

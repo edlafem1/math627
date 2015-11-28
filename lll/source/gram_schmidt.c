@@ -25,12 +25,17 @@ void vj_projection(double *ui, double *uj, int m) {
         uj[i] -= (quotient * ui[i]);
     }
 }
-
+void normalize(double *v, int m) {
+    double norm = euclidean_norm(v, m);
+    for (int i = 0; i < m; i++) {
+        v[i] /= norm;
+    }
+}
 /*
 A is column major matrix of dimension m x n
+Note: what if B in m x n is such that m > n? Does the bottom part of E mean anything? We want E n x n, but for now it is m x n because we have not answered this question.
 */
 void gramschmidt_process(double *A, double *E, int m, int n) {
-    double norm;
     double *vi, *vj;
 
     memcpy(E, A, sizeof(double)*m*n);
@@ -38,10 +43,7 @@ void gramschmidt_process(double *A, double *E, int m, int n) {
     for (int i = 0; i < n; i++) {
         vi = &(E[i*m]);
 
-        norm = euclidean_norm(vi, m);
-        for (int iindex = 0; iindex < m; iindex++) {
-            vi[iindex] /= norm;
-        }
+        normalize(vi, m);
 
         for (int j = i + 1; j < n; j++) {
             vj = &(E[j*m]);
@@ -51,6 +53,9 @@ void gramschmidt_process(double *A, double *E, int m, int n) {
     }
 }
 
+/*
+See above considerations about dimension of other matrices
+*/
 void qdu_decomposition(double *A, double *E, double *D, double *U, int m, int n) {
     double denominator;
     // see if maybe switching order of the loops and doing condition i <= j will be faster
