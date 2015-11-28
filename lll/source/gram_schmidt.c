@@ -60,7 +60,7 @@ void qdu_decomposition(double *A, double *E, double *D, double *U, int m, int n)
             if (i == j) {
                 // we use this indexing because j is changing most frequently and we reduce cache misses. Note, we can switch i and j here because i==j
                 U[i*m + j] = 1;
-                D[i*m + j] = denominator; // D[i,j] = R[i,i]
+                D[i] = denominator; // D[i,j] = R[i,i], but D is only diagonal, so we represent it with just a vector
             }
             else {                
                 U[j*m + i] = dot_product(&(E[i*m]), &(A[j*m]), m) / denominator; // U[i,j] = R[i,j] / R[i,i]
