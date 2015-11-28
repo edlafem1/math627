@@ -1,10 +1,11 @@
 #include "lin_alg.h"
 
+#ifdef PARALLEL
 /*
 Computes dot product of two n-length column vectors and returns result.
 Note, l_x and l_y represent only the portion of the vector that this function will process
 */
-double dot_product(double *l_x, double *l_y, int n, int id, int np) {
+double parallel_dot_product(double *l_x, double *l_y, int n, int id, int np) {
     double dot_product = 0;
 #ifdef BLAS
 #ifndef PARALLEL
@@ -37,7 +38,7 @@ double dot_product(double *l_x, double *l_y, int n, int id, int np) {
 Calculates the Eucildean Norm of a column vector of length n.
 Relies on the dot_product function.
 */
-double euclidean_norm(double *l_x, int n, int id, int np) {
+double parallel_euclidean_norm(double *l_x, int n, int id, int np) {
 #ifdef BLASXXX
     return cblas_dnrm2(n, l_x, 1); // euclidean norm BLAS level 1
 #else
@@ -59,6 +60,8 @@ void matrix_vector_mult(double *l_y, double *l_A, double *l_x, double *temp_y, d
     MPI_Scatter(y, l_n, MPI_DOUBLE, l_y, l_n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 #endif
 }
+#endif
+
 
 void naive_inner_product(double *A, double *B, double *D, int m, int k, int n) {
     for (int j = 0; j < n; j++) {
@@ -218,4 +221,13 @@ void identity(double *X, int m, int n, int zeroed) {
         for (int i = 0; i < min_dim; i++) {
             X[i*m + i] = 1;
         }
+}
+
+void printMatrix(double *B, int m, int n) {
+    for (int j = 0; j < m; j++) {
+        for (int i = 0; i < n; i++) {
+            printf("%f   ", B[i*m + j]);
+        }
+        printf("\n");
+    }
 }

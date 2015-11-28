@@ -1,48 +1,43 @@
-#include "gram_schmidt.h"
 #include <stdlib.h>
 #include <stdio.h>
 
-void printMatrix(double *B, int m, int n) {
-    printf("Matrix:\n");
-    for (int j = 0; j < m; j++) {
-        for (int i = 0; i < n; i++) {
-            printf("%f   ", B[i*m + j]);
-        }
-        printf("\n");
-    }
-}
+#include "lin_alg.h"
+#include "gram_schmidt.h"
+#include "lll.h"
 
 int main() {
-    int m = 2;
-    int n = 2;
+    int m = 3;
+    int n = 3;
 
     double *A = (double *) calloc(m*n, sizeof(double));
-    double *E = (double *)calloc(m*n, sizeof(double));
-    double *U = (double *)calloc(m*n, sizeof(double));
+    double *Q = (double *)calloc(m*n, sizeof(double));
     double *D = (double *)calloc(m, sizeof(double)); // diagonal matrix
-    /*
-    // j is row, i is column
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < m; j++) {
-            B[j + i*m] = i ^ j;
-        }
-    }
-    */
+    double *U = (double *)calloc(m*n, sizeof(double));
+    double *M = (double *)calloc(m*n, sizeof(double));
+
     A[0 + 0 * m] = 1;
-    A[0 + 1 * m] = 1;
-    A[1 + 0 * m] = 2;
+    A[0 + 1 * m] = -1;
+    A[0 + 2 * m] = 3;
+    A[1 + 0 * m] = 1;
     A[1 + 1 * m] = 0;
+    A[1 + 2 * m] = 5;
+    A[2 + 0 * m] = 1;
+    A[2 + 1 * m] = 2;
+    A[2 + 2 * m] = 6;
 
-    printMatrix(A, m, n);
-
-    gramschmidt_process(A, E, m, n);
     printf("A:\n");
     printMatrix(A, m, n);
 
-    printf("Q:\n");
-    printMatrix(E, m, n);
+    gramschmidt_process(A, Q, m, n);
+    /*
+    printf("A:\n");
+    printMatrix(A, m, n);
+    */
 
-    qdu_decomposition(A, E, D, U, m, n);
+    qdu_decomposition(A, Q, D, U, m, n);
+
+    printf("Q:\n");
+    printMatrix(Q, m, n);
 
     printf("D:\n");
     printMatrix(D, m, 1);
@@ -50,5 +45,28 @@ int main() {
     printf("U:\n");
     printMatrix(U, m, n);
 
+    double w = .75;
+    LLL(Q, D, U, M, w, m, n);
+    printf("M:\n");
+    printMatrix(M, m, n);
+
+    printf("D:\n");
+    printMatrix(D, m, 1);
+
+    printf("U:\n");
+    printMatrix(U, m, n);
+
+    printf("Q:\n");
+    printMatrix(Q, m, n);
+
+    printf("Is size reduced? %s\n", (size_reduced(U, m, n)==1) ? "yes" : "no");
+
+    printf("Is LLL reduced? %s\n", (LLL_reduced(D, U, w, m, n)==1) ? "yes" : "no");
+
+    free(A);
+    free(Q);
+    free(D);
+    free(U);
+    free(M);
     return 0;
 }
