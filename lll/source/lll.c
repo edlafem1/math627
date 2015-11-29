@@ -3,7 +3,6 @@
 B is dimension m x n, m>=n
 D is dimension n x n but since it is a diagonal, we just represent it as in dimension n
 U is dimension n x n
-X is dimension n x n
 M is dimension n x n
 */
 
