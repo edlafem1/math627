@@ -11,9 +11,9 @@ int main() {
 
     double *B = (double *) calloc(m*n, sizeof(double));
     double *Q = (double *)calloc(m*n, sizeof(double));
-    double *D = (double *)calloc(m, sizeof(double)); // diagonal matrix
+    double *D = (double *)calloc(n, sizeof(double)); // diagonal matrix
     double *U = (double *)calloc(m*n, sizeof(double));
-    double *M = (double *)calloc(m*n, sizeof(double));
+    double *M = (double *)calloc(n*n, sizeof(double));
 
     B[0 + 0 * m] = 1;
     B[0 + 1 * m] = -1;
@@ -33,7 +33,6 @@ int main() {
     printf("B:\n");
     printMatrix(B, m, n);
     */
-
     qdu_decomposition(B, Q, D, U, m, n);
 
     /*

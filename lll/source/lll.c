@@ -53,7 +53,8 @@ void reduce(double *U, double *B, double *M, int i, int j, int m, int n) {
         //printf("%f - %f = %f\n", U[j*m + r], gamma*U[i*m + r], U[j*m + r] - gamma*U[i*m + r]);
         U[j*m + r] -= gamma*U[i*m + r];
         B[j*m + r] -= gamma*B[i*m + r];
-        M[j*m + r] -= gamma*M[i*m + r];
+        if (r < m)
+            M[j*n + r] -= gamma*M[i*n + r];
     }
 }
 
@@ -81,10 +82,10 @@ void swap_restore(double *U, double *B, double *D, double *M, int i, int m, int 
         B[i*m + j] = B[(i - 1)*m + j];
         B[(i - 1)*m + j] = temp;
     }
-    for (int j = 0; j < m; j++) {
-        temp = M[i*m + j];
-        M[i*m + j] = M[(i - 1)*m + j];
-        M[(i - 1)*m + j] = temp;
+    for (int j = 0; j < n; j++) {
+        temp = M[i*n + j];
+        M[i*n + j] = M[(i - 1)*n + j];
+        M[(i - 1)*n + j] = temp;
     }
 
     /*
