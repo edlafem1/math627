@@ -12,7 +12,7 @@ int main() {
     double *B = (double *) calloc(m*n, sizeof(double));
     double *Q = (double *)calloc(m*n, sizeof(double));
     double *D = (double *)calloc(n, sizeof(double)); // diagonal matrix
-    double *U = (double *)calloc(m*n, sizeof(double));
+    double *U = (double *)calloc(n*n, sizeof(double));
     double *M = (double *)calloc(n*n, sizeof(double));
 
     B[0 + 0 * m] = 1;
