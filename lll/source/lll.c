@@ -9,8 +9,9 @@ M is dimension n x n
 
 
 int size_reduced(double *U, int m, int n) {
-    for (int i = 0; i < n-1; i++) {
-        for (int j = i + 1; j <= n-1; j++) {
+    // iterating over upper triangular matrix, excluding main diagonal of all 1's
+    for (int i = 1; i < n-1; i++) {
+        for (int j = 0; j < i; j++) {
             if (fabs(U[i*m + j]) > 0.5)
                 return -1;
         }
@@ -107,7 +108,11 @@ void LLL(double *B, double *D, double *U, double *M, double w, int m, int n) {
         //printf("[%i]: Top of while\n", k);
         if (fabs(U[k*m + (k - 1)]) > 0.5+1e-14) { //Need to add 1e-14 to account for machine error
             printf("[%i]: Reduce(%i, %i)\n", k, k-1, k);
+            printf("B\n");
+            printMatrix(B, m, n);
             reduce(U, B, M, k - 1, k, m, n);
+            printf("B\n");
+            printMatrix(B, m, n);
             printf("D\n");
             printMatrix(D, m, 1);
             printf("U\n");
@@ -116,7 +121,11 @@ void LLL(double *B, double *D, double *U, double *M, double w, int m, int n) {
         //printf("[%i]: After first reduce if\n", k);
         if (D[k] < (w - (U[k*m + (k - 1)])*(U[k*m + (k - 1)]))*D[k - 1]) {
             printf("[%i]: SwapRestore(%i)\n", k, k);
+            printf("B\n");
+            printMatrix(B, m, n);
             swap_restore(U, B, D, M, k, m, n);
+            printf("B\n");
+            printMatrix(B, m, n);
             printf("D\n");
             printMatrix(D, m, 1);
             printf("U\n");
@@ -127,9 +136,13 @@ void LLL(double *B, double *D, double *U, double *M, double w, int m, int n) {
         else {
             //printf("[%i]: before else for loop\n", k);
             for (int i = k - 2; i >= 0; i--) { //math: i=k-2 down to 1
-                if (fabs(U[k*m + i])>0.5) {
+                if (fabs(U[k*m + i])>0.5+1e-14) { // need this check for machine error
                     printf("[%i, %i]: reduce(%i,%i)\n", k, i, i, k);
+                    printf("B\n");
+                    printMatrix(B, m, n);
                     reduce(U, B, M, i, k, m, n);
+                    printf("B\n");
+                    printMatrix(B, m, n);
                     printf("D\n");
                     printMatrix(D, m, 1);
                     printf("U\n");
