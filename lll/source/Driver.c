@@ -25,7 +25,7 @@ int main() {
     B[2 + 1 * m] = 2;
     B[2 + 2 * m] = 6;
     
-    printf("B:\n");
+    printf("Initial Basis:\n");
     printMatrix(B, m, n);
 
     gramschmidt_process(B, Q, m, n);
@@ -36,19 +36,22 @@ int main() {
 
     qdu_decomposition(B, Q, D, U, m, n);
 
-
+    /*
     printf("Q:\n");
     printMatrix(Q, m, n);
+    */
     free(Q);
-
+    /*
     printf("D:\n");
     printMatrix(D, m, 1);
 
     printf("U:\n");
     printMatrix(U, m, n);
+    */
 
     double w = .75;
     LLL(B, D, U, M, w, m, n);
+    /*
     printf("M:\n");
     printMatrix(M, m, n);
 
@@ -57,8 +60,9 @@ int main() {
 
     printf("U:\n");
     printMatrix(U, m, n);
+    */
 
-    printf("B:\n");
+    printf("Final Basis:\n");
     printMatrix(B, m, n);
 
     printf("Is size reduced? %s\n", (size_reduced(U, m, n)==1) ? "yes" : "no");

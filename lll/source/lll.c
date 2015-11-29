@@ -100,36 +100,45 @@ void swap_restore(double *U, double *B, double *D, double *M, int i, int m, int 
 }
 
 void LLL(double *B, double *D, double *U, double *M, double w, int m, int n) {
+    printf("-----------------------------\n\n");
+    
     identity(M, m, n, 1);
 
     int k = 1; //math: k=2
-    printf("-----------------------------\n\n");
     while (k < n) { //math: k <= n
         //printf("[%i]: Top of while\n", k);
         if (fabs(U[k*m + (k - 1)]) > 0.5+1e-14) { //Need to add 1e-14 to account for machine error
+            /*
             printf("[%i]: Reduce(%i, %i)\n", k, k-1, k);
             printf("B\n");
             printMatrix(B, m, n);
+            */
             reduce(U, B, M, k - 1, k, m, n);
+            /*
             printf("B\n");
             printMatrix(B, m, n);
             printf("D\n");
             printMatrix(D, m, 1);
             printf("U\n");
             printMatrix(U, m, n);
+            */
         }
         //printf("[%i]: After first reduce if\n", k);
         if (D[k] < (w - (U[k*m + (k - 1)])*(U[k*m + (k - 1)]))*D[k - 1]) {
+            /*
             printf("[%i]: SwapRestore(%i)\n", k, k);
             printf("B\n");
             printMatrix(B, m, n);
+            */
             swap_restore(U, B, D, M, k, m, n);
+            /*
             printf("B\n");
             printMatrix(B, m, n);
             printf("D\n");
             printMatrix(D, m, 1);
             printf("U\n");
             printMatrix(U, m, n);
+            */
             k = max(k - 1, 1); //math: k=max(k-1,2)
             //printf("[%i]: After first swap restore\n", k);
         }
@@ -137,16 +146,20 @@ void LLL(double *B, double *D, double *U, double *M, double w, int m, int n) {
             //printf("[%i]: before else for loop\n", k);
             for (int i = k - 2; i >= 0; i--) { //math: i=k-2 down to 1
                 if (fabs(U[k*m + i])>0.5+1e-14) { // need this check for machine error
+                    /*
                     printf("[%i, %i]: reduce(%i,%i)\n", k, i, i, k);
                     printf("B\n");
                     printMatrix(B, m, n);
+                    */
                     reduce(U, B, M, i, k, m, n);
+                    /*
                     printf("B\n");
                     printMatrix(B, m, n);
                     printf("D\n");
                     printMatrix(D, m, 1);
                     printf("U\n");
                     printMatrix(U, m, n);
+                    */
                 }
                 //printf("[%i, %i]: after second reduce if\n", k, i);
             }
