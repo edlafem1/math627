@@ -59,7 +59,7 @@ See above considerations about dimension of other matrices
 void qdu_decomposition(double *B, double *Q, double *D, double *U, int m, int n) {
     double denominator;
     // see if maybe switching order of the loops and doing condition i <= j will be faster
-    for (int i = 0; i < m; i++) {
+    for (int i = 0; i < n; i++) {
         denominator = dot_product(&(Q[i*m]), &(B[i*m]), m); // this is R[i,i]
         for (int j = i; j < m; j++) {
             if (i == j) {
