@@ -6,7 +6,7 @@
 #include "lll.h"
 
 int main() {
-    int m = 3;
+    int m = 4;
     int n = 3;
 
     double *B = (double *) calloc(m*n, sizeof(double));
@@ -24,6 +24,10 @@ int main() {
     B[2 + 0 * m] = 1;
     B[2 + 1 * m] = 2;
     B[2 + 2 * m] = 6;
+
+    B[3 + 0 * m] = 1;
+    B[3 + 1 * m] = 0;
+    B[3 + 2 * m] = 0;
     
     printf("Initial Basis:\n");
     printMatrix(B, m, n);
