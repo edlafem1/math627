@@ -14,7 +14,13 @@ int main() {
     double *D = (double *)calloc(n, sizeof(double)); // diagonal matrix
     double *U = (double *)calloc(n*n, sizeof(double));
     double *M = (double *)calloc(n*n, sizeof(double));
-
+    /*
+    To make vectors in Matlab:
+    M = randi(r,m,n)
+    Creates m rows of linearly independent n-vectors with values x between 1<=x<=r.
+    To write to file:
+    dlmwrite('filename',M) will be a comma deliminated file of the values
+    */
     B[0 + 0 * m] = 1;
     B[0 + 1 * m] = -1;
     B[0 + 2 * m] = 3;
