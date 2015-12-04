@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{B2460B46-FD70-4559-9195-7D228FFDBD8A}</ProjectGuid>
+    <ProjectGuid>{65561972-B3A8-41BE-8523-945FDF0115A4}</ProjectGuid>
     <RootNamespace>LLL</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>

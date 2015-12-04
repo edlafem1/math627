@@ -61,16 +61,14 @@ void qdu_decomposition(double *B, double *Q, double *D, double *U, int m, int n)
     // see if maybe switching order of the loops and doing condition i <= j will be faster
     for (int i = 0; i < n; i++) {
         denominator = dot_product(&(Q[i*m]), &(B[i*m]), m); // this is R[i,i]
-        for (int j = i; j < m; j++) {
+        for (int j = i; j < n; j++) {
             if (i == j) {
                 // we use this indexing because j is changing most frequently and we reduce cache misses. Note, we can switch i and j here because i==j
-                if (j < n)
-                    U[i*n + j] = 1;
+                U[i*n + j] = 1;
                 D[i] = denominator*denominator; // (D[i,j] = R[i,i], but D is only diagonal, so we represent it with just a vector)^2 for LLL algo
             }
-            else {     
-                if (j < m)
-                    U[j*n + i] = dot_product(&(Q[i*m]), &(B[j*m]), m) / denominator; // U[i,j] = R[i,j] / R[i,i]
+            else {                
+                U[j*n + i] = dot_product(&(Q[i*m]), &(B[j*m]), m) / denominator; // U[i,j] = R[i,j] / R[i,i]
             }
 
         }

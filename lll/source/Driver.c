@@ -24,6 +24,7 @@ int main() {
     B[2 + 0 * m] = 1;
     B[2 + 1 * m] = 2;
     B[2 + 2 * m] = 6;
+
     B[3 + 0 * m] = 1;
     B[3 + 1 * m] = 0;
     B[3 + 2 * m] = 0;
@@ -36,6 +37,7 @@ int main() {
     printf("B:\n");
     printMatrix(B, m, n);
     */
+
     qdu_decomposition(B, Q, D, U, m, n);
 
     /*
@@ -50,9 +52,9 @@ int main() {
     printf("U:\n");
     printMatrix(U, m, n);
     */
-    
+
     double w = .75;
-    //LLL(B, D, U, M, w, m, n);
+    LLL(B, D, U, M, w, m, n);
     /*
     printf("M:\n");
     printMatrix(M, m, n);
@@ -73,7 +75,6 @@ int main() {
 
     free(B);
     free(D);
-    return 0;
     free(U);
     free(M);
     return 0;

@@ -50,11 +50,11 @@ void reduce(double *U, double *B, double *M, int i, int j, int m, int n) {
 
     for (int r = 0; r < m; r++) {
         //printf("%f - %f = %f\n", U[j*m + r], gamma*U[i*m + r], U[j*m + r] - gamma*U[i*m + r]);
-        B[j*m + r] -= gamma*B[i*m + r];
         if (r < n) {
             U[j*n + r] -= gamma*U[i*n + r];
             M[j*n + r] -= gamma*M[i*n + r];
         }
+        B[j*m + r] -= gamma*B[i*m + r];
     }
 }
 
