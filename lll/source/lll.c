@@ -52,9 +52,9 @@ void reduce(double *U, double *B, double *M, int i, int j, int m, int n) {
         //printf("%f - %f = %f\n", U[j*m + r], gamma*U[i*m + r], U[j*m + r] - gamma*U[i*m + r]);
         if (r < n) {
             U[j*n + r] -= gamma*U[i*n + r];
+            M[j*n + r] -= gamma*M[i*n + r];
         }
         B[j*m + r] -= gamma*B[i*m + r];
-        M[j*m + r] -= gamma*M[i*m + r];
     }
 }
 
@@ -82,10 +82,10 @@ void swap_restore(double *U, double *B, double *D, double *M, int i, int m, int 
         B[i*m + j] = B[(i - 1)*m + j];
         B[(i - 1)*m + j] = temp;
     }
-    for (int j = 0; j < m; j++) {
-        temp = M[i*m + j];
-        M[i*m + j] = M[(i - 1)*m + j];
-        M[(i - 1)*m + j] = temp;
+    for (int j = 0; j < n; j++) {
+        temp = M[i*n + j];
+        M[i*n + j] = M[(i - 1)*n + j];
+        M[(i - 1)*n + j] = temp;
     }
 
     /*
@@ -103,7 +103,7 @@ void swap_restore(double *U, double *B, double *D, double *M, int i, int m, int 
 void LLL(double *B, double *D, double *U, double *M, double w, int m, int n) {
     printf("-----------------------------\n\n");
     
-    identity(M, m, n, 1);
+    identity(M, n, n, 1);
 
     int k = 1; //math: k=2
     while (k < n) { //math: k <= n
