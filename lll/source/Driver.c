@@ -11,8 +11,8 @@ int main() {
 
     double *B = (double *) calloc(m*n, sizeof(double));
     double *Q = (double *)calloc(m*n, sizeof(double));
-    double *D = (double *)calloc(m, sizeof(double)); // diagonal matrix
-    double *U = (double *)calloc(m*n, sizeof(double));
+    double *D = (double *)calloc(n, sizeof(double)); // diagonal matrix
+    double *U = (double *)calloc(n*n, sizeof(double));
     double *M = (double *)calloc(m*n, sizeof(double));
 
     B[0 + 0 * m] = 1;
@@ -50,7 +50,7 @@ int main() {
     */
 
     double w = .75;
-    LLL(B, D, U, M, w, m, n);
+    //LLL(B, D, U, M, w, m, n);
     /*
     printf("M:\n");
     printMatrix(M, m, n);
