@@ -50,7 +50,7 @@ int main() {
     */
 
     double w = .75;
-    //LLL(B, D, U, M, w, m, n);
+    LLL(B, D, U, M, w, m, n);
     /*
     printf("M:\n");
     printMatrix(M, m, n);
