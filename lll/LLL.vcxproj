@@ -120,6 +120,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="source\delayed_lll.c" />
     <ClCompile Include="source\Driver.c" />
     <ClCompile Include="source\gram_schmidt.c" />
     <ClCompile Include="source\lin_alg.c" />
@@ -127,6 +128,7 @@
     <ClCompile Include="source\memory.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\delayed_lll.h" />
     <ClInclude Include="source\gram_schmidt.h" />
     <ClInclude Include="source\lin_alg.h" />
     <ClInclude Include="source\lll.h" />
