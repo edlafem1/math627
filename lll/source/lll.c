@@ -11,8 +11,10 @@ int size_reduced(double *U, int m, int n) {
     // iterating over upper triangular matrix, excluding main diagonal of all 1's
     for (int i = 1; i < n-1; i++) {
         for (int j = 0; j < i; j++) {
-            if (fabs(U[i*n + j]) > 0.5)
+            if (fabs(U[i*n + j]) > 0.5 + 1e-14) {
+                printf("U[%i][%i]\n", j, i);
                 return -1;
+            }
         }
     }
     return 1;
@@ -28,16 +30,14 @@ int LLL_reduced(double *D, double *U, double w, int m, int n) {
 }
 
 int closest_integer(double x) {
-    //printf("Questionable num %f\n", x);
     return (int)(x + 0.5);
 }
 
 /*
-B is the vector E in Driver. i.e. It is the Gram Schmidt orthognolized vectors
+B is the Gram Schmidt orthognolized vectors
 */
 void reduce(double *U, double *B, double *M, int i, int j, int m, int n) {
     double gamma = (double)closest_integer(U[j*n + i]);
-    //printf("gamma=%f\n", gamma);
     /*
     M_ij = I_n - gamma*e_i*e_j'
     For any matrix A:
@@ -49,7 +49,6 @@ void reduce(double *U, double *B, double *M, int i, int j, int m, int n) {
     */
 
     for (int r = 0; r < m; r++) {
-        //printf("%f - %f = %f\n", U[j*m + r], gamma*U[i*m + r], U[j*m + r] - gamma*U[i*m + r]);
         if (r < n) {
             U[j*n + r] -= gamma*U[i*n + r];
             M[j*n + r] -= gamma*M[i*n + r];
@@ -107,66 +106,20 @@ void LLL(double *B, double *D, double *U, double *M, double w, int m, int n) {
 
     int k = 1; //math: k=2
     while (k < n) { //math: k <= n
-        //printf("[%i]: Top of while\n", k);
         if (fabs(U[k*n + (k - 1)]) > 0.5+1e-14) { //Need to add 1e-14 to account for machine error
-            /*
-            printf("[%i]: Reduce(%i, %i)\n", k, k-1, k);
-            printf("B\n");
-            printMatrix(B, m, n);
-            */
             reduce(U, B, M, k - 1, k, m, n);
-            /*
-            printf("B\n");
-            printMatrix(B, m, n);
-            printf("D\n");
-            printMatrix(D, m, 1);
-            printf("U\n");
-            printMatrix(U, m, n);
-            */
         }
-        //printf("[%i]: After first reduce if\n", k);
         if (D[k] < (w - (U[k*n + (k - 1)])*(U[k*n + (k - 1)]))*D[k - 1]) {
-            /*
-            printf("[%i]: SwapRestore(%i)\n", k, k);
-            printf("B\n");
-            printMatrix(B, m, n);
-            */
             swap_restore(U, B, D, M, k, m, n);
-            /*
-            printf("B\n");
-            printMatrix(B, m, n);
-            printf("D\n");
-            printMatrix(D, m, 1);
-            printf("U\n");
-            printMatrix(U, m, n);
-            */
             k = max(k - 1, 1); //math: k=max(k-1,2)
-            //printf("[%i]: After first swap restore\n", k);
         }
         else {
-            //printf("[%i]: before else for loop\n", k);
             for (int i = k - 2; i >= 0; i--) { //math: i=k-2 down to 1
                 if (fabs(U[k*n + i])>0.5+1e-14) { // need this check for machine error
-                    /*
-                    printf("[%i, %i]: reduce(%i,%i)\n", k, i, i, k);
-                    printf("B\n");
-                    printMatrix(B, m, n);
-                    */
                     reduce(U, B, M, i, k, m, n);
-                    /*
-                    printf("B\n");
-                    printMatrix(B, m, n);
-                    printf("D\n");
-                    printMatrix(D, m, 1);
-                    printf("U\n");
-                    printMatrix(U, m, n);
-                    */
                 }
-                //printf("[%i, %i]: after second reduce if\n", k, i);
             }
-            //printf("[%i]: After else for loop\n", k);
             k++;
         }
-        //printf("[%i]: Bottom of while\n", k);
     }
 }

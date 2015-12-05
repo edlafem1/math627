@@ -226,7 +226,7 @@ void identity(double *X, int m, int n, int zeroed) {
 void printMatrix(double *B, int m, int n) {
     for (int j = 0; j < m; j++) {
         for (int i = 0; i < n; i++) {
-            printf("%f   ", B[i*m + j]);
+            printf("%.0f   ", B[i*m + j]);
         }
         printf("\n");
     }

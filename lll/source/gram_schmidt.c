@@ -47,7 +47,7 @@ void gramschmidt_process(double *B, double *Q, int m, int n) {
 
         for (int j = i + 1; j < n; j++) {
             vj = &(Q[j*m]);
-            vj_projection(vi, vj, m); //comment says remove component in direction vi
+            vj_projection(vi, vj, m);
         }
 
     }
