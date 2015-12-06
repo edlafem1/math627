@@ -11,7 +11,7 @@ int size_reduced(double *U, int m, int n) {
     // iterating over upper triangular matrix, excluding main diagonal of all 1's
     for (int i = 1; i < n-1; i++) {
         for (int j = 0; j < i; j++) {
-            if (fabs(U[i*n + j]) > 0.5 + 1e-14) {
+            if (fabs(U[i*n + j]) > 0.5 + NUM_ERR) {
                 printf("U[%i][%i]\n", j, i);
                 return -1;
             }
@@ -30,7 +30,12 @@ int LLL_reduced(double *D, double *U, double w, int m, int n) {
 }
 
 int closest_integer(double x) {
-    return (int)(x + 0.5);
+    if (x < 0) {
+        return (int)(x - 0.5);
+    }
+    else {
+        return (int)(x + 0.5);
+    }
 }
 
 /*
@@ -47,12 +52,26 @@ void reduce(double *U, double *B, double *M, int i, int j, int m, int n) {
     In Mathematica:
     U = U[[All,j]]-gamma*U[[All,i]]
     */
-
+    /*
     for (int r = 0; r < m; r++) {
         if (r < n) {
             U[j*n + r] -= gamma*U[i*n + r];
             M[j*n + r] -= gamma*M[i*n + r];
         }
+        B[j*m + r] -= gamma*B[i*m + r];
+    }
+    */
+    printf("gamma=%i\n", gamma);
+    for (int k = 0; k < i; ++k) {
+        U[j*n + k] -= gamma*U[i*n + k];
+    }
+    U[j*n + i] -= gamma; //?
+
+    for (int q = 0; q < n; q++) {
+        M[j*n + q] -= gamma*M[i*n + q];
+    }
+
+    for (int r = 0; r < m; ++r) {
         B[j*m + r] -= gamma*B[i*m + r];
     }
 }
@@ -106,20 +125,39 @@ void LLL(double *B, double *D, double *U, double *M, double w, int m, int n) {
 
     int k = 1; //math: k=2
     while (k < n) { //math: k <= n
-        if (fabs(U[k*n + (k - 1)]) > 0.5+1e-14) { //Need to add 1e-14 to account for machine error
+        if (fabs(U[k*n + (k - 1)]) > 0.5+ NUM_ERR) { //Need to add NUM_ERR to account for machine error
+            printf("Reduce %i, %i\n", k - 1, k);
             reduce(U, B, M, k - 1, k, m, n);
+            printf("U: \n");
+            printMatrix(U, n, n);
+            printf("B: \n");
+            printMatrix(B, m, n);
         }
         if (D[k] < (w - (U[k*n + (k - 1)])*(U[k*n + (k - 1)]))*D[k - 1]) {
+            printf("SwapRestore %i\n", k);
             swap_restore(U, B, D, M, k, m, n);
+            printf("U: \n");
+            printMatrix(U, n, n);
+            printf("B: \n");
+            printMatrix(B, m, n);
+            printf("D: \n");
+            printMatrix(D, n, 1);
             k = max(k - 1, 1); //math: k=max(k-1,2)
         }
         else {
             for (int i = k - 2; i >= 0; i--) { //math: i=k-2 down to 1
-                if (fabs(U[k*n + i])>0.5+1e-14) { // need this check for machine error
+                if (fabs(U[k*n + i])>0.5+ NUM_ERR) { // need this check for machine error
+                    printf("reduce %i, %i\n", i, k);
                     reduce(U, B, M, i, k, m, n);
+                    printf("U: \n");
+                    printMatrix(U, n, n);
+                    printf("B: \n");
+                    printMatrix(B, m, n);
+                    
                 }
             }
             k++;
         }
     }
+    printf("-----------------------------\n\n");
 }

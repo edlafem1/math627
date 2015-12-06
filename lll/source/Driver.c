@@ -4,14 +4,27 @@
 #include "lin_alg.h"
 #include "gram_schmidt.h"
 #include "lll.h"
+#include "delayed_lll.h"
 
 void get_B_values(double *B, int m, int n, char *filename) {
+    /*
+    Mathematica and MuPad print something like this:
+    ( a  b  c )
+    ( d  e  f )
+    ( g  h  i )
+    Which is interpreted as list of vectors.
+    We think of it like this:
+    [ a  d  g ]
+    [ b  d  h ]
+    [ c  f  i ]
+    Which needs to be in the input file looking like the first representation
+    */
     FILE *file = fopen(filename, "r");
     int i = 0;
     int j;
     while (i < m*n) {
         fscanf(file, "%i", &(j));
-        printf("%i\n", j);
+        //printf("%i\n", j);
         B[i] = (double)j;
         ++i;
     }
@@ -64,28 +77,25 @@ int main() {
     printMatrix(B, m, n);
 
     gramschmidt_process(B, Q, m, n);
-    /*
-    printf("B:\n");
-    printMatrix(B, m, n);
-    */
+    
+    printf("Q:\n");
+    printMatrix(Q, m, n);
+    
 
     qdu_decomposition(B, Q, D, U, m, n);
 
-    /*
-    printf("Q:\n");
-    printMatrix(Q, m, n);
-    */
-    free(Q);
-    /*
+    
     printf("D:\n");
-    printMatrix(D, m, 1);
-
+    printMatrix(D, n, 1);
+    
+    free(Q);
+    
     printf("U:\n");
-    printMatrix(U, m, n);
-    */
+    printMatrix(U, n, n);
+    
 
     double w = .75;
-    LLL(B, D, U, M, w, m, n);
+    delayed_LLL(B, D, U, M, w, m, n);
     /*
     printf("M:\n");
     printMatrix(M, m, n);
@@ -99,6 +109,8 @@ int main() {
 
     printf("Final Basis:\n");
     printMatrix(B, m, n);
+    printf("M: \n");
+    printMatrix(M, n, n);
 
     printf("U:\n");
     printMatrix(U, n, n);
