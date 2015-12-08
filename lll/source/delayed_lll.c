@@ -65,7 +65,7 @@ void delayed_LLL(double *B, double *D, double *U, double *M, double w, int m, in
     }
     
     for (k = 1; k < n; ++k) {
-        for (int i = k - 1; i > 0; --i) {
+        for (int i = k - 1; i >= 0; --i) {
             if (fabs(U[k*n + i])>0.5 + NUM_ERR) {
                 reduce(U, B, M, i, k, m, n);
             }
