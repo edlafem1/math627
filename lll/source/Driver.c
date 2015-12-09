@@ -180,15 +180,15 @@ int main(int argc, char *argv[]) {
     }
     fprintf(stdout, "Got basis\n");
     
-    sprintf(filename, "%sQ%ix%i.dat", DATA_FOLDER, m, n);
+    sprintf(filename, "%sQ%ix%i.comp", DATA_FOLDER, m, n);
     matrix_initialized = get_Matrix(Q, m, n, filename);
     if (matrix_initialized != 0) goto START_GRAMSCHMIDT;
 
-    sprintf(filename, "%sD%ix%i.dat", DATA_FOLDER, m, n);
+    sprintf(filename, "%sD%ix%i.comp", DATA_FOLDER, m, n);
     matrix_initialized = get_Matrix(D, 1, n, filename);
     if (matrix_initialized != 0) goto START_GRAMSCHMIDT;
 
-    sprintf(filename, "%sU%ix%i.dat", DATA_FOLDER, m, n);
+    sprintf(filename, "%sU%ix%i.comp", DATA_FOLDER, m, n);
     matrix_initialized = get_Matrix(U, n, n, filename);
     if (matrix_initialized != 0) goto START_GRAMSCHMIDT;
 
@@ -218,11 +218,11 @@ START_GRAMSCHMIDT:
     qdu_decomposition(B, Q, D, U, m, n);
 
 
-    sprintf(filename, "%sQ%ix%i.dat", DATA_FOLDER, m, n);
+    sprintf(filename, "%sQ%ix%i.comp", DATA_FOLDER, m, n);
     write_Matrix(Q, m, n, filename);
-    sprintf(filename, "%sD%ix%i.dat", DATA_FOLDER, m, n);
+    sprintf(filename, "%sD%ix%i.comp", DATA_FOLDER, m, n);
     write_Matrix(D, 1, n, filename);
-    sprintf(filename, "%sU%ix%i.dat", DATA_FOLDER, m, n);
+    sprintf(filename, "%sU%ix%i.comp", DATA_FOLDER, m, n);
     write_Matrix(U, n, n, filename);
     
     fprintf(stdout, "Done QDR\n");
