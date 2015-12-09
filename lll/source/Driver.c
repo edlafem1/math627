@@ -179,9 +179,9 @@ int main(int argc, char *argv[]) {
     fprintf(stdout, "Time started\n");
 #endif
 #ifdef DELAYED_LLL
-   //delayed_LLL(B, D, U, M, w, m, n);
+   delayed_LLL(B, D, U, M, w, m, n);
 #else
-    //LLL(B, D, U, M, w, m, n);
+    LLL(B, D, U, M, w, m, n);
 #endif
     fprintf(stdout, "Done with LLL stuff\n");
 #ifdef MPI_INCLUDE
