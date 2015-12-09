@@ -127,10 +127,9 @@ int main(int argc, char *argv[]) {
         exit(0);
     }
     
-#ifdef DEBUG_LLL
     printf("Initial Basis:\n");
     printMatrix(B, m, n);
-#endif
+
 
     gramschmidt_process(B, Q, m, n);
 
