@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#ifdef PARALLEL
+#ifdef MPI_INCLUDE
 #include <mpi.h>
 #endif
 

@@ -78,20 +78,28 @@ int main(int argc, char *argv[]) {
     */
     double w = 0.75;
 
-    char filename[256];
+    char filename[512];
     if (argc >= 3) {
         m = atoi(argv[1]);
         n = atoi(argv[2]);
         if (m <= 0 || n <= 0 || n > m) {
             fprintf(stderr, "m and n must satisfy 0 < n <= m.\nQuiting\n");
-            exit(0);
+#ifdef MPI_INCLUDE
+            MPI_Abort(MPI_COMM_WORLD, 1);
+#else
+            exit(1);
+#endif
         }
         sprintf(filename, "%s%ix%i.dat", DATA_FOLDER, m, n);
         if (argc == 4) {
             w = atof(argv[3]);
             if (w <= .25 || w >= 1) {
                 fprintf(stderr, "w must be > 0.25 and < 1.\nQuiting.\n");
-                exit(0);
+#ifdef MPI_INCLUDE
+                MPI_Abort(MPI_COMM_WORLD, 1);
+#else
+                exit(1);
+#endif
             }
         }
     }
@@ -141,7 +149,11 @@ int main(int argc, char *argv[]) {
     int basis_initialized = 0;
     //basis_initialized = get_Initial_Basis(B, m, n, filename);
     if (basis_initialized != 0) {
-        exit(0);
+#ifdef MPI_INCLUDE
+        MPI_Abort(MPI_COMM_WORLD, 1);
+#else
+        exit(1);
+#endif
     }
     fprintf(stdout, "Got basis\n");
 
