@@ -35,6 +35,7 @@ int get_Initial_Basis(double *B, int m, int n, char *filename) {
     Which needs to be in the input file looking like the first representation.
     */
     printf("filename: %s\n", filename);
+    printf("Dimensions are %i x %i\n", m, n);
     FILE *file = fopen(filename, "r");
     if (file == NULL) {
         fprintf(stderr, "Error opening file.\nQuiting.\n");
@@ -44,6 +45,7 @@ int get_Initial_Basis(double *B, int m, int n, char *filename) {
 
     for (int i = 0; i < m*n; i++) {
         fscanf(file, "%lf", &(j));
+        //printf("%lf\n", j);
         B[i] = j;
     }
     fclose(file);
@@ -126,10 +128,11 @@ int main(int argc, char *argv[]) {
     if (get_Initial_Basis(B, m, n, filename) != 0) {
         exit(0);
     }
-    
+
+#ifdef DEBUG_LLL
     printf("Initial Basis:\n");
     printMatrix(B, m, n);
-
+#endif
 
     gramschmidt_process(B, Q, m, n);
 
@@ -154,9 +157,13 @@ int main(int argc, char *argv[]) {
 
     delayed_LLL(B, D, U, M, w, m, n);
 
-    printf("Final Basis:\n");
-    printMatrix(B, m, n);
-
+    if (m * n < 128 * 128) {
+        printf("Final Basis:\n");
+        printMatrix(B, m, n);
+    }
+    else {
+        printf("Final basis too large to print out.\n");
+    }
 #ifdef DEBUG_LLL
 
     printf("D:\n");
