@@ -56,6 +56,9 @@
     <ClInclude Include="source\parallel_lll.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="source\Driver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="input.txt">
