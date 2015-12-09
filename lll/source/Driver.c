@@ -1,6 +1,6 @@
 #include "Driver.h"
 
-#define DATA_FOLDER "" //"/home/edlafem1/student_user/bases/"
+#define DATA_FOLDER "/home/edlafem1/student_user/bases/"
 
 /**
 Reads in a column oriented matrix of dimension m x n from file referenced by filename into B.
@@ -32,7 +32,7 @@ int get_Matrix(double *B, int m, int n, char *filename) {
     fprintf(stdout, "Dimensions are %i x %i\n", m, n);
     FILE *file = fopen(filename, "r");
     if (file == NULL) {
-        fprintf(stderr, "Error opening file.\n");
+        fprintf(stderr, "Error opening file: %s.\n", filename);
         return -1;
     }
     double j;
@@ -49,7 +49,7 @@ int get_Matrix(double *B, int m, int n, char *filename) {
 int write_Matrix(double *source, int m, int n, char *filename) {
     FILE *file = fopen(filename, "w");
     if (file == NULL) {
-        fprintf(stderr, "Error opening file.\n");
+        fprintf(stderr, "Error opening file: %s.\n", filename);
         return -1;
     }
 
