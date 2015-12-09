@@ -1,6 +1,5 @@
-#include <math.h>
-#include <stdlib.h>
-#include <string.h>
+#include "gram_schmidt.h"
+
 
 /**
 Computes the projection of m-vectors uj on ui.

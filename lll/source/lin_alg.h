@@ -1,5 +1,6 @@
 #ifndef LIN_ALG
 #define LIN_ALG
+
 #include "memory.h"
 #include <string.h>
 #include <math.h>
@@ -12,7 +13,13 @@
 #include <mkl.h>
 #endif
 
-double serial_dot(double *x, double *y, int n);
+void identity(double *X, int m, int n, int zeroed);
+
+void printMatrix(double *B, int m, int n);
+
+double dot_product(double *x, double *y, int length);
+
+double euclidean_norm(double *x, int m);
 
 /*
 Computes dot product of two n-length column vectors and returns result.
@@ -45,12 +52,5 @@ void blas3_inner_product(double *A, double *B, double *C, int m, int k, int n);
 void parallel_blas3_product(double *A, double *B, double *C, int m, int k, int n, int id, int np);
 #endif
 
-void identity(double *X, int m, int n, int zeroed);
-
-void printMatrix(double *B, int m, int n);
-
-double dot_product(double *x, double *y, int length);
-
-double euclidean_norm(double *x, int m);
 
 #endif
