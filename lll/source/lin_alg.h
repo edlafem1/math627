@@ -44,8 +44,6 @@ void blas3_inner_product(double *A, double *B, double *C, int m, int k, int n);
 void parallel_blas3_product(double *A, double *B, double *C, int m, int k, int n, int id, int np);
 #endif
 
-double frobenius_check(double *known, double *computed, int m, int n, int id, int np);
-
 void identity(double *X, int m, int n, int zeroed);
 
 void printMatrix(double *B, int m, int n);

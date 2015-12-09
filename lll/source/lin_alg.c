@@ -188,25 +188,6 @@ void parallel_blas3_product(double *A, double *B, double *C, int m, int k, int n
 }
 #endif
 
-double frobenius_check(double *known, double *computed, int m, int n, int id, int np) {
-	int l_num_elements = m*n / np;
-
-    if (computed == NULL) {
-        return euclidean_norm(known, m*n, id, np);
-    }
-
-	double *difference = allocate_double_vector(l_num_elements);
-
-	for (int i = 0; i < l_num_elements; i++) {
-		difference[i] = computed[i] - known[i];
-	}
-    double e_norm = euclidean_norm(difference, m*n, id, np);
-    free(difference);
-
-    return e_norm;
-}
-
-
 /**
 Embeds the idendity matrix of dimension min(m,n) inside the matrix X 
 of dimensions m x n.
