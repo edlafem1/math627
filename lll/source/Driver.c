@@ -1,6 +1,6 @@
 #include "Driver.h"
 
-#define DATA_FOLDER "/home/edlafem1/student_user/bases/"
+#define DATA_FOLDER "" //"/home/edlafem1/student_user/bases/"
 
 /**
 Reads in a column oriented matrix of dimension m x n from file referenced by filename into B.
@@ -9,7 +9,7 @@ column of B. Note: every element MUST be an integer.
 
 Returns 0 on success, -1 on error.
 */
-int get_Initial_Basis(double *B, int m, int n, char *filename) {
+int get_Matrix(double *B, int m, int n, char *filename) {
     /*
     To make vectors in Matlab:
     M = randi(r,m,n)
@@ -28,11 +28,11 @@ int get_Initial_Basis(double *B, int m, int n, char *filename) {
     [ c  f  i ]
     Which needs to be in the input file looking like the first representation.
     */
-    fprintf(stdout, "filename: %s\n", filename);
+    fprintf(stdout, "filename: %s\t\t", filename);
     fprintf(stdout, "Dimensions are %i x %i\n", m, n);
     FILE *file = fopen(filename, "r");
     if (file == NULL) {
-        fprintf(stderr, "Error opening file.\nQuiting.\n");
+        fprintf(stderr, "Error opening file.\n");
         return -1;
     }
     double j;
@@ -46,9 +46,23 @@ int get_Initial_Basis(double *B, int m, int n, char *filename) {
     return 0;
 }
 
+int write_Matrix(double *source, int m, int n, char *filename) {
+    FILE *file = fopen(filename, "w");
+    if (file == NULL) {
+        fprintf(stderr, "Error opening file.\n");
+        return -1;
+    }
+
+    for (int i = 0; i < m*n; i++) {
+        fprintf(file, "%lf ", source[i]);
+    }
+    fclose(file);
+    return 0;
+}
+
 /**
 Memory Estimates assuming m == n:
-4n^2 + n
+(4n^2 + n) * 8 / 1024^3 GB
 With 64 GB, n=46341 max
 */
 int main(int argc, char *argv[]) {
@@ -145,10 +159,19 @@ int main(int argc, char *argv[]) {
     double *M = allocate_double_vector(n*n);
     fprintf(stdout, "Alloc M\n");
 
+/////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////
 
-    int basis_initialized = 0;
-    //basis_initialized = get_Initial_Basis(B, m, n, filename);
-    if (basis_initialized != 0) {
+    int matrix_initialized = 0;
+    matrix_initialized = get_Matrix(B, m, n, filename);
+    if (matrix_initialized != 0) {
+        fprintf(stderr, "Quiting.\n");
+        free_vector(B);
+        free_vector(Q);
+        free_vector(D);
+        free_vector(U);
+        free_vector(M);
 #ifdef MPI_INCLUDE
         MPI_Abort(MPI_COMM_WORLD, 1);
 #else
@@ -156,21 +179,59 @@ int main(int argc, char *argv[]) {
 #endif
     }
     fprintf(stdout, "Got basis\n");
+    
+    sprintf(filename, "Q%s%ix%i.dat", DATA_FOLDER, m, n);
+    matrix_initialized = get_Matrix(Q, m, n, filename);
+    if (matrix_initialized != 0) goto START_GRAMSCHMIDT;
+
+    sprintf(filename, "D%s%ix%i.dat", DATA_FOLDER, m, n);
+    matrix_initialized = get_Matrix(D, 1, n, filename);
+    if (matrix_initialized != 0) goto START_GRAMSCHMIDT;
+
+    sprintf(filename, "U%s%ix%i.dat", DATA_FOLDER, m, n);
+    matrix_initialized = get_Matrix(U, n, n, filename);
+    if (matrix_initialized != 0) goto START_GRAMSCHMIDT;
+
+    // We have all matrices loaded
+    goto START_LLL;
+
 
 #ifdef DEBUG_LLL
     fprintf(stdout, "Initial Basis:\n");
     printMatrix(B, m, n);
 #endif
+    
+/////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////
 
-    //gramschmidt_process(B, Q, m, n);
+START_GRAMSCHMIDT:
+    gramschmidt_process(B, Q, m, n);
     fprintf(stdout, "Done GS\n");
+
+
 #ifdef DEBUG_LLL
     fprintf(stdout, "Q:\n");
     printMatrix(Q, m, n);
 #endif   
 
-    //qdu_decomposition(B, Q, D, U, m, n);
+    qdu_decomposition(B, Q, D, U, m, n);
+
+
+    sprintf(filename, "Q%s%ix%i.dat", DATA_FOLDER, m, n);
+    write_Matrix(Q, m, n, filename);
+    sprintf(filename, "D%s%ix%i.dat", DATA_FOLDER, m, n);
+    write_Matrix(D, 1, n, filename);
+    sprintf(filename, "U%s%ix%i.dat", DATA_FOLDER, m, n);
+    write_Matrix(U, n, n, filename);
+    
     fprintf(stdout, "Done QDR\n");
+/////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////
+
+START_LLL:
+
 #ifdef DEBUG_LLL  
     fprintf(stdout, "D:\n");
     printMatrix(D, n, 1);
@@ -183,7 +244,7 @@ int main(int argc, char *argv[]) {
     printMatrix(U, n, n);
 #endif
 
-    //identity(M, n, n, 1);
+    identity(M, n, n, 1);
     fprintf(stdout, "Done identity\n");
 #ifdef MPI_INCLUDE
     MPI_Barrier(MPI_COMM_WORLD);
@@ -221,9 +282,9 @@ int main(int argc, char *argv[]) {
     printMatrix(U, n, n);
 #endif
 
-    //fprintf(stdout, "Is size reduced? %s\n", (size_reduced(U, m, n)==1) ? "yes" : "no");
+    fprintf(stdout, "Is size reduced? %s\n", (size_reduced(U, m, n)==1) ? "yes" : "no");
 
-    //fprintf(stdout, "Is LLL reduced? %s\n", (LLL_reduced(D, U, w, m, n)==1) ? "yes" : "no");
+    fprintf(stdout, "Is LLL reduced? %s\n", (LLL_reduced(D, U, w, m, n)==1) ? "yes" : "no");
 
 #ifdef MPI_INCLUDE
     fprintf(stdout, "Elapsed time for LLL algorithm only: %lf\n", (end_time - start_time));
