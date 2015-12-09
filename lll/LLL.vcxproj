@@ -129,6 +129,7 @@
     <ClCompile Include="source\lin_alg.c" />
     <ClCompile Include="source\lll.c" />
     <ClCompile Include="source\memory.c" />
+    <ClCompile Include="source\parallel_lll.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\delayed_lll.h" />
@@ -136,6 +137,7 @@
     <ClInclude Include="source\lin_alg.h" />
     <ClInclude Include="source\lll.h" />
     <ClInclude Include="source\memory.h" />
+    <ClInclude Include="source\parallel_lll.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="input.txt" />

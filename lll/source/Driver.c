@@ -63,6 +63,7 @@ With 64 GB, n=46341 max
 */
 int main(int argc, char *argv[]) {
     printf("Starting point\n");
+    return 0;
 #ifdef MPI_INCLUDE
     printf("MPI Included\n");
     MPI_Init(&argc, &argv);
