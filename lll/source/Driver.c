@@ -148,8 +148,8 @@ int main(int argc, char *argv[]) {
     fprintf(stdout, "Alloc M\n");
 
 
-    int basis_initialized = 1;
-    basis_initialized = get_Initial_Basis(B, m, n, filename);
+    int basis_initialized = 0;
+    //basis_initialized = get_Initial_Basis(B, m, n, filename);
     if (basis_initialized != 0) {
         exit(0);
     }
@@ -180,16 +180,16 @@ int main(int argc, char *argv[]) {
     printMatrix(U, n, n);
 #endif
 
-    identity(M, n, n, 1);
+    //identity(M, n, n, 1);
     fprintf(stdout, "Done identity\n");
 #ifdef MPI_INCLUDE
     MPI_Barrier(MPI_COMM_WORLD);
     double start_time = MPI_Wtime();
 #endif
 #ifdef DELAYED_LLL
-    delayed_LLL(B, D, U, M, w, m, n);
+   //delayed_LLL(B, D, U, M, w, m, n);
 #else
-    LLL(B, D, U, M, w, m, n);
+    //LLL(B, D, U, M, w, m, n);
 #endif
     fprintf(stdout, "Done with LLL stuff\n");
 #ifdef MPI_INCLUDE
@@ -216,9 +216,9 @@ int main(int argc, char *argv[]) {
     printMatrix(U, n, n);
 #endif
 
-    fprintf(stdout, "Is size reduced? %s\n", (size_reduced(U, m, n)==1) ? "yes" : "no");
+    //fprintf(stdout, "Is size reduced? %s\n", (size_reduced(U, m, n)==1) ? "yes" : "no");
 
-    fprintf(stdout, "Is LLL reduced? %s\n", (LLL_reduced(D, U, w, m, n)==1) ? "yes" : "no");
+    //fprintf(stdout, "Is LLL reduced? %s\n", (LLL_reduced(D, U, w, m, n)==1) ? "yes" : "no");
 
 #ifdef MPI_Include
     fprintf(stdout, "Elapsed time for LLL algorithm only: %d\n", (end_time - start_time));
