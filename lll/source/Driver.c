@@ -105,14 +105,14 @@ int main(int argc, char *argv[]) {
     Dimensions m x n.
     B = [b_1, b_2, ..., b_n] where b_i are m-length vectors.
     */
-    double *B = (double *) calloc(m*n, sizeof(double));
+    double *B = allocate_double_vector(m*n);
     fprintf(stdout, "Alloc B\n");
     /**
     Q is the gram-schmidt orthogonalized basis. 
     Dimensions m x n.
     Q = [b_1*, b_2*, ..., b_n*] where b_i* are orthogonal m-length vectors.
     */
-    double *Q = (double *)calloc(m*n, sizeof(double));
+    double *Q = allocate_double_vector(m*n);
     fprintf(stdout, "Alloc Q\n");
     /**
     D is a diagonal matrix with the L2 norm of the gram-schmidt vectors on the main diagonal, zeros elsewhere. 
@@ -120,13 +120,13 @@ int main(int argc, char *argv[]) {
     Dimensions n x 1.
     D=diag(d_i), d_i = ||b_i*||^2
     */
-    double *D = (double *)calloc(n, sizeof(double));
+    double *D = allocate_double_vector(n);
     fprintf(stdout, "Alloc D\n");
     /**
     U is an upper-triangular matrix with ones on the main diagonal. 
     Dimensions n x n.
     */
-    double *U = (double *)calloc(n*n, sizeof(double));
+    double *U = allocate_double_vector(n*n);
     fprintf(stdout, "Alloc U\n");
     /**
     M is a unimodular matrix that relates two bases for the same lattice by C=BM where
@@ -134,7 +134,7 @@ int main(int argc, char *argv[]) {
     the identity matrix I_n but relies on the assumption that it starts out as filled with zeros.
     Dimensions n x n.
     */
-    double *M = (double *)calloc(n*n, sizeof(double));
+    double *M = allocate_double_vector(n*n);
     fprintf(stdout, "Alloc M\n");
 
 
@@ -144,19 +144,20 @@ int main(int argc, char *argv[]) {
         exit(0);
     }
     fprintf(stdout, "Got basis\n");
+
 #ifdef DEBUG_LLL
     fprintf(stdout, "Initial Basis:\n");
     printMatrix(B, m, n);
 #endif
 
-    gramschmidt_process(B, Q, m, n);
+    //gramschmidt_process(B, Q, m, n);
     fprintf(stdout, "Done GS\n");
 #ifdef DEBUG_LLL
     fprintf(stdout, "Q:\n");
     printMatrix(Q, m, n);
 #endif   
 
-    qdu_decomposition(B, Q, D, U, m, n);
+    //qdu_decomposition(B, Q, D, U, m, n);
     fprintf(stdout, "Done QDR\n");
 #ifdef DEBUG_LLL  
     fprintf(stdout, "D:\n");
