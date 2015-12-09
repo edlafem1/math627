@@ -50,4 +50,8 @@ void identity(double *X, int m, int n, int zeroed);
 
 void printMatrix(double *B, int m, int n);
 
+double dot_product(double *x, double *y, int length);
+
+double euclidean_norm(double *x, int m);
+
 #endif

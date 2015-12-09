@@ -2,19 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-double dot_product(double *x, double *y, int length) {
-    double product = 0;
-
-    for (int i = 0; i < length; i++) {
-        product += (x[i] * y[i]);
-    }
-    return product;
-}
-
-double euclidean_norm(double *x, int m) {
-    return sqrt(dot_product(x, x, m));
-}
-
 /**
 Computes the projection of m-vectors uj on ui.
 */
