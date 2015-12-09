@@ -38,8 +38,8 @@ int get_Initial_Basis(double *B, int m, int n, char *filename) {
     [ c  f  i ]
     Which needs to be in the input file looking like the first representation.
     */
-    printf("filename: %s\n", filename);
-    printf("Dimensions are %i x %i\n", m, n);
+    fprintf(stdout, "filename: %s\n", filename);
+    fprintf(stdout, "Dimensions are %i x %i\n", m, n);
     FILE *file = fopen(filename, "r");
     if (file == NULL) {
         fprintf(stderr, "Error opening file.\nQuiting.\n");
@@ -62,17 +62,17 @@ Memory Estimates assuming m == n:
 With 64 GB, n=46341 max
 */
 int main(int argc, char *argv[]) {
-    printf("Starting point\n");
+    fprintf(stdout, "Starting point\n");
     return 0;
 #ifdef MPI_INCLUDE
-    printf("MPI Included\n");
+    fprintf(stdout, "MPI Included\n");
     MPI_Init(&argc, &argv);
 #endif
 
 #ifdef DELAYED_LLL
-    printf("Delayed LLL\n");
+    fprintf(stdout, "Delayed LLL\n");
 #else
-    printf("Normal LLL\n");
+    fprintf(stdout, "Normal LLL\n");
 #endif
 
     /**
@@ -117,14 +117,14 @@ int main(int argc, char *argv[]) {
     B = [b_1, b_2, ..., b_n] where b_i are m-length vectors.
     */
     double *B = (double *) calloc(m*n, sizeof(double));
-    printf("Alloc B\n");
+    fprintf(stdout, "Alloc B\n");
     /**
     Q is the gram-schmidt orthogonalized basis. 
     Dimensions m x n.
     Q = [b_1*, b_2*, ..., b_n*] where b_i* are orthogonal m-length vectors.
     */
     double *Q = (double *)calloc(m*n, sizeof(double));
-    printf("Alloc Q\n");
+    fprintf(stdout, "Alloc Q\n");
     /**
     D is a diagonal matrix with the L2 norm of the gram-schmidt vectors on the main diagonal, zeros elsewhere. 
     Dimension is n x n, but we can represent it with just a vector of length n to save memory.
@@ -132,13 +132,13 @@ int main(int argc, char *argv[]) {
     D=diag(d_i), d_i = ||b_i*||^2
     */
     double *D = (double *)calloc(n, sizeof(double));
-    printf("Alloc D\n");
+    fprintf(stdout, "Alloc D\n");
     /**
     U is an upper-triangular matrix with ones on the main diagonal. 
     Dimensions n x n.
     */
     double *U = (double *)calloc(n*n, sizeof(double));
-    printf("Alloc U\n");
+    fprintf(stdout, "Alloc U\n");
     /**
     M is a unimodular matrix that relates two bases for the same lattice by C=BM where
     B is the original basis and C is the new basis. Initially, the LLL algorithm forces this to be
@@ -146,7 +146,7 @@ int main(int argc, char *argv[]) {
     Dimensions n x n.
     */
     double *M = (double *)calloc(n*n, sizeof(double));
-    printf("Alloc M\n");
+    fprintf(stdout, "Alloc M\n");
 
 
     int basis_initialized = 1;
@@ -154,35 +154,35 @@ int main(int argc, char *argv[]) {
     if (basis_initialized != 0) {
         exit(0);
     }
-    printf("Got basis\n");
+    fprintf(stdout, "Got basis\n");
 #ifdef DEBUG_LLL
-    printf("Initial Basis:\n");
+    fprintf(stdout, "Initial Basis:\n");
     printMatrix(B, m, n);
 #endif
 
     gramschmidt_process(B, Q, m, n);
-    printf("Done GS\n");
+    fprintf(stdout, "Done GS\n");
 #ifdef DEBUG_LLL
-    printf("Q:\n");
+    fprintf(stdout, "Q:\n");
     printMatrix(Q, m, n);
 #endif   
 
     qdu_decomposition(B, Q, D, U, m, n);
-    printf("Done QDR\n");
+    fprintf(stdout, "Done QDR\n");
 #ifdef DEBUG_LLL  
-    printf("D:\n");
+    fprintf(stdout, "D:\n");
     printMatrix(D, n, 1);
 #endif
 
     free(Q);
     
 #ifdef DEBUG_LLL
-    printf("U:\n");
+    fprintf(stdout, "U:\n");
     printMatrix(U, n, n);
 #endif
 
     identity(M, n, n, 1);
-    printf("Done identity\n");
+    fprintf(stdout, "Done identity\n");
 #ifdef MPI_INCLUDE
     MPI_Barrier(MPI_COMM_WORLD);
     double start_time = MPI_Wtime();
@@ -192,37 +192,37 @@ int main(int argc, char *argv[]) {
 #else
     LLL(B, D, U, M, w, m, n);
 #endif
-    printf("Done with LLL stuff\n");
+    fprintf(stdout, "Done with LLL stuff\n");
 #ifdef MPI_INCLUDE
     MPI_BArrier(MPI_COMM_WORLD);
     double end_time = MPI_Wtime();
 #endif
 
     if (m * n < 128 * 128) {
-        printf("Final Basis:\n");
+        fprintf(stdout, "Final Basis:\n");
         printMatrix(B, m, n);
     }
     else {
-        printf("Final basis too large to print out.\n");
+        fprintf(stdout, "Final basis too large to print out.\n");
     }
 #ifdef DEBUG_LLL
 
-    printf("D:\n");
+    fprintf(stdout, "D:\n");
     printMatrix(D, m, 1);
 
-    printf("M: \n");
+    fprintf(stdout, "M: \n");
     printMatrix(M, n, n);
 
-    printf("U:\n");
+    fprintf(stdout, "U:\n");
     printMatrix(U, n, n);
 #endif
 
-    printf("Is size reduced? %s\n", (size_reduced(U, m, n)==1) ? "yes" : "no");
+    fprintf(stdout, "Is size reduced? %s\n", (size_reduced(U, m, n)==1) ? "yes" : "no");
 
-    printf("Is LLL reduced? %s\n", (LLL_reduced(D, U, w, m, n)==1) ? "yes" : "no");
+    fprintf(stdout, "Is LLL reduced? %s\n", (LLL_reduced(D, U, w, m, n)==1) ? "yes" : "no");
 
 #ifdef MPI_Include
-    printf("Elapsed time for LLL algorithm only: %d\n", (end_time - start_time));
+    fprintf(stdout, "Elapsed time for LLL algorithm only: %d\n", (end_time - start_time));
 #endif
 
     free(B);
