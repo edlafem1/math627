@@ -6,7 +6,7 @@
 #include "lll.h"
 #include "delayed_lll.h"
 
-#define DATA_FOLDER "~/student_user/bases/"
+#define DATA_FOLDER "/home/edlafem1/student_user/bases/"
 
 /**
 Reads in a column oriented matrix of dimension m x n from file referenced by filename into B.
