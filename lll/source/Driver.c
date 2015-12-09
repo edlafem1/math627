@@ -214,7 +214,7 @@ int main(int argc, char *argv[]) {
     //fprintf(stdout, "Is LLL reduced? %s\n", (LLL_reduced(D, U, w, m, n)==1) ? "yes" : "no");
 
 #ifdef MPI_INCLUDE
-    fprintf(stdout, "Elapsed time for LLL algorithm only: %d\n", (end_time - start_time));
+    fprintf(stdout, "Elapsed time for LLL algorithm only: %lf\n", (end_time - start_time));
 #endif
 
     free(B);
