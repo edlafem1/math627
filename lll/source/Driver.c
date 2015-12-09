@@ -32,7 +32,7 @@ int get_Matrix(double *B, int m, int n, char *filename) {
     fprintf(stdout, "Dimensions are %i x %i\n", m, n);
     FILE *file = fopen(filename, "r");
     if (file == NULL) {
-        fprintf(stderr, "Error opening file: %s.\n", filename);
+        fprintf(stderr, "Error opening file for reading: %s.\n", filename);
         return -1;
     }
     double j;
@@ -49,7 +49,7 @@ int get_Matrix(double *B, int m, int n, char *filename) {
 int write_Matrix(double *source, int m, int n, char *filename) {
     FILE *file = fopen(filename, "w");
     if (file == NULL) {
-        fprintf(stderr, "Error opening file: %s.\n", filename);
+        fprintf(stderr, "Error opening file for writing: %s.\n", filename);
         return -1;
     }
 
@@ -180,15 +180,15 @@ int main(int argc, char *argv[]) {
     }
     fprintf(stdout, "Got basis\n");
     
-    sprintf(filename, "Q%s%ix%i.dat", DATA_FOLDER, m, n);
+    sprintf(filename, "%sQ%ix%i.dat", DATA_FOLDER, m, n);
     matrix_initialized = get_Matrix(Q, m, n, filename);
     if (matrix_initialized != 0) goto START_GRAMSCHMIDT;
 
-    sprintf(filename, "D%s%ix%i.dat", DATA_FOLDER, m, n);
+    sprintf(filename, "%sD%ix%i.dat", DATA_FOLDER, m, n);
     matrix_initialized = get_Matrix(D, 1, n, filename);
     if (matrix_initialized != 0) goto START_GRAMSCHMIDT;
 
-    sprintf(filename, "U%s%ix%i.dat", DATA_FOLDER, m, n);
+    sprintf(filename, "%sU%ix%i.dat", DATA_FOLDER, m, n);
     matrix_initialized = get_Matrix(U, n, n, filename);
     if (matrix_initialized != 0) goto START_GRAMSCHMIDT;
 
@@ -218,11 +218,11 @@ START_GRAMSCHMIDT:
     qdu_decomposition(B, Q, D, U, m, n);
 
 
-    sprintf(filename, "Q%s%ix%i.dat", DATA_FOLDER, m, n);
+    sprintf(filename, "%sQ%ix%i.dat", DATA_FOLDER, m, n);
     write_Matrix(Q, m, n, filename);
-    sprintf(filename, "D%s%ix%i.dat", DATA_FOLDER, m, n);
+    sprintf(filename, "%sD%ix%i.dat", DATA_FOLDER, m, n);
     write_Matrix(D, 1, n, filename);
-    sprintf(filename, "U%s%ix%i.dat", DATA_FOLDER, m, n);
+    sprintf(filename, "%sU%ix%i.dat", DATA_FOLDER, m, n);
     write_Matrix(U, n, n, filename);
     
     fprintf(stdout, "Done QDR\n");
