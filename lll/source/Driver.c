@@ -34,9 +34,9 @@ int get_Initial_Basis(double *B, int m, int n, char *filename) {
     [ c  f  i ]
     Which needs to be in the input file looking like the first representation.
     */
-
+    printf("filename: %s\n", filename);
     FILE *file = fopen(filename, "r");
-    if (file != NULL) {
+    if (file == NULL) {
         fprintf(stderr, "Error opening file.\nQuiting.\n");
         return -1;
     }
@@ -123,7 +123,6 @@ int main(int argc, char *argv[]) {
     Dimensions n x n.
     */
     double *M = (double *)calloc(n*n, sizeof(double));
-
     if (get_Initial_Basis(B, m, n, filename) != 0) {
         exit(0);
     }
