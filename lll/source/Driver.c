@@ -184,7 +184,7 @@ int main(int argc, char *argv[]) {
 #endif
     fprintf(stdout, "Done with LLL stuff\n");
 #ifdef MPI_INCLUDE
-    MPI_BArrier(MPI_COMM_WORLD);
+    MPI_Barrier(MPI_COMM_WORLD);
     double end_time = MPI_Wtime();
 #endif
 
