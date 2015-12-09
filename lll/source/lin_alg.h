@@ -2,6 +2,7 @@
 #define LIN_ALG
 #include "memory.h"
 #include <string.h>
+#include <math.h>
 
 #ifdef PARALLEL
 #include <mpi.h>
