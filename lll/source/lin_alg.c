@@ -206,6 +206,15 @@ double frobenius_check(double *known, double *computed, int m, int n, int id, in
     return e_norm;
 }
 
+
+/**
+Embeds the idendity matrix of dimension min(m,n) inside the matrix X 
+of dimensions m x n.
+If zeroed != 0, we assume X is filled with zeroes and set each 
+element X_i,i to 1 for 0 <= i < min(m,n). Otherwise, we 
+iterate over each element of X
+
+*/
 void identity(double *X, int m, int n, int zeroed) {
     int min_dim = (m < n) ? m : n;
     if (!zeroed)

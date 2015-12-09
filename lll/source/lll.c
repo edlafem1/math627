@@ -12,7 +12,7 @@ int size_reduced(double *U, int m, int n) {
     for (int i = 1; i < n-1; i++) {
         for (int j = 0; j < i; j++) {
             if (fabs(U[i*n + j]) > 0.5 + NUM_ERR) {
-                printf("U[%i][%i]\n", j, i);
+                printf("U[%i][%i]=%f\n", j, i, U[i*n+j]);
                 return -1;
             }
         }
@@ -61,11 +61,10 @@ void reduce(double *U, double *B, double *M, int i, int j, int m, int n) {
         B[j*m + r] -= gamma*B[i*m + r];
     }
     */
-    printf("gamma=%i\n", gamma);
     for (int k = 0; k < i; ++k) {
         U[j*n + k] -= gamma*U[i*n + k];
     }
-    U[j*n + i] -= gamma; //?
+    U[j*n + i] -= gamma;
 
     for (int q = 0; q < n; q++) {
         M[j*n + q] -= gamma*M[i*n + q];
@@ -119,45 +118,59 @@ void swap_restore(double *U, double *B, double *D, double *M, int i, int m, int 
 }
 
 void LLL(double *B, double *D, double *U, double *M, double w, int m, int n) {
+#ifdef DEBUG_LLL
     printf("-----------------------------\n\n");
-    
+#endif
     identity(M, n, n, 1);
 
     int k = 1; //math: k=2
     while (k < n) { //math: k <= n
         if (fabs(U[k*n + (k - 1)]) > 0.5+ NUM_ERR) { //Need to add NUM_ERR to account for machine error
+#ifdef DEBUG_LLL
             printf("Reduce %i, %i\n", k - 1, k);
+#endif
             reduce(U, B, M, k - 1, k, m, n);
+#ifdef DEBUG_LLL
             printf("U: \n");
             printMatrix(U, n, n);
             printf("B: \n");
             printMatrix(B, m, n);
+#endif
         }
         if (D[k] < (w - (U[k*n + (k - 1)])*(U[k*n + (k - 1)]))*D[k - 1]) {
+#ifdef DEBUG_LLL
             printf("SwapRestore %i\n", k);
+#endif
             swap_restore(U, B, D, M, k, m, n);
+#ifdef DEBUG_LLL
             printf("U: \n");
             printMatrix(U, n, n);
             printf("B: \n");
             printMatrix(B, m, n);
             printf("D: \n");
             printMatrix(D, n, 1);
+#endif DEBUG_LLL
             k = max(k - 1, 1); //math: k=max(k-1,2)
         }
         else {
             for (int i = k - 2; i >= 0; i--) { //math: i=k-2 down to 1
                 if (fabs(U[k*n + i])>0.5+ NUM_ERR) { // need this check for machine error
+#ifdef DEBUG_LLL
                     printf("reduce %i, %i\n", i, k);
+#endif
                     reduce(U, B, M, i, k, m, n);
+#ifdef DEBUG_LLL
                     printf("U: \n");
                     printMatrix(U, n, n);
                     printf("B: \n");
                     printMatrix(B, m, n);
-                    
+#endif
                 }
             }
             k++;
         }
     }
+#ifdef DEBUG_LLL
     printf("-----------------------------\n\n");
+#endif
 }

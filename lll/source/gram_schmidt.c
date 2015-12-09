@@ -15,6 +15,9 @@ double euclidean_norm(double *x, int m) {
     return sqrt(dot_product(x, x, m));
 }
 
+/**
+Computes the projection of m-vectors uj on ui.
+*/
 void vj_projection(double *ui, double *uj, int m) {
     double numerator, denominator, quotient;
     numerator = dot_product(ui, uj, m);
@@ -25,6 +28,10 @@ void vj_projection(double *ui, double *uj, int m) {
         uj[i] -= (quotient * ui[i]);
     }
 }
+
+/**
+Normalizes a vector of length m with the Euclidean norm.
+*/
 void normalize(double *v, int m) {
     double norm = euclidean_norm(v, m);
     for (int i = 0; i < m; i++) {
@@ -32,8 +39,8 @@ void normalize(double *v, int m) {
     }
 }
 /*
-B is column major matrix of dimension m x n
-Note: what if B in m x n is such that m > n? Does the bottom part of Q mean anything? We want Q n x n, but for now it is m x n because we have not answered this question.
+B is a column major matrix. Dimensions m x n.
+Stores orthogonalized vectors in Q. Dimensions m x n.
 */
 void gramschmidt_process(double *B, double *Q, int m, int n) {
     double *vi, *vj;
@@ -54,7 +61,24 @@ void gramschmidt_process(double *B, double *Q, int m, int n) {
 }
 
 /*
-See above considerations about dimension of other matrices
+Takes Gram-Schmidt orthogonalized vectors and computes D and U such that:
+B=Q(D^1/2)U.
+
+B is the initial basis.
+Dimensions m x n.
+B = [b_1, b_2, ..., b_n] where b_i are m-length vectors.
+
+Q is the gram-schmidt orthogonalized basis.
+Dimensions m x n.
+Q = [b_1*, b_2*, ..., b_n*] where b_i* are orthogonal m-length vectors.
+
+D is a diagonal matrix with the L2 norm of the gram-schmidt vectors on the main diagonal, zeros elsewhere.
+Dimension is n x n, but we can represent it with just a vector of length n to save memory.
+Dimensions n x 1.
+D=diag(d_i), d_i = ||b_i*||^2.
+
+U is an upper-triangular matrix with ones on the main diagonal.
+Dimensions n x n.
 */
 void qdu_decomposition(double *B, double *Q, double *D, double *U, int m, int n) {
     double denominator;
