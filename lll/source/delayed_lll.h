@@ -2,6 +2,8 @@
 #define DELAYED_LLL_H
 
 #include "lll.h"
+#include <math.h>
+#include "lin_alg.h"
 
 void delayed_LLL(double *B, double *D, double *U, double *M, double w, int m, int n);
 

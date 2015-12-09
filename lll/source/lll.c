@@ -149,7 +149,7 @@ void LLL(double *B, double *D, double *U, double *M, double w, int m, int n) {
             printMatrix(B, m, n);
             printf("D: \n");
             printMatrix(D, n, 1);
-#endif DEBUG_LLL
+#endif
             k = max(k - 1, 1); //math: k=max(k-1,2)
         }
         else {
