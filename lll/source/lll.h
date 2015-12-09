@@ -4,6 +4,8 @@
 #include <math.h>
 #include "lin_alg.h"
 
+#define max(a,b) ((a > b) ? a : b)
+
 #define NUM_ERR 1e-14
 /**
 Returns 1 if |u[i,j]| <= 1/2 for all 0 <= i < j <= n-1
