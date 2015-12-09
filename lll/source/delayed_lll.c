@@ -45,10 +45,10 @@ void reduceSwapRestore(int i, int gamma, double *B, double *D, double *U, double
 }
 
 void delayed_LLL(double *B, double *D, double *U, double *M, double w, int m, int n) {
-    identity(M, n, n, 1);
+//    identity(M, n, n, 1); // putting this in main
 
     int k = 1;
-    double gamma;
+    int gamma;
     
     while (k < n) {
         gamma = closest_integer(U[k*n + (k - 1)]);

@@ -121,7 +121,7 @@ void LLL(double *B, double *D, double *U, double *M, double w, int m, int n) {
 #ifdef DEBUG_LLL
     printf("-----------------------------\n\n");
 #endif
-    identity(M, n, n, 1);
+//    identity(M, n, n, 1); // putting this in main
 
     int k = 1; //math: k=2
     while (k < n) { //math: k <= n

@@ -1,6 +1,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#ifdef MPI_INCLUDE
+#include <mpi.h>
+#endif
+
 #include "lin_alg.h"
 #include "gram_schmidt.h"
 #include "lll.h"
@@ -58,6 +62,11 @@ Memory Estimates assuming m == n:
 With 64 GB, n=46341 max
 */
 int main(int argc, char *argv[]) {
+#ifdef MPI_INCLUDE
+    MPI_Init(&argc, &argv);
+#endif
+
+
     /**
     m x n is the dimension of the lattice basis.
     */
@@ -125,7 +134,9 @@ int main(int argc, char *argv[]) {
     Dimensions n x n.
     */
     double *M = (double *)calloc(n*n, sizeof(double));
-    if (get_Initial_Basis(B, m, n, filename) != 0) {
+    int basis_initialized = 1;
+    basis_initialized = get_Initial_Basis(B, m, n, filename);
+    if (basis_initialized != 0) {
         exit(0);
     }
 
@@ -155,7 +166,21 @@ int main(int argc, char *argv[]) {
     printMatrix(U, n, n);
 #endif
 
+    identity(M, n, n, 1);
+
+#ifdef MPI_INCLUDE
+    MPI_Barrier(MPI_COMM_WORLD);
+    double start_time = MPI_Wtime();
+#endif
+#ifdef DELAYED_LLL
     delayed_LLL(B, D, U, M, w, m, n);
+#else
+    LLL(B, D, U, M, w, m, n);
+#endif
+#ifdef MPI_INCLUDE
+    MPI_BArrier(MPI_COMM_WORLD);
+    double end_time = MPI_Wtime();
+#endif
 
     if (m * n < 128 * 128) {
         printf("Final Basis:\n");
@@ -180,9 +205,18 @@ int main(int argc, char *argv[]) {
 
     printf("Is LLL reduced? %s\n", (LLL_reduced(D, U, w, m, n)==1) ? "yes" : "no");
 
+#ifdef MPI_Include
+    printf("Elapsed time for LLL algorithm only: %d\n", (end_time - start_time));
+#endif
+
     free(B);
     free(D);
     free(U);
     free(M);
+
+#ifdef MPI_INCLUDE
+    MPI_Finalize();
+#endif
+
     return 0;
 }
