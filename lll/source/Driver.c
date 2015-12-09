@@ -176,6 +176,7 @@ int main(int argc, char *argv[]) {
 #ifdef MPI_INCLUDE
     MPI_Barrier(MPI_COMM_WORLD);
     double start_time = MPI_Wtime();
+    fprintf(stdout, "Time started\n");
 #endif
 #ifdef DELAYED_LLL
    //delayed_LLL(B, D, U, M, w, m, n);
@@ -186,6 +187,7 @@ int main(int argc, char *argv[]) {
 #ifdef MPI_INCLUDE
     MPI_Barrier(MPI_COMM_WORLD);
     double end_time = MPI_Wtime();
+    fprintf(stdout, "Time stopped\n");
 #endif
 
     if (m * n < 128 * 128) {
@@ -211,7 +213,7 @@ int main(int argc, char *argv[]) {
 
     //fprintf(stdout, "Is LLL reduced? %s\n", (LLL_reduced(D, U, w, m, n)==1) ? "yes" : "no");
 
-#ifdef MPI_Include
+#ifdef MPI_INCLUDE
     fprintf(stdout, "Elapsed time for LLL algorithm only: %d\n", (end_time - start_time));
 #endif
 
