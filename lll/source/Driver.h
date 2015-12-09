@@ -12,6 +12,7 @@
 #include "gram_schmidt.h"
 #include "lll.h"
 #include "delayed_lll.h"
+#include "parallel_lll.h"
 
 
 #endif

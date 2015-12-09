@@ -1,6 +1,6 @@
 #include "Driver.h"
 
-#define DATA_FOLDER "/home/edlafem1/student_user/bases/"
+#define DATA_FOLDER "" //"/home/edlafem1/student_user/bases/"
 
 /**
 Reads in a column oriented matrix of dimension m x n from file referenced by filename into B.
@@ -254,7 +254,7 @@ START_LLL:
 #ifdef DELAYED_LLL
    delayed_LLL(B, D, U, M, w, m, n);
 #else
-    LLL(B, D, U, M, w, m, n);
+    parallel_LLL(B, D, U, M, w, m, n, 0, 1);
 #endif
     fprintf(stdout, "Done with LLL stuff\n");
 #ifdef MPI_INCLUDE
@@ -291,6 +291,7 @@ START_LLL:
 #endif
 
     free(B);
+    return;
     free(D);
     free(U);
     free(M);
