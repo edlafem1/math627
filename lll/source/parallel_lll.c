@@ -1,36 +1,5 @@
 #include "parallel_lll.h"
 
-void parallel_reduceSwapRestore(int i, int gamma, double *B, double *D, double *U, double *M, int m, int n, int id, int np, int do_work) {
-
-
-    if (do_work != 1) return; // no need to permute these columns
-
-    // Update i-1 and i columns of B
-    double tempB;
-    for (int k = 0; k < m; ++k) {
-        tempB = B[(i - 1)*m + k];
-        B[(i - 1)*m + k] = B[i*m + k] - gamma*tempB;
-        B[i*m + k] = tempB;
-    }
-
-    //Update i-1 and i columns of M
-    double tempM;
-    for (int k = 0; k < n; ++k) {
-        tempM = M[(i - 1)*n + k];
-        M[(i - 1)*n + k] = M[i*m + k] - gamma*tempM;
-        M[i*m + k] = tempM;
-    }
-
-    // Update i-1 and i columsn of U
-    double tempU;
-    for (int k = 0; k <= i - 2; ++k) {
-        tempU = U[(i - 1)*n + k];
-        U[(i - 1)*n + k] = U[i*n + k] - gamma*tempU;
-        U[i*n + k] = tempU;
-    }
-}
-
-
 void parallel_LLL(double *B, double *D, double *U, double *M, double w, int m, int n, int id, int np) {
 
     int k = 1;
