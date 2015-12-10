@@ -52,7 +52,12 @@ void parallel_LLL(double *B, double *D, double *U, double *M, double w, int m, i
             ////////////////////////////////////////////////////////////////////////
         }
         printf("[%i] Before first allgather\n", id);
-        MPI_Allgather(&(U[id * (n / np)*n]), how_many, row_t, U, how_many, row_t, MPI_COMM_WORLD);
+        if (id == 0) {
+            MPI_Allgather(MPI_IN_PLACE, how_many, row_t, U, how_many, row_t, MPI_COMM_WORLD);
+        }
+        else {
+            MPI_Allgather(&(U[id * (n / np)*n]), how_many, row_t, U, how_many, row_t, MPI_COMM_WORLD);
+        }
         printf("[%i] After first allgather\n", id);
         ////////////////////////////////////////////////////////////////////////////
         counter = 0;
