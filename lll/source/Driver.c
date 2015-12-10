@@ -66,7 +66,6 @@ Memory Estimates assuming m == n:
 With 64 GB, n=46341 max
 */
 int main(int argc, char *argv[]) {
-    fprintf(stdout, "Starting point\n");
 #ifdef MPI_INCLUDE
     fprintf(stdout, "MPI Included\n");
     MPI_Init(&argc, &argv);
@@ -128,14 +127,12 @@ int main(int argc, char *argv[]) {
     B = [b_1, b_2, ..., b_n] where b_i are m-length vectors.
     */
     double *B = allocate_double_vector(m*n);
-    fprintf(stdout, "Alloc B\n");
     /**
     Q is the gram-schmidt orthogonalized basis. 
     Dimensions m x n.
     Q = [b_1*, b_2*, ..., b_n*] where b_i* are orthogonal m-length vectors.
     */
     double *Q = allocate_double_vector(m*n);
-    fprintf(stdout, "Alloc Q\n");
     /**
     D is a diagonal matrix with the L2 norm of the gram-schmidt vectors on the main diagonal, zeros elsewhere. 
     Dimension is n x n, but we can represent it with just a vector of length n to save memory.
@@ -143,13 +140,11 @@ int main(int argc, char *argv[]) {
     D=diag(d_i), d_i = ||b_i*||^2
     */
     double *D = allocate_double_vector(n);
-    fprintf(stdout, "Alloc D\n");
     /**
     U is an upper-triangular matrix with ones on the main diagonal. 
     Dimensions n x n.
     */
     double *U = allocate_double_vector(n*n);
-    fprintf(stdout, "Alloc U\n");
     /**
     M is a unimodular matrix that relates two bases for the same lattice by C=BM where
     B is the original basis and C is the new basis. Initially, the LLL algorithm forces this to be
@@ -157,7 +152,6 @@ int main(int argc, char *argv[]) {
     Dimensions n x n.
     */
     double *M = allocate_double_vector(n*n);
-    fprintf(stdout, "Alloc M\n");
 
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
@@ -196,9 +190,9 @@ int main(int argc, char *argv[]) {
     goto START_LLL;
 
 
+#ifdef DEBUG_LLL
     fprintf(stdout, "Initial Basis:\n");
     printMatrix(B, m, n);
-#ifdef DEBUG_LLL
 #endif
     
 /////////////////////////////////////////////////////////////////////////////////////
@@ -245,7 +239,7 @@ START_LLL:
 #endif
 
     identity(M, n, n, 1);
-    fprintf(stdout, "Done identity\n");
+
 #ifdef MPI_INCLUDE
     MPI_Barrier(MPI_COMM_WORLD);
     double start_time = MPI_Wtime();
@@ -263,7 +257,7 @@ START_LLL:
 #else
     LLL(B, D, U, M, w, m, n);
 #endif
-    fprintf(stdout, "Done with LLL stuff\n");
+    fprintf(stdout, "LLL finished\n");
 
 #ifdef MPI_INCLUDE
     MPI_Barrier(MPI_COMM_WORLD);
