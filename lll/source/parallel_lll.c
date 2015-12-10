@@ -1,7 +1,7 @@
 #include "parallel_lll.h"
 
 void parallel_LLL(double *B, double *D, double *U, double *M, double w, int m, int n, int id, int np) {
-    return 0;
+    return;
 #ifdef MPI_INCLUDE
     int k = 1;
     int gamma;
