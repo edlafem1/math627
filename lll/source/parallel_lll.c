@@ -11,6 +11,7 @@ void parallel_LLL(double *B, double *D, double *U, double *M, double w, int m, i
 
     while (f == 0) {
         int how_many = (2 + (id + 1) * (n / np) - 1) - (2 + id * (n / np) - 1);
+        printf("how_many=%i\n", how_many);
         int *works = (int *)calloc(how_many, sizeof(int));
         int counter = 0;
         f = 1;
@@ -50,16 +51,16 @@ void parallel_LLL(double *B, double *D, double *U, double *M, double w, int m, i
             }
 
             ////////////////////////////////////////////////////////////////////////
+        }
         printf("[%i] Before first allgather\n", id);
         if (id == 0) {
-            MPI_Allgather(MPI_IN_PLACE, 2, row_t, U, 2, row_t, MPI_COMM_WORLD);
+            MPI_Allgather(MPI_IN_PLACE, how_many, row_t, U, how_many, row_t, MPI_COMM_WORLD);
         }
         else {
-            MPI_Allgather(&(U[id * (n / np)*n]), 2, row_t, U, 2, row_t, MPI_COMM_WORLD);
+            MPI_Allgather(&(U[id * (n / np)*n]), how_many, row_t, U, how_many, row_t, MPI_COMM_WORLD);
         }
         printf("[%i] After first allgather\n", id);
         ////////////////////////////////////////////////////////////////////////////
-        }
         counter = 0;
         for (int k = 2 + id * (n / np) - 1; k < 2 + (id + 1) * (n / np) - 1 && k < n; k += 2) {
             gamma = closest_integer(U[k*n + (k - 1)]);
