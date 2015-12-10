@@ -1,6 +1,7 @@
 #include "parallel_lll.h"
 
 void parallel_LLL(double *B, double *D, double *U, double *M, double w, int m, int n, int id, int np) {
+    return 0;
 #ifdef MPI_INCLUDE
     int k = 1;
     int gamma;
@@ -54,6 +55,7 @@ void parallel_LLL(double *B, double *D, double *U, double *M, double w, int m, i
         }
         printf("[%i] Before first allgather\n", id);
         double *Utemp = (double *)calloc(n*n, sizeof(double));
+        if (Utemp != NULL) printf("Not null\n");
             MPI_Allgather(&(U[id * (n / np)*n]), how_many, row_t, Utemp, how_many, row_t, MPI_COMM_WORLD);
             memcpy(U, Utemp, n*n*sizeof(double));
             free(Utemp);

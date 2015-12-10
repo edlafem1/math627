@@ -252,19 +252,19 @@ START_LLL:
     fprintf(stdout, "Time started\n");
 #endif
 
-#ifdef MPI_INCLUDE
+/*
     int id, np;
     MPI_Comm_size(MPI_COMM_WORLD, &np);
     MPI_Comm_rank(MPI_COMM_WORLD, &id);
     parallel_LLL(B, D, U, M, w, m, n, id, np);
-#else
+*/
 #ifdef DELAYED_LLL
    delayed_LLL(B, D, U, M, w, m, n);
 #else
     LLL(B, D, U, M, w, m, n);
 #endif
     fprintf(stdout, "Done with LLL stuff\n");
-#endif
+
 #ifdef MPI_INCLUDE
     MPI_Barrier(MPI_COMM_WORLD);
     double end_time = MPI_Wtime();
@@ -279,7 +279,6 @@ START_LLL:
         fprintf(stdout, "Final basis too large to print out.\n");
     }
 #ifdef DEBUG_LLL
-#endif
 
     fprintf(stdout, "D:\n");
     printMatrix(D, m, 1);
@@ -289,6 +288,7 @@ START_LLL:
     printMatrix(U, n, n);
     fprintf(stdout, "M: \n");
     printMatrix(M, n, n);
+#endif
 
     fprintf(stdout, "Is size reduced? %s\n", (size_reduced(U, m, n)==1) ? "yes" : "no");
 
