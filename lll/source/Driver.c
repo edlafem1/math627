@@ -279,6 +279,7 @@ START_LLL:
         fprintf(stdout, "Final basis too large to print out.\n");
     }
 #ifdef DEBUG_LLL
+#endif
 
     fprintf(stdout, "D:\n");
     printMatrix(D, m, 1);
@@ -286,7 +287,6 @@ START_LLL:
 
     fprintf(stdout, "U:\n");
     printMatrix(U, n, n);
-#endif
     fprintf(stdout, "M: \n");
     printMatrix(M, n, n);
 
