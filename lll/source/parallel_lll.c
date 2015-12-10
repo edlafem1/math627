@@ -51,7 +51,9 @@ void parallel_LLL(double *B, double *D, double *U, double *M, double w, int m, i
 
             ////////////////////////////////////////////////////////////////////////
         }
+        printf("[%i] Before first allgather\n", id);
         MPI_Allgather(&(U[id * (n / np)*n]), how_many, row_t, U, how_many, row_t, MPI_COMM_WORLD);
+        printf("[%i] After first allgather\n", id);
         ////////////////////////////////////////////////////////////////////////////
         counter = 0;
         for (int k = 2 + id * (n / np) - 1; k < 2 + (id + 1) * (n / np) - 1 && k < n; k += 2) {
@@ -93,11 +95,12 @@ void parallel_LLL(double *B, double *D, double *U, double *M, double w, int m, i
             }
         }
             ////////////////////////////////////////////////////////////////////////////////
+        printf("[%i] Before last chunk allgather\n", id);
         MPI_Allgather(&(U[id * (n / np)*n]), how_many*n, MPI_DOUBLE, U, how_many*n, MPI_DOUBLE, MPI_COMM_WORLD);
         MPI_Allgather(&(M[id * (n / np)*n]), how_many*n, MPI_DOUBLE, M, how_many*n, MPI_DOUBLE, MPI_COMM_WORLD);
         MPI_Allgather(&(B[id * (n / np)*m]), how_many*m, MPI_DOUBLE, B, how_many*m, MPI_DOUBLE, MPI_COMM_WORLD);
         MPI_Allgather(&(D[id*(n / np)*1])  , how_many*1, MPI_DOUBLE, D, how_many*1, MPI_DOUBLE, MPI_COMM_WORLD);
-                
+        printf("[%i] After last chunk allgather\n", id);
         // End Parallel
 #ifdef MPI_INCLUDE
         MPI_Barrier(MPI_COMM_WORLD);
