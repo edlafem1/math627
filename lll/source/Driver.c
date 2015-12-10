@@ -291,7 +291,6 @@ START_LLL:
 #endif
 
     free(B);
-    return;
     free(D);
     free(U);
     free(M);
