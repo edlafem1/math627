@@ -1,0 +1,26 @@
+\frametitle{Idea for Parallelization}
+The pseudo code might look as follows:
+\begin{tiny}
+\begin{semiverbatim}
+M=identity(n)
+f=false
+while f is false:
+\hspace{2em} f = true
+\hspace{2em} in parallel for all even k=2...n:
+\hspace{2em}\hspace{2em} gamma=closest_int(u[k-1][k])
+\hspace{2em}\hspace{2em} if d[k] < (w-square((u[k-1][k]-gamma)))*d[k-1]:
+\hspace{2em}\hspace{2em}\hspace{2em} f=false
+\hspace{2em}\hspace{2em}\hspace{2em} ReduceSwapRestore(k,gamma)
+\hspace{2em}\hspace{2em}endif
+\hspace{2em} endparallel
+\hspace{2em} in parallel for all odd k=3...n:
+\hspace{2em}\hspace{2em} gamma=closest_int(u[k-1][k])
+\hspace{2em}\hspace{2em} if d[k] < (w-square((u[k-1][k]-gamma)))*d[k-1]:
+\hspace{2em}\hspace{2em}\hspace{2em} f=false
+\hspace{2em}\hspace{2em}\hspace{2em} ReduceSwapRestore(k,gamma)
+\hspace{2em}\hspace{2em}endif
+\hspace{2em} endparallel
+endwhile
+\ldots
+\end{semiverbatim}
+\end{tiny}

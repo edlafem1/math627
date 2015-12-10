@@ -1,0 +1,17 @@
+\documentclass{beamer}
+\usetheme{Berlin}
+\usecolortheme{beaver}
+
+\title{Improving the Speed of LLL Lattice Basis Reduction Algorithm on the Maya Cluster}
+\subtitle{Using Beamer}
+\author{Joe Bloggs}
+\institute{University of ShareLaTeX}
+\date{\today}
+\begin{document}
+\begin{frame}
+\titlepage
+\end{frame}
+\begin{frame}
+This is so cool!
+\end{frame}
+\end{document}

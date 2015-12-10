@@ -1,0 +1,191 @@
+\documentclass[12pt]{article}
+\usepackage{latexsym,amssymb,amsmath,eufrak} % for \Box, \mathbb, split, etc.
+% \usepackage[]{showkeys} % shows label names
+\usepackage{cite} % sorts citation numbers appropriately
+\usepackage{path}
+\usepackage{url}
+\usepackage{verbatim}
+\usepackage[pdftex]{graphicx}
+
+% horizontal margins: 1.0 + 6.5 + 1.0 = 8.5
+\setlength{\oddsidemargin}{0.0in}
+\setlength{\textwidth}{6.5in}
+% vertical margins: 1.0 + 9.0 + 1.0 = 11.0
+\setlength{\topmargin}{0.0in}
+\setlength{\headheight}{12pt}
+\setlength{\headsep}{13pt}
+\setlength{\textheight}{625pt}
+\setlength{\footskip}{24pt}
+
+\renewcommand{\textfraction}{0.10}
+\renewcommand{\topfraction}{0.85}
+\renewcommand{\bottomfraction}{0.85}
+\renewcommand{\floatpagefraction}{0.90}
+
+\makeatletter
+\setlength{\arraycolsep}{2\p@} % make spaces around "=" in eqnarray smaller
+\makeatother
+
+% change equation, table, figure numbers to be counted inside a section:
+\numberwithin{equation}{section}
+\numberwithin{table}{section}
+\numberwithin{figure}{section}
+
+% begin of personal macros
+\newcommand{\half}{{\textstyle \frac{1}{2}}}
+\newcommand{\eps}{\varepsilon}
+\newcommand{\myth}{\vartheta}
+\newcommand{\myphi}{\varphi}
+
+\newcommand{\IN}{\mathbb{N}}
+\newcommand{\IZ}{\mathbb{Z}}
+\newcommand{\IQ}{\mathbb{Q}}
+\newcommand{\IR}{\mathbb{R}}
+\newcommand{\IC}{\mathbb{C}}
+\newcommand{\Real}[1]{\mathrm{Re}\left({#1}\right)}
+\newcommand{\Imag}[1]{\mathrm{Im}\left({#1}\right)}
+
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+\newcommand{\abs}[1]{\left|{#1}\right|}
+\newcommand{\ip}[2]{\left\langle {#1}, {#2} \right\rangle}
+\newcommand{\der}[2]{\frac{\partial {#1}}{\partial {#2}}}
+\newcommand{\dder}[2]{\frac{\partial^2 {#1}}{\partial {#2}^2}}
+
+\newcommand{\nn}{\mathbf{n}}
+\newcommand{\xx}{\mathbf{x}}
+\newcommand{\uu}{\mathbf{u}}
+
+\newcommand{\junk}[1]{{}}
+
+% set two lengths for the includegraphics commands used to import the plots:
+\newlength{\fwtwo} \setlength{\fwtwo}{0.45\textwidth}
+% end of personal macros
+
+\begin{document}
+\DeclareGraphicsExtensions{.jpg}
+
+\begin{center}
+\textbf{\Large Improving the Speed of LLL Lattice Basis Reduction Algorithm on the Maya Cluster} \\[6pt]
+  Edward Paul LaFemina, Jr. \\[6pt]
+  Department of Computer Science and Electrical Engineering,
+  University of Maryland, Baltimore County  \\[6pt]
+  edlafem1@umbc.edu
+\end{center}
+\abstract This report discusses the performance of the LLL algorithm for lattice basis reduction used for cryptanalysis and in wireless technologies such as Wi\-Fi. We aim to improve the speed of the original algorithm by following modifications made by Yixian Luo and Sanzheng Qiao. We modify the original to be a faster serial version which Luo and Qiao have parallelized on a shared memory system using pthreads. We attempt to implement this parallelized version on the maya cluster-a distributed memory system-using the Message Passing Interface (MPI) library, however we find that it does not easily adapt to the maya cluster's architecture and forcing it to conform introduces significant amounts of communication that we believe outweighs cost.
+
+\section{Introduction}
+Originally published in a $1982$ paper by A.K. Lenstra, H.W. Lenstra, and L. Lov\'{a}sz, the LLL algorithm is the most popular and considered one of the fastest lattice basis reduction algorithms in existence. In this paper, we are interested in considering the delayed size reduction technique used by Yixian Luo and Sanzheng Qiao of McMaster University in Ontario, Canada to create a parallel implementation of the LLL algorithm using MPI on maya.
+
+\subsection{Lattices}
+A lattice $\mathfrak{L}$ is a subset of the $n$-dimensional real vector space $\mathbb{R^n}$ which can be defined as an integer combination of vectors
+$$\mathfrak{L}=\{Bz\}$$
+where $n$ is a positive integer, $z$ is all vectors in $\mathbb{Z^n}$ and $B$ is an $m$ by $n$ matrix with $m\geq n$ of linearly independent vectors which span $\mathfrak{L}$ and form a basis for $\mathfrak{L}$.
+
+\subsection{Reduced Bases}
+Bases for a lattice $\mathfrak{L}$ need not be unique and for every two bases $B$ and $C$ of the same lattice $\mathfrak{L}$ there exists an $n$ by $n$ matrix $M$ such that
+$$C=BM.$$
+$M$ is called a \textbf{unimodular matrix}, meaning it is nonsingular with integer entries and $\det{M}=\pm 1$.
+
+Of the set of bases of a lattice $\mathfrak{L}$, some are better than others. Often this is determined by the length of the vectors in the basis, typically with respect to the Euclidean norm. Bases with short vectors are called reduced bases.
+
+\subsection{Orthogonal Bases with The Gram-Schmidt Process}
+To construct an orthogonal basis for any vectorspace of $\mathbb{R^n}$ given a set of linearly independent vectors, recall the Gram-Schmidt Process. Let $B=[b_1,b_2,\ldots,b_n]$ be a basis for a lattice $\mathfrak{L}$. We compute an orthogonal basis $B^*=[b^*_1,b^*_2,\ldots,b^*_n]$:
+\begin{align*}
+&b^*_1=b_1,\\
+&b^*_2=b_2-{proj}_{b^*_1}(b_2),\\
+&b^*_3=b_3-{proj}_{b^*_1}(b_3)-{proj}_{b^*_2}(b_3),\\
+&\vdots\\
+&b^*_n=b_n-\sum_{j=1}^{n-1} {proj}_{b^*_j}(b_n)
+\end{align*}
+
+\subsection{QDR Decomposition}
+Any $m$ by $n$ ($m \geq n$) basis $B$ can be written:
+\begin{align*}
+B=&\left[b_1,b_2,\ldots,b_{n-1},b_n\right]\\
+ =&\left[b^*_1,b^*_2,\ldots,b^*_{n-1}b^*_n\right]
+	\left[ \begin{array}{ccccc}
+		1 & u_{1,2} & \cdots & u_{1,n-1} & u_{1,n} \\
+		0 & 1       & \cdots & u_{2,n-1} & u_{2,n} \\
+		\vdots & \vdots & \ddots & \vdots & \vdots \\
+		0 & 0       & \cdots & 1 & u_{n-1,n}       \\
+		0 & 0       & \cdots & 0 & 1               
+	\end{array}\right]\\
+ =&\left[\frac{b^*_1}{\norm{b^*_1}_2},\ldots,\frac{b^*_n}{\norm{b^*_n}_2}\right]
+   \left[\begin{array}{ccc}
+		\norm{b^*_1}_2  &  \\
+		&  \ddots       &  \\
+		&      &\norm{b^*_n}_2 
+   \end{array}\right]
+   \left[\begin{array}{ccc}
+		1 & \cdots & u_{1,n} \\
+		\vdots & \ddots & \vdots \\
+		0 & \cdots & 1
+   \end{array}\right]
+\end{align*}
+that is,
+\begin{eqnarray}
+B=QD^{1/2}U \label{decomp}
+\end{eqnarray}
+where $u_{i,j}=\frac{<q_i,b_j>}{<q_i,b_i}$ for $1 < i < j \leq n$ and $<\cdot,\cdot>$ denotes the dot product. Note that $D=diag(d_i)$ with $d_i=\norm{b^*_i}^2_2$ and $U$ is upper triangular with $1$s on the main diagonal.
+
+\section{LLL Algorithm}
+The LLL algorithm is an iterative algorithm that stops when the following conditions hold:
+\begin{description}
+\item[Definition: Size-Reduced]\textit{ A basis $B=[b_1,b_2,\ldots,b_n]$ for a lattice is called sized-reduced if $U$ in (\ref{decomp}) satisfies:}
+\begin{eqnarray}
+|u_{i,j}|\leq\frac{1}{2}\text{, for }1\leq i < j \leq n \label{size-reduced}
+\end{eqnarray}
+\item[Definition: LLL-reduced] \textit{$B=[b_1,b_2,\ldots,b_n]$ for a lattice is called LLL-reduced if $U$ and $D$ in (\ref{decomp}) satisfy:}
+\begin{eqnarray}
+B\text{ is size reduced}\\
+d_i+u^2_{i-1,i}d_{i-1}\geq \omega d_{i-1}\text{, for }2 \leq i \leq n \label{LLL-reduced}
+\end{eqnarray}
+\end{description}
+The algorithm is composed of two main steps, \textbf{Reduce} and \textbf{SwapRestore}.
+\begin{description}
+\item[Reduce(i,j)] \textit{Define a unimodular transformation $M_{ij}$ of dimension $n\times m$ by 
+\\$M_{ij}=I_n-\gamma <e_i, e_j>$ where $\gamma=\lceil u_{i,j} \lfloor$ is the closest integer to $u_{i,j}$ and $e_i$ is the $i$-th unit vector. Then perform:}
+$$U\leftarrow UM_{ij}, B\leftarrow BM_{ij}, M\leftarrow MM_{ij}.$$
+\end{description}
+Notice that $BM_{ij}=QD^{1/2}UM_{ij}$ and since $M_{ij}$ is unimodular, $C=BM_{ij}$ is a new basis for $\mathfrak{L}$ where $|u_{i,j}|\leq \frac{1}{2}$, working towards satisfying (\ref{size-reduced}).
+
+To work towards satisfying the second condition (\ref{LLL-reduced}), we have another operation:
+\begin{description}
+\item[SwapRestore(i)] \textit{Let $\mu=u_{i-1,i}$, compute $\hat{d}_i-1=d_i+\mu^2 d_i-1, d_i\leftarrow \frac{d_{i-1}d_i}{\hat{d}_{i-1}},
+\\\varepsilon=\frac{\mu d_{i-1}}{\hat{d}_{i-1}},d_{i-1}\leftarrow \hat{d}_{i-1}, u_{i-1,i}\leftarrow \varepsilon$. Swap the $i$-th and $i-1$-th columns in $U,B,$ and $M$, then perform:}
+$$U \leftarrow \left[
+\begin{array}{cccc}
+I_{i-2} & & &\\
+&\mu & 1-\mu \varepsilon &\\
+&1   &  -\mu &\\
+& & & I_{n-i}
+\end{array}\right]U $$
+\end{description}
+Performing this operation satisfies (\ref{LLL-reduced}) for the current values of $i$ and $j$.
+
+Thus, we have enough to write the full LLL algorithm as described in LLL PAPER HERE.
+\pagebreak
+\begin{description}
+\item[LLL Algorithm:] \textit{Given a lattice basis $B$ of dimension $m\times n,$ $m\geq n$, $D$ and $U$ which satisfy (\ref{decomp}), the algorithm is as follows:}
+\begin{enumerate}
+\item $M\leftarrow I_n$
+\item $k\leftarrow 2$
+\item while ($k\leq n$)
+\item \hspace{2em} if($|u_{k-1,k}|>1/2$)
+\item \hspace{2em}\hspace{2em} Reduce($k-1,k$)
+\item \hspace{2em} endif
+\item \hspace{2em} if($d_k<\left(\omega -u^2_{k-1,k}\right)d_{k-1}$)
+\item \hspace{2em}\hspace{2em} SwapRestore($k$)
+\item \hspace{2em}\hspace{2em} $k\leftarrow\max(k-1,2)$
+\item \hspace{2em} else
+\item \hspace{2em}\hspace{2em} for $i=k-2; i \geq 1; i\leftarrow i-1$
+\item \hspace{2em}\hspace{2em} \hspace{2em} if($|u_{k-1,k}|>1/2$)
+\item \hspace{2em}\hspace{2em} \hspace{2em} \hspace{2em} Reduce($i,k$)
+\item \hspace{2em}\hspace{2em} \hspace{2em} endif
+\item \hspace{2em}\hspace{2em} endfor
+\item \hspace{2em} $k\leftarrow k+1$
+\item \hspace{2em} endif
+\item endwhile
+\end{enumerate}
+\end{description}
+\end{document}

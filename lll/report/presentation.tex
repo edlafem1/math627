@@ -1,0 +1,330 @@
+\documentclass{beamer}
+\usepackage{latexsym,amssymb,amsmath,eufrak}
+
+\usetheme{Berlin}
+\usecolortheme{beaver}
+
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+
+\title{Improving the Speed of LLL Lattice Basis Reduction Algorithm on the Maya Cluster}
+
+\author{Edward Paul LaFemina, Jr.}
+\institute{University Maryland, Baltimore County}
+\date{\today}
+\begin{document}
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}
+\frametitle{Motivation}
+\begin{itemize}
+\item Lattice basis reduction has applications in cryptanalysis as well as in multiple-input multiple output symbol detection which is used often in wireless communications such as Wi-Fi.
+\item LLL is the most popular lattice basis reduction algorithm and is one of the fastest.
+\item Yixian Luo and Sanzheng Qiao of McMaster University, Canada created a parallel version for a shared memory system using pthreads.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Lattices}
+\begin{definition}
+A lattice is an integer combination of linearly independent vectors.
+$$\mathfrak{L} = \{Bz\}$$
+where z is all vectors in $\mathbb{Z}^n$ and $B$ is an $m$ by $n$ matrix with $m\geq n$ of linearly independent vectors which span $\mathfrak{L}$ and form a basis for $\mathfrak{L}$.
+\end{definition}
+\end{frame}
+
+\begin{frame}
+\frametitle{QDU Decomposition}
+We can decompose the basis $B$ into component parts via the Gram-Schmidt process:
+\begin{align*}
+B=&\left[b_1,b_2,\ldots,b_{n-1},b_n\right]\\
+ =&\left[b^*_1,b^*_2,\ldots,b^*_{n-1}b^*_n\right]
+	\left[ \begin{array}{ccccc}
+		1 & u_{1,2} & \cdots & u_{1,n-1} & u_{1,n} \\
+		0 & 1       & \cdots & u_{2,n-1} & u_{2,n} \\
+		\vdots & \vdots & \ddots & \vdots & \vdots \\
+		0 & 0       & \cdots & 1 & u_{n-1,n}       \\
+		0 & 0       & \cdots & 0 & 1               
+	\end{array}\right]\\
+ =&\left[\frac{b^*_1}{\norm{b^*_1}_2},\ldots,\frac{b^*_n}{\norm{b^*_n}_2}\right]
+   \left[\begin{array}{ccc}
+		\norm{b^*_1}_2  &  \\
+		&  \ddots       &  \\
+		&      &\norm{b^*_n}_2 
+   \end{array}\right]
+   \left[\begin{array}{ccc}
+		1 & \cdots & u_{1,n} \\
+		\vdots & \ddots & \vdots \\
+		0 & \cdots & 1
+   \end{array}\right]
+\end{align*}
+\end{frame}
+\begin{frame}
+We can write this as
+\begin{eqnarray}
+B=QD^{1/2}U\label{decomp}
+\end{eqnarray}
+where $u_{i,j}=\frac{<q_i,b_j>}{<q_i,b_i}$ for $1 < i < j \leq n$ and $<\cdot,\cdot>$ denotes the dot product. Note that $D=diag(d_i)$ with $d_i=\norm{b^*_i}^2_2$ and $U$ is upper triangular with $1$s on the main diagonal.
+\end{frame}
+
+\begin{frame}
+\frametitle{LLL Algorithm}
+\begin{enumerate}
+\item The LLL Algorithm takes as inputs $B$, $D$, and $U$. Notice we do not need the orthogonalized basis $Q$.
+\item The LLL Algorithm is iterative and performs two basic operations \textbf{Reduce} and \textbf{SwapRestore} until two well defined conditions are met.
+\end{enumerate}
+\end{frame}
+
+\begin{frame}
+\frametitle{Conditions - Size Reduced}
+\begin{block}{Size-Reduced}\textit{ A basis $B=[b_1,b_2,\ldots,b_n]$ for a lattice is called sized-reduced if $U$ in (\ref{decomp}) satisfies:}
+\begin{eqnarray}
+|u_{i,j}|\leq\frac{1}{2}\text{, for }1\leq i < j \leq n \label{size-reduced}
+\end{eqnarray}
+\end{block}
+\end{frame}
+\begin{frame}
+\frametitle{Conditions - LLL Reduced}
+\begin{block}{LLL-reduced} \textit{$B=[b_1,b_2,\ldots,b_n]$ for a lattice is called LLL-reduced if $U$ and $D$ in (\ref{decomp}) satisfy:}
+\begin{eqnarray}
+&B\text{ is size reduced}\\
+&d_i+u^2_{i-1,i}d_{i-1}\geq \omega d_{i-1}\text{, for }2 \leq i \leq n \label{LLL-reduced}
+\end{eqnarray}
+\end{block}
+\end{frame}
+
+\begin{frame}
+\frametitle{Operation - Reduce}
+\begin{block}{Reduce(i,j)} \textit{Define a unimodular transformation $M_{ij}$ of dimension $n\times m$ by 
+\\$M_{ij}=I_n-\gamma <e_i, e_j>$ where $\gamma=\lceil u_{i,j} \lfloor$ is the closest integer to $u_{i,j}$ and $e_i$ is the $i$-th unit vector. Then perform:}
+$$U\leftarrow UM_{ij}, B\leftarrow BM_{ij}, M\leftarrow MM_{ij}.$$
+\end{block}
+Notice that $BM_{ij}=QD^{1/2}UM_{ij}$ and since $M_{ij}$ is unimodular, $C=BM_{ij}$ is a new basis for $\mathfrak{L}$ where $|u_{i,j}|\leq \frac{1}{2}$, working towards satisfying (\ref{size-reduced}).
+\end{frame}
+
+\begin{frame}
+\frametitle{Operation - SwapRestore}
+\begin{block}{SwapRestore(i)} \textit{Let $\mu=u_{i-1,i}$. Compute $\hat{d}_i-1=d_i+\mu^2 d_i-1, d_i\leftarrow \frac{d_{i-1}d_i}{\hat{d}_{i-1}},$}
+
+\textit{$\varepsilon=\frac{\mu d_{i-1}}{\hat{d}_{i-1}},d_{i-1}\leftarrow \hat{d}_{i-1}, u_{i-1,i}\leftarrow \varepsilon$. Swap the $i$-th and $i-1$-th columns in $U,B,$ and $M$, then perform:}
+$$U \leftarrow \left[
+\begin{array}{cccc}
+I_{i-2} & & &\\
+&\mu & 1-\mu \varepsilon &\\
+&1   &  -\mu &\\
+& & & I_{n-i}
+\end{array}\right]U $$
+\end{block}
+Performing this operation satisfies (\ref{LLL-reduced}) for the current values of $i$ and $j$.
+\end{frame}
+
+\begin{frame}
+\frametitle{The LLL Algorithm}
+Given a lattice basis $B$ of dimension $m\times n,$ $m\geq n$, $D$ and $U$ which satisfy (\ref{decomp}), the algorithm is as follows:
+\begin{tiny}
+\begin{enumerate}[1]
+\item $M\leftarrow I_n$
+\item $k\leftarrow 2$
+\item while ($k\leq n$)
+\item \hspace{2em} if $\left(|u_{k-1,k}|>1/2\right)$
+\item \hspace{2em}\hspace{2em} Reduce($k-1,k$)
+\item \hspace{2em} endif
+\item \hspace{2em} if $\left(d_k<\omega -u^2_{k-1,k}d_{k-1}\right)$
+\item \hspace{2em}\hspace{2em} SwapRestore($k$)
+\item \hspace{2em}\hspace{2em} $k\leftarrow\max(k-1,2)$
+\item \hspace{2em} else
+\item \hspace{2em}\hspace{2em} for $\left(i=k-2; i \geq 1; i\leftarrow i-1\right)$
+\item \hspace{2em}\hspace{2em} \hspace{2em} if $\left(|u_{k-1,k}|>1/2\right)$
+\item \hspace{2em}\hspace{2em} \hspace{2em} \hspace{2em} Reduce($i,k$)
+\item \hspace{2em}\hspace{2em} \hspace{2em} endif
+\item \hspace{2em}\hspace{2em} endfor
+\item \hspace{2em} $k\leftarrow k+1$
+\item \hspace{2em} endif
+\item endwhile
+\end{enumerate}
+\end{tiny}
+\end{frame}
+
+\begin{frame}
+\frametitle{Commentary}
+Luo and Qiao notice that the following scenario happens often:
+\begin{align*}
+&\vdots \\
+&Reduce(i-1,i) \\
+&SwapRestore(i) \\
+&Reduce(i-1,i) \\
+&\vdots \\
+\end{align*}
+This happens because during the \textbf{SwapRestore}, a column of $U$ with a value $|u_{i-1,i}|>1/2$ is moved into a position that has already had \textbf{Reduce} applied.
+\end{frame}
+
+\begin{frame}
+\frametitle{Delayed Size-Reduction}
+To avoid excess operations, we introduce a new operation:
+\begin{block}{ReduceSwapRestore(i,$\gamma$)} \textit{Let $\mu=u_{i-1,i}$. Compute: $\hat{d}_{i-1}=d_i+(\mu-\gamma)^2 d_{i-1}, d_i\leftarrow \frac{d_{i-1}d_i}{\hat{d}_{i-1}}, \varepsilon=\frac{(\mu-\gamma)d_{i-1}}{\hat{d}_{i-1}}, d_{i-1}\leftarrow \hat{d}_{i-1},u_{i-1,i}\leftarrow \varepsilon$. Let}
+$$P=\left[\begin{array}{cc}
+1 &\gamma \\
+0 &1
+\end{array}\right]\left[\begin{array}{cc}
+0 &1 \\
+1 &0
+\end{array}\right]\text{ and } \Pi_i=diag([I_{i-2}\hspace{1em}P\hspace{1em}I_{n-i}])$$
+which will have the effect of reduction and swapping columns $i-1$ and $i$.
+Perform
+$$U\leftarrow U\Pi_i, B\leftarrow B\Pi_i, M\leftarrow M\Pi_i.$$
+\end{block}
+\end{frame}
+\begin{frame}
+\frametitle{Delayed Size-Reduction, continued}
+\begin{block}{ReduceSwapRestore(i,$\gamma$), continued}
+Finally, perform:
+$$U\leftarrow \left[\begin{array}{cccc}
+I_{i-2} &&& \\
+& \varepsilon &1-\varepsilon\mu+\gamma\varepsilon & \\
+& 1 & \gamma-\mu & \\
+&&& I_{n-i}
+\end{array}\right]U$$
+\end{block}
+\end{frame}
+
+\begin{frame}
+\frametitle{LLL Algorithm with Delayed Size-Reduction}
+Given a lattice basis $B$ of dimension $m\times n,$ $m\geq n$, $D$ and $U$ which satisfy (\ref{decomp}), the algorithm is as follows:
+\begin{tiny}
+\begin{enumerate}[1]
+\item $M\leftarrow I_n$
+\item $k\leftarrow 2$
+\item while ($k\leq n$)
+\item \hspace{2em} $\gamma=\lceil u_{k-1,k} \rfloor $
+\item \hspace{2em} if $\left(d_k<(\omega -(u^2_{k-1,k}-\gamma)^2)d_{k-1}\right)$
+\item \hspace{2em}\hspace{2em} ReduceSwapRestore($k,\gamma$)
+\item \hspace{2em}\hspace{2em} $k\leftarrow\max(k-1,2)$
+\item \hspace{2em} else
+\item \hspace{2em}\hspace{2em} $k\leftarrow k+1$
+\item \hspace{2em} endif
+\item endwhile
+\item for $\left(k=2; k\leq n; k+=1\right)$
+\item \hspace{2em}\hspace{2em} for $i=k-1; i \geq 1; i\leftarrow i-1$
+\item \hspace{2em}\hspace{2em} \hspace{2em} if $\left(|u_{i,k}|>1/2\right)$
+\item \hspace{2em}\hspace{2em} \hspace{2em} \hspace{2em} Reduce($i,k$)
+\item \hspace{2em}\hspace{2em} \hspace{2em} endif
+\item \hspace{2em}\hspace{2em} endfor
+\item \hspace{2em} endif
+\item endfor
+\end{enumerate}
+\end{tiny}
+\end{frame}
+
+\begin{frame}
+\frametitle{Serial Performance Comparison - Memory Usage}
+We need to store all of $B,Q,D,U,$ and $M$ on the same processor at some point. Restricting ourselves to square bases, the following estimates our memory usage in GB:
+$$\frac{(4n^2+n)*8}{1024^3}$$
+Using this formula, we can have a maximum dimension $n \times n$ with $n=46341$ on a $64$GB node. In the interest of parallel computing, we restricted ourselves to powers of $2$ and thus our max $n$ is $2^{15}=32768$.
+\end{frame}
+\begin{frame}
+\frametitle{Serial Performance Comparison - Time}
+\begin{table} \centering
+  \caption{Time(s) to compute an LLL-reduced basis for a lattice with basis $B$ of dimension $n\times n$}
+  \label{tab:convdemo}
+  \vspace{-0.5\baselineskip}
+  \begin{tabular}{rccc}
+    \hline
+    $n$ & Original & Delayed Size-Reduction & Speedup-Avg 2.72\\
+    \hline
+      512 & $<$0.02   & $<$0.01   & 3.15 \\
+     1024 & 0.040076  & $<$0.02   & 2.46 \\
+     2048 & 0.168528  & 0.059718  & 2.82 \\
+     4096 & 1.556064  & 0.442634  & 3.51 \\
+     8192 & 3.540025  & 1.668347  & 2.12 \\
+    16384 & 16.372345 & 6.937223  & 2.36 \\
+    32768 & 48.689103 & 18.396112 & 2.64 \\
+    \hline                          
+  \end{tabular}
+\end{table}
+\tiny{Note, we timed only the LLL algorithm itself, not the Gram-Schmidt Process or the QDU decomposition.}
+\end{frame}
+
+\begin{frame}
+\frametitle{Serial Conclusions}
+As we can see, there is no case in which it is not better to use Delayed Size-Reduction versus the original LLL Algorithm with no modification.
+This is fortunate, as the modifications made by Luo and Qiao require the use of Delayed Size-Reduction.
+\end{frame}
+
+\begin{frame}
+\frametitle{Idea for Parallelization}
+\begin{itemize}
+\item ReduceSwapRestore($k,\gamma$) simply swaps columns $k$ and $k-1$ and performs row operations on rows $k$ and $k-1$.
+\item This means that for $k$ and $k+2$, ReduceSwapRestore($k,\gamma$) and ReduceSwapRestore($k+2,\gamma$) swap columns $k$ and $k-1$ with eachother and $k+2$ and $k+1$ with eachother and perform row operations on rows $k$ and $k-1$ as well as $k+2$ and $k+1$.
+\item Thus, ReduceSwapRestore may be applied for all even $k$ at the same time and all odd $k$ at the same time. Note though that we cannot apply ReduceSwapRestore to both even and odd $k$ at the same time; these must happen separatly.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Idea for Parallelization}
+The pseudo code might look as follows:
+\begin{tiny}
+\begin{semiverbatim}
+M=identity(n)
+f=false
+while f is false:
+\hspace{2em} f = true
+\hspace{2em} in parallel for all even k=2...n:
+\hspace{2em}\hspace{2em} gamma=closest_int(u[k-1][k])
+\hspace{2em}\hspace{2em} if d[k] < (w-square((u[k-1][k]-gamma)))*d[k-1]:
+\hspace{2em}\hspace{2em}\hspace{2em} f=false
+\hspace{2em}\hspace{2em}\hspace{2em} ReduceSwapRestore(k,gamma)
+\hspace{2em}\hspace{2em}endif
+\hspace{2em} endparallel
+\hspace{2em} in parallel for all odd k=3...n:
+\hspace{2em}\hspace{2em} gamma=closest_int(u[k-1][k])
+\hspace{2em}\hspace{2em} if d[k] < (w-square((u[k-1][k]-gamma)))*d[k-1]:
+\hspace{2em}\hspace{2em}\hspace{2em} f=false
+\hspace{2em}\hspace{2em}\hspace{2em} ReduceSwapRestore(k,gamma)
+\hspace{2em}\hspace{2em}endif
+\hspace{2em} endparallel
+endwhile
+\ldots
+\end{semiverbatim}
+\end{tiny}
+\end{frame}
+
+\begin{frame}
+\frametitle{On Maya}
+\begin{itemize}
+\item This type of parallelization was designed for a shared memory machine
+\item This means that when a value was changed on one process, it was instantly changed on all processes
+\item It works because the order of the parallel operations does not matter
+\item Maya is distributed memory, meaning when a value is changed on one processor, it would need to be communicated to all processes.
+\end{itemize}
+\end{frame}
+\begin{frame}
+Consider the following:
+\begin{itemize}
+\item process 0 swaps columns 2 and 1, performing row operations on rows 2 and 1
+\item process 1 swaps columns 4 and 3, performing row operations on rows 4 and 3
+\item At the end of the parallel section for even $k$, all matrices must be updated and consistent with eachother before the odd $k$ section.
+\item Reasoning: the \texttt{while} loop is essentially sorting vectors in the basis via successive swaps
+\end{itemize}
+\end{frame}
+\begin{frame}
+\frametitle{Problems with Maya}
+It is interesting to note that ReduceSwapRestore is not called for all $k$. This does not matter for communicating matrix updates because no process can know whether any other process performed an update.
+Thus, communication must occur for every update. The only way to keep matrices consistent with operations is to communicate the change after every update by every process.
+Suppose process 0 performed a row operation on row $1$ affecting all columns greater than $2$ and process 1 performed a swap of columns $3$ and $4$. After the fact, there is no way to determine the correct value of element in position $1,3$ or $1,4$. Keep the swap, or keep the row update? For the algorithm to work, we need both.
+\end{frame}
+
+\begin{frame}
+\frametitle{Communication Cost}
+For one ReduceSwapRestore, we perform 2 row operations on $U$ and swap 2 columns of $B,U,$ and $M$.
+At a minimum, this requires 4 communications to and from all processes  of about 2*n doubles each communication.
+Because the computation on each element that would need to be communicated is minimal or non-existent, the time cost of communication would take longer than performing the communication on the destination node itself.
+\end{frame}
+\begin{frame}
+\frametitle{Conclusions}
+\begin{itemize}
+\item We recommend using the Delayed Size-Reduction modification when running this algorithm in serial in all cases
+\item It may be possible to use the same or similar ideas as Luo and Qiao's parallel algorithm with pthreads to allow for larger lattices to be reduced, however in the time available to us and with the knowledge we have, we could not devise a way to do so.
+\end{itemize}
+\end{frame}
+\end{document}
