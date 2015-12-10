@@ -39,19 +39,23 @@ void parallel_LLL(double *B, double *D, double *U, double *M, double w, int m, i
         MPI_Barrier(MPI_COMM_WORLD);
 #endif
     }
-
-
+    int l_n = n / np;
+    int offset = id*l_n;
     // End Parallel
     // NEED TO GET MATRICES ON ALL PARTS NOW
     int i, j, start;
-    for (k = 2 * n - 3; k >= 1; k--) {
-        if (k <= n - 1) {
+    for (k = 2 * l_n - 3; k >= 1; k--) {
+        if (k <= l_n - 1) {
             start = 1;
         }
         else {
-            start = k - n + 2;
+            start = k - l_n + 2;
         }
-        for (i = start; i < (k + 3) / 2; i++) {
+        for (i = start+offset; i < (k + 3) / 2; i++) { // paper code has i+=NUM_THREADS. why?
+                                                       // I think because their offset==id. 
+                                                       // i.e. they have each thread doing 
+                                                       // all columns congruent to 
+                                                       // id (mod NUM_THREADS)
             j = k + 2 - i;
 #ifdef DEBUG_LLL
             printf("U[%i][%i]=%lf\n", i, j, U[(j - 0)*n + (i - 0)]);
