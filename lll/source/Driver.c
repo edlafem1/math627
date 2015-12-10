@@ -196,9 +196,9 @@ int main(int argc, char *argv[]) {
     goto START_LLL;
 
 
-#ifdef DEBUG_LLL
     fprintf(stdout, "Initial Basis:\n");
     printMatrix(B, m, n);
+#ifdef DEBUG_LLL
 #endif
     
 /////////////////////////////////////////////////////////////////////////////////////
@@ -283,12 +283,12 @@ START_LLL:
     fprintf(stdout, "D:\n");
     printMatrix(D, m, 1);
 
-    fprintf(stdout, "M: \n");
-    printMatrix(M, n, n);
 
     fprintf(stdout, "U:\n");
     printMatrix(U, n, n);
 #endif
+    fprintf(stdout, "M: \n");
+    printMatrix(M, n, n);
 
     fprintf(stdout, "Is size reduced? %s\n", (size_reduced(U, m, n)==1) ? "yes" : "no");
 
