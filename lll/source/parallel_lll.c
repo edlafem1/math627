@@ -101,10 +101,18 @@ void parallel_LLL(double *B, double *D, double *U, double *M, double w, int m, i
         }
             ////////////////////////////////////////////////////////////////////////////////
         printf("[%i] Before last chunk allgather\n", id);
-        MPI_Allgather(&(U[id * (n / np)*n]), how_many*n, MPI_DOUBLE, U, how_many*n, MPI_DOUBLE, MPI_COMM_WORLD);
-        MPI_Allgather(&(M[id * (n / np)*n]), how_many*n, MPI_DOUBLE, M, how_many*n, MPI_DOUBLE, MPI_COMM_WORLD);
-        MPI_Allgather(&(B[id * (n / np)*m]), how_many*m, MPI_DOUBLE, B, how_many*m, MPI_DOUBLE, MPI_COMM_WORLD);
-        MPI_Allgather(&(D[id*(n / np)*1])  , how_many*1, MPI_DOUBLE, D, how_many*1, MPI_DOUBLE, MPI_COMM_WORLD);
+        if (id == 0) {
+            MPI_Allgather(MPI_IN_PLACE, how_many*n, MPI_DOUBLE, U, how_many*n, MPI_DOUBLE, MPI_COMM_WORLD);
+            MPI_Allgather(MPI_IN_PLACE, how_many*n, MPI_DOUBLE, M, how_many*n, MPI_DOUBLE, MPI_COMM_WORLD);
+            MPI_Allgather(MPI_IN_PLACE, how_many*m, MPI_DOUBLE, B, how_many*m, MPI_DOUBLE, MPI_COMM_WORLD);
+            MPI_Allgather(MPI_IN_PLACE, how_many * 1, MPI_DOUBLE, D, how_many * 1, MPI_DOUBLE, MPI_COMM_WORLD);
+        }
+        else {
+            MPI_Allgather(&(U[id * (n / np)*n]), how_many*n, MPI_DOUBLE, U, how_many*n, MPI_DOUBLE, MPI_COMM_WORLD);
+            MPI_Allgather(&(M[id * (n / np)*n]), how_many*n, MPI_DOUBLE, M, how_many*n, MPI_DOUBLE, MPI_COMM_WORLD);
+            MPI_Allgather(&(B[id * (n / np)*m]), how_many*m, MPI_DOUBLE, B, how_many*m, MPI_DOUBLE, MPI_COMM_WORLD);
+            MPI_Allgather(&(D[id*(n / np) * 1]), how_many * 1, MPI_DOUBLE, D, how_many * 1, MPI_DOUBLE, MPI_COMM_WORLD);
+        }
         printf("[%i] After last chunk allgather\n", id);
         // End Parallel
 #ifdef MPI_INCLUDE
