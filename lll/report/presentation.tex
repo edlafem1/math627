@@ -6,6 +6,10 @@
 
 \newcommand{\norm}[1]{\left\lVert#1\right\rVert}
 
+\bibliographystyle{acm}
+\usepackage{verbatim}
+
+
 \title{Improving the Speed of LLL Lattice Basis Reduction Algorithm on the Maya Cluster}
 
 \author{Edward Paul LaFemina, Jr.}
@@ -21,7 +25,7 @@
 \begin{itemize}
 \item Lattice basis reduction has applications in cryptanalysis as well as in multiple-input multiple output symbol detection which is used often in wireless communications such as Wi-Fi.
 \item LLL is the most popular lattice basis reduction algorithm and is one of the fastest.
-\item Yixian Luo and Sanzheng Qiao of McMaster University, Canada created a parallel version for a shared memory system using pthreads.
+\item Yixian Luo and Sanzheng Qiao of McMaster University, Canada created a parallel version for a shared memory system using pthreads. \cite{LuoQiaoParallelLLL}
 \end{itemize}
 \end{frame}
 
@@ -72,13 +76,13 @@ where $u_{i,j}=\frac{<q_i,b_j>}{<q_i,b_i}$ for $1 < i < j \leq n$ and $<\cdot,\c
 \frametitle{LLL Algorithm}
 \begin{enumerate}
 \item The LLL Algorithm takes as inputs $B$, $D$, and $U$. Notice we do not need the orthogonalized basis $Q$.
-\item The LLL Algorithm is iterative and performs two basic operations \textbf{Reduce} and \textbf{SwapRestore} until two well defined conditions are met.
+\item The LLL Algorithm is iterative and performs two basic operations \textbf{Reduce} and \textbf{SwapRestore} until two well defined conditions are met.\cite{LuoQiaoParallelLLL}
 \end{enumerate}
 \end{frame}
 
 \begin{frame}
 \frametitle{Conditions - Size Reduced}
-\begin{block}{Size-Reduced}\textit{ A basis $B=[b_1,b_2,\ldots,b_n]$ for a lattice is called sized-reduced if $U$ in (\ref{decomp}) satisfies:}
+\begin{block}{Size-Reduced\cite{OriginalLLL}}\textit{ A basis $B=[b_1,b_2,\ldots,b_n]$ for a lattice is called sized-reduced if $U$ in (\ref{decomp}) satisfies:}
 \begin{eqnarray}
 |u_{i,j}|\leq\frac{1}{2}\text{, for }1\leq i < j \leq n \label{size-reduced}
 \end{eqnarray}
@@ -86,7 +90,7 @@ where $u_{i,j}=\frac{<q_i,b_j>}{<q_i,b_i}$ for $1 < i < j \leq n$ and $<\cdot,\c
 \end{frame}
 \begin{frame}
 \frametitle{Conditions - LLL Reduced}
-\begin{block}{LLL-reduced} \textit{$B=[b_1,b_2,\ldots,b_n]$ for a lattice is called LLL-reduced if $U$ and $D$ in (\ref{decomp}) satisfy:}
+\begin{block}{LLL-reduced\cite{OriginalLLL}} \textit{$B=[b_1,b_2,\ldots,b_n]$ for a lattice is called LLL-reduced if $U$ and $D$ in (\ref{decomp}) satisfy:}
 \begin{eqnarray}
 &B\text{ is size reduced}\\
 &d_i+u^2_{i-1,i}d_{i-1}\geq \omega d_{i-1}\text{, for }2 \leq i \leq n \label{LLL-reduced}
@@ -100,7 +104,7 @@ where $u_{i,j}=\frac{<q_i,b_j>}{<q_i,b_i}$ for $1 < i < j \leq n$ and $<\cdot,\c
 \\$M_{ij}=I_n-\gamma <e_i, e_j>$ where $\gamma=\lceil u_{i,j} \lfloor$ is the closest integer to $u_{i,j}$ and $e_i$ is the $i$-th unit vector. Then perform:}
 $$U\leftarrow UM_{ij}, B\leftarrow BM_{ij}, M\leftarrow MM_{ij}.$$
 \end{block}
-Notice that $BM_{ij}=QD^{1/2}UM_{ij}$ and since $M_{ij}$ is unimodular, $C=BM_{ij}$ is a new basis for $\mathfrak{L}$ where $|u_{i,j}|\leq \frac{1}{2}$, working towards satisfying (\ref{size-reduced}).
+Notice that $BM_{ij}=QD^{1/2}UM_{ij}$ and since $M_{ij}$ is unimodular, $C=BM_{ij}$ is a new basis for $\mathfrak{L}$ where $|u_{i,j}|\leq \frac{1}{2}$, working towards satisfying (\ref{size-reduced}).\cite{LuoQiaoParallelLLL}
 \end{frame}
 
 \begin{frame}
@@ -116,12 +120,12 @@ I_{i-2} & & &\\
 & & & I_{n-i}
 \end{array}\right]U $$
 \end{block}
-Performing this operation satisfies (\ref{LLL-reduced}) for the current values of $i$ and $j$.
+Performing this operation satisfies (\ref{LLL-reduced}) for the current values of $i$ and $j$. \cite{LuoQiaoParallelLLL}
 \end{frame}
 
 \begin{frame}
 \frametitle{The LLL Algorithm}
-Given a lattice basis $B$ of dimension $m\times n,$ $m\geq n$, $D$ and $U$ which satisfy (\ref{decomp}), the algorithm is as follows:
+Given a lattice basis $B$ of dimension $m\times n,$ $m\geq n$, $D$ and $U$ which satisfy (\ref{decomp}), the algorithm is as follows\cite{LuoQiaoParallelLLL}:
 \begin{tiny}
 \begin{enumerate}[1]
 \item $M\leftarrow I_n$
@@ -148,7 +152,7 @@ Given a lattice basis $B$ of dimension $m\times n,$ $m\geq n$, $D$ and $U$ which
 
 \begin{frame}
 \frametitle{Commentary}
-Luo and Qiao notice that the following scenario happens often:
+Luo and Qiao notice that the following scenario happens often\cite{LuoQiaoParallelLLL}:
 \begin{align*}
 &\vdots \\
 &Reduce(i-1,i) \\
@@ -190,7 +194,7 @@ I_{i-2} &&& \\
 
 \begin{frame}
 \frametitle{LLL Algorithm with Delayed Size-Reduction}
-Given a lattice basis $B$ of dimension $m\times n,$ $m\geq n$, $D$ and $U$ which satisfy (\ref{decomp}), the algorithm is as follows:
+Given a lattice basis $B$ of dimension $m\times n,$ $m\geq n$, $D$ and $U$ which satisfy (\ref{decomp}), the algorithm is as follows\cite{LuoQiaoParallelLLL}:
 \begin{tiny}
 \begin{enumerate}[1]
 \item $M\leftarrow I_n$
@@ -246,6 +250,16 @@ Using this formula, we can have a maximum dimension $n \times n$ with $n=46341$ 
 \end{frame}
 
 \begin{frame}
+\begin{verbatim}
+\begin{figure} \centering
+  \includegraphics[width=0.75\textwidth]{ovd}
+  \caption{Graph of times for Original and Delayed Size Reduce versions of the LLL algorithm.}
+  \label{results}
+\end{figure}
+\end{verbatim}
+\end{frame}
+
+\begin{frame}
 \frametitle{Serial Conclusions}
 As we can see, there is no case in which it is not better to use Delayed Size-Reduction versus the original LLL Algorithm with no modification.
 This is fortunate, as the modifications made by Luo and Qiao require the use of Delayed Size-Reduction.
@@ -256,7 +270,7 @@ This is fortunate, as the modifications made by Luo and Qiao require the use of 
 \begin{itemize}
 \item ReduceSwapRestore($k,\gamma$) simply swaps columns $k$ and $k-1$ and performs row operations on rows $k$ and $k-1$.
 \item This means that for $k$ and $k+2$, ReduceSwapRestore($k,\gamma$) and ReduceSwapRestore($k+2,\gamma$) swap columns $k$ and $k-1$ with eachother and $k+2$ and $k+1$ with eachother and perform row operations on rows $k$ and $k-1$ as well as $k+2$ and $k+1$.
-\item Thus, ReduceSwapRestore may be applied for all even $k$ at the same time and all odd $k$ at the same time. Note though that we cannot apply ReduceSwapRestore to both even and odd $k$ at the same time; these must happen separatly.
+\item Thus, ReduceSwapRestore may be applied for all even $k$ at the same time and all odd $k$ at the same time. Note though that we cannot apply ReduceSwapRestore to both even and odd $k$ at the same time; these must happen separatly.\cite{LuoQiaoParallelLLL}
 \end{itemize}
 \end{frame}
 
@@ -326,5 +340,10 @@ Because the computation on each element that would need to be communicated is mi
 \item We recommend using the Delayed Size-Reduction modification when running this algorithm in serial in all cases
 \item It may be possible to use the same or similar ideas as Luo and Qiao's parallel algorithm with pthreads to allow for larger lattices to be reduced, however in the time available to us and with the knowledge we have, we could not devise a way to do so.
 \end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{References}
+\bibliography{template}
 \end{frame}
 \end{document}

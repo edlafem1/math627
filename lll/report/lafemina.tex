@@ -6,6 +6,9 @@
 \usepackage{url}
 \usepackage{verbatim}
 \usepackage[pdftex]{graphicx}
+\usepackage{enumerate}
+
+\bibliographystyle{acm}
 
 % horizontal margins: 1.0 + 6.5 + 1.0 = 8.5
 \setlength{\oddsidemargin}{0.0in}
@@ -126,12 +129,12 @@ that is,
 \begin{eqnarray}
 B=QD^{1/2}U \label{decomp}
 \end{eqnarray}
-where $u_{i,j}=\frac{<q_i,b_j>}{<q_i,b_i}$ for $1 < i < j \leq n$ and $<\cdot,\cdot>$ denotes the dot product. Note that $D=diag(d_i)$ with $d_i=\norm{b^*_i}^2_2$ and $U$ is upper triangular with $1$s on the main diagonal.
+where $u_{i,j}=\frac{<q_i,b_j>}{<q_i,b_i}$ for $1 < i < j \leq n$ and $<\cdot,\cdot>$ denotes the dot product. Note that $D=diag(d_i)$ with $d_i=\norm{b^*_i}^2_2$ and $U$ is upper triangular with $1$s on the main diagonal \cite{LuoQiaoParallelLLL}.
 
 \section{LLL Algorithm}
 The LLL algorithm is an iterative algorithm that stops when the following conditions hold:
 \begin{description}
-\item[Definition: Size-Reduced]\textit{ A basis $B=[b_1,b_2,\ldots,b_n]$ for a lattice is called sized-reduced if $U$ in (\ref{decomp}) satisfies:}
+\item[Definition: Size-Reduced]\textit{ A basis $B=[b_1,b_2,\ldots,b_n]$ for a lattice is called sized-reduced if $U$ in (\ref{decomp}) satisfies\cite{OriginalLLL}:}
 \begin{eqnarray}
 |u_{i,j}|\leq\frac{1}{2}\text{, for }1\leq i < j \leq n \label{size-reduced}
 \end{eqnarray}
@@ -141,7 +144,7 @@ B\text{ is size reduced}\\
 d_i+u^2_{i-1,i}d_{i-1}\geq \omega d_{i-1}\text{, for }2 \leq i \leq n \label{LLL-reduced}
 \end{eqnarray}
 \end{description}
-The algorithm is composed of two main steps, \textbf{Reduce} and \textbf{SwapRestore}.
+The algorithm is composed of two main steps, \textbf{Reduce} and \textbf{SwapRestore} \cite{OriginalLLL}.
 \begin{description}
 \item[Reduce(i,j)] \textit{Define a unimodular transformation $M_{ij}$ of dimension $n\times m$ by 
 \\$M_{ij}=I_n-\gamma <e_i, e_j>$ where $\gamma=\lceil u_{i,j} \lfloor$ is the closest integer to $u_{i,j}$ and $e_i$ is the $i$-th unit vector. Then perform:}
@@ -151,7 +154,7 @@ Notice that $BM_{ij}=QD^{1/2}UM_{ij}$ and since $M_{ij}$ is unimodular, $C=BM_{i
 
 To work towards satisfying the second condition (\ref{LLL-reduced}), we have another operation:
 \begin{description}
-\item[SwapRestore(i)] \textit{Let $\mu=u_{i-1,i}$, compute $\hat{d}_i-1=d_i+\mu^2 d_i-1, d_i\leftarrow \frac{d_{i-1}d_i}{\hat{d}_{i-1}},
+\item[SwapRestore(i)] \textit{Let $\mu=u_{i-1,i}$, compute $\hat{d}_{i-1}=d_i+\mu^2 d_{i-1}, d_i\leftarrow \frac{d_{i-1}d_i}{\hat{d}_{i-1}},
 \\\varepsilon=\frac{\mu d_{i-1}}{\hat{d}_{i-1}},d_{i-1}\leftarrow \hat{d}_{i-1}, u_{i-1,i}\leftarrow \varepsilon$. Swap the $i$-th and $i-1$-th columns in $U,B,$ and $M$, then perform:}
 $$U \leftarrow \left[
 \begin{array}{cccc}
@@ -163,11 +166,11 @@ I_{i-2} & & &\\
 \end{description}
 Performing this operation satisfies (\ref{LLL-reduced}) for the current values of $i$ and $j$.
 
-Thus, we have enough to write the full LLL algorithm as described in LLL PAPER HERE.
+Thus, we have enough to write the full LLL algorithm as described in the original paper on LLL \cite{OriginalLLL}.
 \pagebreak
 \begin{description}
 \item[LLL Algorithm:] \textit{Given a lattice basis $B$ of dimension $m\times n,$ $m\geq n$, $D$ and $U$ which satisfy (\ref{decomp}), the algorithm is as follows:}
-\begin{enumerate}
+\begin{enumerate}[1\hspace{.75em}]
 \item $M\leftarrow I_n$
 \item $k\leftarrow 2$
 \item while ($k\leq n$)
@@ -188,4 +191,71 @@ Thus, we have enough to write the full LLL algorithm as described in LLL PAPER H
 \item endwhile
 \end{enumerate}
 \end{description}
+
+\section{Improvements}
+Upon analysis of the previous algorithm, Luo and Qiao noticed repeated and unnecessary steps, specifically, performing additional \textbf{Reduce} operations\cite{LuoQiaoParallelLLL}. Below is the example used by Luo and Qiao\cite{LuoQiaoParallelLLL}:
+$$
+B=\left[
+\begin{array}{ccc}
+1 & -1 & 3 \\
+1 & 0 & 5 \\
+1 & 2 & 6 \\
+\end{array}\right]
+$$
+\begin{enumerate}[1)]
+\item Create QDU decomposition
+\item $k=2$ Do nothing
+\item $k=3$ Reduce(2,3)
+\item SwapRestore(3)
+\item $k=2$ Reduce(1,2)
+\item SwapRestore(2)
+\item $k=2$ Reduce(1,2)
+\item $k=3$ Do nothing. End.
+\end{enumerate}
+Notice that \textbf{Reduce(1,2)} occurs twice, separated only by a \textbf{SwapRestore} operation. If we had swapped first instead of reduced $u_{1,2}$ first, we would only need to reduce once. Luo and Qiao found that this happens often enough that it is useful to delay the reductions until all \textbf{SwapRestore} operations are completed. They call this the LLL algorithm with delayed size\-reduction. To make the requisite changes, we introduce a new operation \textbf{ReduceSwapRestore} \cite{LuoQiaoParallelLLL}.
+\begin{description}
+\item[ReduceSwapRestore(i,$\gamma$)] \textit{Let $\mu=u_{i-1,i}$. Compute: $\hat{d}_{i-1}=d_i+(\mu-\gamma)^2 d_{i-1}, d_i\leftarrow \frac{d_{i-1}d_i}{\hat{d}_{i-1}}, \varepsilon=\frac{(\mu-\gamma)d_{i-1}}{\hat{d}_{i-1}}, 
+\\d_{i-1}\leftarrow \hat{d}_{i-1},u_{i-1,i}\leftarrow \varepsilon$. Let}
+$$P=\left[\begin{array}{cc}
+1 &\gamma \\
+0 &1
+\end{array}\right]\left[\begin{array}{cc}
+0 &1 \\
+1 &0
+\end{array}\right]\text{ and } \Pi_i=diag([I_{i-2}\hspace{1em}P\hspace{1em}I_{n-i}])$$
+which will have the effect of reduction and swapping columns $i-1$ and $i$.
+Lastly, we perform
+$$U\leftarrow U\Pi_i, B\leftarrow B\Pi_i, M\leftarrow M\Pi_i.$$
+\end{description}
+We can now present the modified LLL algorithm with delayed size-reduction:
+\begin{description}
+\item[LLL Algorithm with Delayed Size-Reduction:] \textit{Given a lattice basis $B$ of dimension $m\times n,$ $m\geq n$, $D$ and $U$ which satisfy (\ref{decomp}), the algorithm is as follows:}
+The LLL algorithm is now as follows\cite{LuoQiaoParallelLLL}:
+\begin{enumerate}[1\hspace{.75em}]
+\item $M\leftarrow I_n$
+\item $k\leftarrow 2$
+\item while ($k\leq n$)
+\item \hspace{2em} $\gamma=\lceil u_{k-1,k} \rfloor $
+\item \hspace{2em} if $\left(d_k<(\omega -(u^2_{k-1,k}-\gamma)^2)d_{k-1}\right)$
+\item \hspace{2em}\hspace{2em} ReduceSwapRestore($k,\gamma$)
+\item \hspace{2em}\hspace{2em} $k\leftarrow\max(k-1,2)$
+\item \hspace{2em} else
+\item \hspace{2em}\hspace{2em} $k\leftarrow k+1$
+\item \hspace{2em} endif
+\item endwhile
+\item for $\left(k=2; k\leq n; k+=1\right)$
+\item \hspace{2em}\hspace{2em} for $i=k-1; i \geq 1; i\leftarrow i-1$
+\item \hspace{2em}\hspace{2em} \hspace{2em} if $\left(|u_{i,k}|>1/2\right)$
+\item \hspace{2em}\hspace{2em} \hspace{2em} \hspace{2em} Reduce($i,k$)
+\item \hspace{2em}\hspace{2em} \hspace{2em} endif
+\item \hspace{2em}\hspace{2em} endfor
+\item \hspace{2em} endif
+\item endfor
+\end{enumerate}
+\end{description}
+\section{Serial Algorithm}
+We now have two different versions of the LLL algorithm that work completely in serial. Because most of the mathematical operations occur down columns, we will store our matrices in column\-major format as we implement the algorithms in C. This will result in greatly better performance than if we used a row\-major format because as we perform column operations, our data will be contiguous and thus we will not be having costly cache misses every single element access. Though we are interested only in timing and improving the LLL algorithm itself, not the Grahm\-Schmidt process or the QDU decomposition, we must still perform these operations to give the LLL algorithm something to start with. We also restrict ourselvs to square matrices
+
+\pagebreak
+\bibliography{template}
 \end{document}
