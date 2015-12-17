@@ -254,8 +254,31 @@ The LLL algorithm is now as follows\cite{LuoQiaoParallelLLL}:
 \end{enumerate}
 \end{description}
 \section{Serial Algorithm}
-We now have two different versions of the LLL algorithm that work completely in serial. Because most of the mathematical operations occur down columns, we will store our matrices in column\-major format as we implement the algorithms in C. This will result in greatly better performance than if we used a row\-major format because as we perform column operations, our data will be contiguous and thus we will not be having costly cache misses every single element access. Though we are interested only in timing and improving the LLL algorithm itself, not the Grahm\-Schmidt process or the QDU decomposition, we must still perform these operations to give the LLL algorithm something to start with. We also restrict ourselvs to square matrices
-
+We now have two different versions of the LLL algorithm that work completely in serial. Because most of the mathematical operations occur down columns, we will store our matrices in column\-major format as we implement the algorithms in C. This will result in greatly better performance than if we used a row\-major format because as we perform column operations, our data will be contiguous and thus we will not be having costly cache misses every single element access. Though we are interested only in timing and improving the LLL algorithm itself, not the Grahm\-Schmidt process or the QDU decomposition, we must still perform these operations to give the LLL algorithm something to start with. We also restrict ourselvs to square matrices of dimension $n \times n$ for simplicity. To compute the QDU decomposition, we must start with matrices $B,Q,D,U$ all of dimension $n \times n$ allocated at the same time. Because $D$ is a diagonal matrix, we represent it as a simple array of length $n$ in our code. After we have computed the QDU decomposition, we no longer need $Q$ for the LLL algorithm and we can free it and only then allocate $M$, which is also of dimension $n \times n$. Thus at any given time we have three $n \times n$ arrays and one $n$ length vector allocated on the computer. We devised the following formula for a memory estimate of our program:
+$$(3n^2 + n) * 8 / 1024^3 GB.$$
+With $64$ GB of total memory on the hcpf2013 nodes of maya, we can have a maximum of $n=53510$. In order to provide a common and familiar conception of size, we use $n$ in incremental powers of $2$ starting at $n=512$ up to $n=32768$. We get the following table of memory estimates and actual memory usage:
+\begin{table} \centering
+  \caption{Estimated and Actual Memory Usages in GB:}
+  \label{memusage}
+  \vspace{0.5\baselineskip}
+  \begin{tabular}{rccc}
+    \hline
+    $n$ & Estimated & Observed\\
+    \hline
+       32 &   3.1250e-02 & 3.2189e-03 \\
+       64 &   1.5625e-02 & 8.0356e-04 \\
+      128 &   7.8125e-03 & 2.0081e-04 \\
+      256 &   3.9062e-03 & 5.0191e-05 \\
+      512 &   1.9531e-03 & 1.2543e-05 \\
+     1024 &   9.7656e-04 & 3.1327e-06 \\
+     2048 &   4.8828e-04 & 7.8097e-07 \\
+     4096 &   2.4414e-04 & 1.9356e-07 \\
+     8192 &   1.2207e-04 & 4.6817e-08 \\
+    16384 &   6.1035e-05 & 8.0469e-09 \\
+    32768 &   3.0518e-05 & 2.9562e-09 \\
+    \hline
+  \end{tabular}
+\end{table}
 \pagebreak
 \bibliography{template}
 \end{document}

@@ -61,9 +61,13 @@ int write_Matrix(double *source, int m, int n, char *filename) {
 }
 
 /**
-Memory Estimates assuming m == n:
+Memory Estimates assuming m == n and allocating all at same time:
 (4n^2 + n) * 8 / 1024^3 GB
 With 64 GB, n=46341 max
+
+Being smart and allocating M only after we have freed Q:
+(3n^2 + n) * 8 / 1024^3 GB
+With 64 GB, n=53510 max
 */
 int main(int argc, char *argv[]) {
 #ifdef MPI_INCLUDE
@@ -151,7 +155,7 @@ int main(int argc, char *argv[]) {
     the identity matrix I_n but relies on the assumption that it starts out as filled with zeros.
     Dimensions n x n.
     */
-    double *M = allocate_double_vector(n*n);
+    double *M; // = allocate_double_vector(n*n);
 
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
@@ -232,7 +236,8 @@ START_LLL:
 #endif
 
     free(Q);
-    
+    M = allocate_double_vector(n*n);
+
 #ifdef DEBUG_LLL
     fprintf(stdout, "U:\n");
     printMatrix(U, n, n);
