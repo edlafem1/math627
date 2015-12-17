@@ -5,6 +5,7 @@
 *.pdf
 *.docx
 
+*.opendb
 *.o
 *.out
 *.err
